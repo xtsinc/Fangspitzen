@@ -128,9 +128,11 @@ cd $BASE
 if [[ $http = 'apache' ]]; then
 	notice "iNSTALLiNG APACHE"
 	if [[ $DISTRO = @(Ubuntu|[dD]ebian|*Mint) ]]; then
-		packages install $PHP_DEBIAN apache2 apache2-mpm-prefork libapache2-mod-php5 libapache2-mod-python libapache2-mod-scgi libapache2-mod-suphp php5 suphp-common apachetop
+		packages install apache2 apache2-mpm-prefork libapache2-mod-python libapache2-mod-scgi apachetop &&
+		packages install $PHP_DEBIAN php5 libapache2-mod-php5 libapache2-mod-suphp suphp-common
 	elif [[ $DISTRO = @(SUSE|[Ss]use)* ]]; then
-		packages install $PHP_SUSE apache2 apache2-mod_php5 apache2-mod_scgi apache2-prefork php5 suphp
+		packages install apache2 apache2-mod_scgi apache2-prefork &&
+		packages install $PHP_SUSE php5 suphp apache2-mod_php5
 	elif [[ $DISTRO = @(ARCH|[Aa]rch)* ]]; then
 		packages install $PHP_ARCHLINUX apache php-apache
 	fi
@@ -201,7 +203,8 @@ elif [[ $http = 'cherokee' ]]; then
 	#	packages install cherokee spawn-fcgi
 	#fi
 	if [[ $DISTRO = @(Ubuntu|[dD]ebian|*Mint) ]]; then
-		packages install $PHP_DEBIAN cherokee libcherokee-mod-libssl libcherokee-mod-rrd libcherokee-mod-admin spawn-fcgi
+		packages install cherokee libcherokee-mod-libssl libcherokee-mod-rrd libcherokee-mod-admin spawn-fcgi &&
+		packages install $PHP_DEBIAN
 	elif [[ $DISTRO = @(SUSE|[Ss]use)* ]]; then
 		echo # packages install $PHP_SUSE TODO
 	elif [[ $DISTRO = @(ARCH|[Aa]rch)* ]]; then
@@ -238,7 +241,8 @@ if [[ $ftpd = 'vsftp' ]]; then
 	cat /etc/vsftpd.conf | grep '# added by autoscript' >/dev/null
 	if [[ $? != 0 ]]; then  # Check if this has already been added or not
 		if [[ -f /etc/vsftpd/vsftpd.pem ]]; then
-			openssl req -x509 -nodes -days 365 -newkey rsa:1024 -keyout /etc/vsftpd/vsftpd.pem -out /etc/vsftpd/vsftpd.pem -subj '/C=AN/ST=ON/L=YM/O=OU/CN=S/emailAddress=slash@dev.null' ;fi
+			mksslcert "/etc/vsftpd/vsftpd.pem"
+		fi
 		echo "# added by autoscript"     >> /etc/vsftpd.conf
 		echo "force_local_logins_ssl=NO" >> /etc/vsftpd.conf
 		echo "force_local_data_ssl=NO"   >> /etc/vsftpd.conf

@@ -10,6 +10,7 @@ if [[ $DISTRO = 'Ubuntu' ]]; then
 	echo "deb-src http://archive.ubuntu.com/ubuntu/ $NAME-updates multiverse"   >> $REPO_PATH/multiverse.list  # non-free
 
 	echo "deb http://ppa.launchpad.net/cherokee-webserver/ppa/ubuntu $NAME main" > $REPO_PATH/autoinstaller.list  # Cherokee
+	#echo "deb http://ppa.launchpad.net/cherokee-webserver/i-tse/ubuntu $NAME main" > $REPO_PATH/autoinstaller.list  # Uncomment for Unstable-Cherokee
 	echo "deb http://ppa.launchpad.net/stbuehler/ppa/ubuntu $NAME main"         >> $REPO_PATH/autoinstaller.list  # Lighttp
 	echo "deb http://ppa.launchpad.net/deluge-team/ppa/ubuntu $NAME main"       >> $REPO_PATH/autoinstaller.list  # Deluge
 	echo "deb http://ppa.launchpad.net/transmissionbt/ppa/ubuntu $NAME main"    >> $REPO_PATH/autoinstaller.list  # Transmission
@@ -35,6 +36,7 @@ elif [[ $DISTRO = @(Debian|LinuxMint) ]]; then
 	fi
 
 	echo "deb http://ppa.launchpad.net/cherokee-webserver/ppa/ubuntu jaunty main"  > $REPO_PATH/autoinstaller.list  # Cherokee
+	#echo "deb http://ppa.launchpad.net/cherokee-webserver/i-tse/ubuntu jaunty main" > $REPO_PATH/autoinstaller.list  # Uncomment for Unstable-Cherokee
 	echo "deb http://ppa.launchpad.net/deluge-team/ppa/ubuntu karmic main"        >> $REPO_PATH/autoinstaller.list  # Deluge
 	echo "deb http://ppa.launchpad.net/transmissionbt/ppa/ubuntu karmic main"     >> $REPO_PATH/autoinstaller.list  # Transmission
 	echo "deb http://ppa.launchpad.net/ssakar/ppa/ubuntu karmic main"             >> $REPO_PATH/autoinstaller.list  # iPList
@@ -46,7 +48,7 @@ elif [[ $DISTRO = @(Debian|LinuxMint) ]]; then
 elif [[ $DISTRO = @(ARCH|[Aa]rch)* ]]; then
 	echo '[archlinuxfr]'                           >> $REPO_PATH
 	echo 'Server = http://repo.archlinux.fr/$arch' >> $REPO_PATH
-	
+
 elif [[ $DISTRO = @(SUSE|[Ss]use)* ]]; then
 	packages addrepo http://download.opensuse.org/repositories/openSUSE:/11.3:/Contrib/standard/     "Contrib"
 	packages addrepo http://ftp.uni-erlangen.de/pub/mirrors/packman/suse/11.3/                       "Packman"
