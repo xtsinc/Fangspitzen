@@ -174,7 +174,7 @@ if [[ $http = 'apache' ]]; then
 elif [[ $http = 'lighttp' ]]; then
 	notice "iNSTALLiNG LiGHTTP"
 	if [[ $DISTRO = @(Ubuntu|[dD]ebian|*Mint) ]]; then
-		packages install lighttpd php5-cgi
+		packages install lighttpd php5-cgi &&
 		packages install $PHP_DEBIAN
 	elif [[ $DISTRO = @(SUSE|[Ss]use)* ]]; then
 		packages install $PHP_SUSE lighttpd
