@@ -151,6 +151,60 @@ elif [[ $bnc = 'psybnc' ]]; then
 	notice "Installed to ~/psybnc"
 fi
 
+##[ Configure Fail2Ban ]##
+if [[ $fail2ban = 'y']]; then
+	notice "iNSTALLiNG Fail2Ban"
+	packages install fail2ban ; if_error "Fail2ban failed to install"
+		log "Fail2ban Installation | Completed" ; debug_wait "fail2ban.installed"
+	f2b_jail=/etc/fail2ban/jail.conf
+	cat $f2b_jail | grep '# added by autoscript' >/dev/null
+	if [[ $? != 0 ]]; then  # Check if this has already been added or not
+		sed -i 's:bantime .*:bantime = 86400:' $f2b_jail  # 24 hours
+		sed -i '/[ssh]/,/port	= ssh/ s:enabled .*:enabled = true:' $f2b_jail
+		if [[ $ftp = 'vsftp' ]]; then
+			sed -i '/[vsftpd]/,/filter   = vsftpd/ s:enabled .*:enabled = true:' $f2b_jail
+		elif [[ $ftp = 'proftp' ]]; then
+			sed -i '/[proftpd]/,/filter   = proftpd/ s:enabled .*:enabled = true:' $f2b_jail
+		elif [[ $ftp = 'pureftp' ]]; then
+			sed -i 's:[wuftpd]:[pure-ftpd]:' $f2b_jail
+			sed -i 's:filter   = wuftpd:filter   = pure-ftpd:'                                            $f2b_jail
+			sed -i '/[pure-ftpd]/,/filter   = pure-ftpd/ s:enabled .*:enabled = true:'                    $f2b_jail
+			sed -i '/filter   = pure-ftpd/,/maxretry = 6/ s:logpath .*:logpath  = /var/log/pureftpd.log:' $f2b_jail
+		fi
+		if [[ $http = 'apache' ]]; then
+			sed -i '/[apache]/,/port	= http,https/ s:enabled .*:enabled = true:'           $f2b_jail
+			sed -i '/[apache-noscript]/,/port    = http,https/ s:enabled .*:enabled = true:'  $f2b_jail
+			sed -i '/[apache-overflows]/,/port    = http,https/ s:enabled .*:enabled = true:' $f2b_jail
+			cat >> $f2b_jail << "EOF"
+[apache-badbots]
+enabled = true
+port    = http,https
+filter  = apache-badbots
+logpath = /var/log/apache*/*error.log
+maxretry = 3
+EOF
+		fi
+		if [[ $webmin = 'y' ]]; then
+			cat >> $f2b_jail << "EOF"
+[webmin-auth]
+enabled = true
+port	= 10000
+filter	= webmin-auth
+logpath = /var/log/auth.log
+maxretry = 5
+EOF
+		fi
+		echo "# added by autoscript" >> $f2b_jail
+
+		echo -n "Restarting fail2ban..."
+		killall -q -15 fail2ban-server ; sleep 2
+		if [[ -e /var/run/fail2ban/fail2ban.sock ]]; then
+			rm /var/run/fail2ban/fail2ban.sock
+			/etc/init.d/fail2ban start
+		fi ; echo " done"
+	fi  # end `if $?`
+fi
+
 ##[ phpSysInfo ]##
 cd $BASE/tmp
 if [[ $phpsysinfo = 'y' ]]; then

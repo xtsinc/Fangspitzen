@@ -30,7 +30,7 @@ while [ $# -gt 0 ]; do
   			packages update ; base_install
   			exit ;;
 		-p|--pass)  # Generate strong random 'user defined length' passwords
-			if $2
+			if [[ $2 ]]
 				then passwdlength=$2 && mkpass
 				else error "Specify Length --pass x "
 			fi ;;
@@ -240,13 +240,13 @@ if [[ $ftpd = 'vsftp' ]]; then
 
 	cat /etc/vsftpd.conf | grep '# added by autoscript' >/dev/null
 	if [[ $? != 0 ]]; then  # Check if this has already been added or not
-		if [[ -f /etc/vsftpd/vsftpd.pem ]]; then
-			mksslcert "/etc/vsftpd/vsftpd.pem"
+		if [[ -f /etc/ssl/private/vsftpd.pem ]]; then
+			mksslcert "/etc/ssl/private/vsftpd.pem"
 		fi
 		echo "# added by autoscript"     >> /etc/vsftpd.conf
 		echo "force_local_logins_ssl=NO" >> /etc/vsftpd.conf
 		echo "force_local_data_ssl=NO"   >> /etc/vsftpd.conf
-		echo "rsa_cert_file=/etc/vsftpd/vsftpd.pem" >> /etc/vsftpd.conf
+		sed -i ":rsa_cert_file=.*:rsa_cert_file=/etc/ssl/private/vsftpd.pem:" /etc/vsftpd.conf
 		echo "ssl_enable=YES" >> /etc/vsftpd.conf
 		echo "ssl_tlsv1=YES"  >> /etc/vsftpd.conf
 		echo "ssl_sslv2=NO"   >> /etc/vsftpd.conf
