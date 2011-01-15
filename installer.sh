@@ -238,8 +238,8 @@ if [[ $ftpd = 'vsftp' ]]; then
 	sed -i 's:#nopriv_user.*:nopriv_user=ftp:'                   /etc/vsftpd.conf
 	sed -i 's:#chroot_local_user.*:chroot_local_user=YES:'       /etc/vsftpd.conf
 
-	cat /etc/vsftpd.conf | grep '# added by autoscript' >/dev/null
-	if [[ $? != 0 ]]; then  # Check if this has already been added or not
+	vsftpd_test=$(cat /etc/vsftpd.conf | grep '# added by autoscript')
+	if [[ ! $vsftpd_test ]]; then  # Check if this has already been added or not
 		if [[ -f /etc/ssl/private/vsftpd.pem ]]; then
 			mksslcert "/etc/ssl/private/vsftpd.pem"
 		fi

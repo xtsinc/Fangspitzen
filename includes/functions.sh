@@ -45,7 +45,7 @@ cleanup() {  # remove tmp folder and restore permissions
 }
 
 clear_logfile() {  # clear the logfile
-	[[ -f $LOG ]] && rm --force $LOG
+	[[ -f $LOG ]] && mv $LOG ${LOG}.bak
 }
 
 compile() {  # compile with num of threads as cpu cores and time it
