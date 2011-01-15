@@ -41,7 +41,7 @@ if [[ $sql = 'mysql' ]]; then
 		packages install libmysqlclient16-dev mysql-client mysql-server mytop
 	elif [[ $DISTRO = [Dd]ebian || $NAME = 'hardy' ]]; then
 		packages install libmysqlclient15-dev mysql-client mysql-server mytop
-	elif [[ $DISTRO = @(SUSE|[Ss]use)*; then
+	elif [[ $DISTRO = @(SUSE|[Ss]use)* ]]; then
 		packages install libmysqlclient-devel mysql-community-server mytop
 		chkconfig --add mysql
 		/etc/init.d/mysql start
