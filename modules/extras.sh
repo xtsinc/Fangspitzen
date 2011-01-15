@@ -26,9 +26,9 @@ elif [[ $cache = 'apc' ]]; then
 	if [[ $DISTRO = @(Ubuntu|[dD]ebian|*Mint) ]]; then
 		packages install php-apc
 	elif [[ $DISTRO = @(SUSE|[Ss]use)* ]]; then
-		# packages install TODO
+		echo "TODO" # packages install
 	elif [[ $DISTRO = @(ARCH|[Aa]rch)* ]]; then
-		# packages install TODO
+		echo "TODO" # packages install
 	fi
 	if_error "PHP-APC failed to install"
 	log "APC Installation | Completed" ; debug_wait "apc.installed"
@@ -70,7 +70,7 @@ elif [[ $sql = 'postgre' ]]; then
 	elif [[ $DISTRO = @(SUSE|[Ss]use)* ]]; then
 		packages install postgresql postgresql-server
 	elif [[ $DISTRO = @(ARCH|[Aa]rch)* ]]; then
-		# packages install TODO
+		echo "TODO" # packages install
 	fi
 	if_error "PostgreSQL failed to install"
 	log "PostgreSQL Installation | Completed" ; debug_wait "postgresql.installed"
@@ -84,7 +84,7 @@ if [[ $bnc != @(none|no|[Nn]) ]]; then
 	elif [[ $DISTRO = @(SUSE|[Ss]use)* ]]; then
 		packages install libcares-devel tcl tcl-devel
 	elif [[ $DISTRO = @(ARCH|[Aa]rch)* ]]; then
-		# packages install TODO
+		echo "TODO" # packages install
 	fi
 	if_error "Required packages failed to install"
 fi
@@ -234,7 +234,7 @@ if [[ $webmin = 'y' ]]; then
 	elif [[ $DISTRO = @(SUSE|[Ss]use)* ]]; then
 		packages install webmin perl-Net-SSLeay
 	elif [[ $DISTRO = @(ARCH|[Aa]rch)* ]]; then
-		# packages install TODO
+		echo "TODO" # packages install
 	fi
 	if_error "Webmin failed to install"
 	log "WebMin Installation | Completed" ; debug_wait "webmin.installed"
@@ -247,9 +247,9 @@ if [[ $vnstat = 'y' ]]; then
 	if [[ $DISTRO = @(Ubuntu|[dD]ebian|*Mint) ]]; then
 		packages install libgd2-xpm libgd2-xpm-dev
 	elif [[ $DISTRO = @(SUSE|[Ss]use)* ]]; then
-		# packages install TODO
+		echo "TODO" # packages install
 	elif [[ $DISTRO = @(ARCH|[Aa]rch)* ]]; then
-		# packages install TODO
+		echo "TODO" # packages install
 	fi
 	if_error "vnStat deps failed to install"
 	
@@ -310,9 +310,9 @@ if [[ $sabnzbd = 'y' ]]; then
 	if [[ $DISTRO = @(Ubuntu|[dD]ebian|*Mint) ]]; then
 			packages install sabnzbdplus par2 python-cheetah python-dbus python-yenc sabnzbdplus-theme-classic sabnzbdplus-theme-plush sabnzbdplus-theme-smpl
 	elif [[ $DISTRO = @(SUSE|[Ss]use)* ]]; then
-		# packages install TODO
+		echo "TODO" # packages install
 	elif [[ $DISTRO = @(ARCH|[Aa]rch)* ]]; then
-		# packages install TODO
+		echo "TODO" # packages install
 	fi
 	if_error "Sabnzbd failed to install"
 
@@ -357,9 +357,9 @@ if [[ $ipblock = 'y' ]]; then
 		fi
 		packages install iplist
 	elif [[ $DISTRO = @(SUSE|[Ss]use)* ]]; then
-		# packages install TODO
+		echo "TODO" # packages install
 	elif [[ $DISTRO = @(ARCH|[Aa]rch)* ]]; then
-		# packages install TODO
+		echo "TODO" # packages install
 	fi
 	if_error "iPBLOCK failed to install"
 
