@@ -152,7 +152,7 @@ elif [[ $bnc = 'psybnc' ]]; then
 fi
 
 ##[ Configure Fail2Ban ]##
-if [[ $fail2ban = 'y']]; then
+if [[ $fail2ban = 'y' ]]; then
 	notice "iNSTALLiNG Fail2Ban"
 	packages install fail2ban ; if_error "Fail2ban failed to install"
 		log "Fail2ban Installation | Completed" ; debug_wait "fail2ban.installed"
