@@ -98,7 +98,7 @@ extract() {  # find type of compression and extract accordingly
 }
 
 if_error() {  # call this to catch a bad return code and log the error
-	if [[ $E_ != 0 ]]; then
+	if [[ $E_ != 0 && $E_ != 100 ]]; then
 		echo -e " Error:${bldred} $1 ${rst} ($E_)"
 		log "Error: $1 ($E_)"
 		cleanup ;exit 1
