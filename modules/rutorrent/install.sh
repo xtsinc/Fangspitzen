@@ -30,7 +30,7 @@ cd plugins
 	checkout http://rutorrent-pausewebui.googlecode.com/svn/trunk pausewebui
 	checkout http://rutorrent-logoff.googlecode.com/svn/trunk/ logoff
 	checkout http://rutorrent-instantsearch.googlecode.com/svn/trunk instantsearch
-	if_error "ruTorrent Extra Plugins Download Failed"
+	#checkout http://rutorrent-chat.googlecode.com/svn/trunk chat
 	extract $BASE/modules/rutorrent/plugin-nfo.tar.gz
 	log "ruTorrent plugins | Downloaded"
 
