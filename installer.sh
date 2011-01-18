@@ -19,7 +19,6 @@ VERSION='0.9.9~git'                                              #
 DATE='Dec 24 2010'                                               #
 ##################################################################
 trap ctrl_c SIGINT
-trap 'echo "ERROR ON LINE: $LINENO"' ERR
 source includes/functions.sh || error "while loading functions.sh"  # Source in our functions
 
 ##[ Check command line switches ]##
@@ -42,10 +41,7 @@ while [ $# -gt 0 ]; do
 			usage ;;
 	esac
 done
-
 checkroot
-[[ $DEBUG = 1 ]] && echo -e ">>> Debug Mode ON.....[${bldylw} done ${rst}]" ||
-	echo -e ">>> Debug Mode OFF....[${bldylw} done ${rst}]"
 
 ##[ Find Config and Load it ]##
 if [[ -f config.ini ]]; then
@@ -54,23 +50,29 @@ if [[ -f config.ini ]]; then
 	[[ $PWD != "$BASE"     ]] && error "Does not match $BASE"   # Check if the user declared BASE correctly in the config
 else error "config.ini not found!"  # Cant continue without a config so produce an error and exit
 fi
+
+if [[ $DEBUG = 1 ]]; then
+	trap 'echo "ERROR ON LINE: $LINENO"' ERR
+	echo  -e ">>> Debug Mode .......[${bldylw} ON ${rst}]" 
+else echo -e ">>> Debug Mode .......[${bldylw} OFF ${rst}]"
+fi
 init
 
 #!=======================>> DiSCLAiMER <<=======================!#
 if [[ ! -f $LOG ]]; then  # only show for first run
-echo -e "
+echo -e "${bldgrn}
                       ______
                    .-\"      \"-.
-                  /            \\
+                  /      ${bldpur}®${bldgrn}     \\
                  |              |
                  |,  .-.  .-.  ,|
                  | )(__/  \__)( |
                  |/     /\     \|
-       (@_       (_     ^^     _)
-  _     ) \_______\__|IIIIII|__/__________________________
- (_)@8@8{}<________|-\IIIIII/-|___________________________>
-        )_/        \          /
-       (@           '--------'
+${bldylw}       (@_${bldgrn}       (_     ^^     _)
+${bldylw}  _     ) \${bldgrn}_______\__|${bldred}IIIIII${bldgrn}|__/__________________________
+${bldylw} (_)@8@8{}<${bldgrn}________|-\\${bldredIIIII${bldgrn}/-|___________________________>
+${bldylw}        )_/${bldgrn}        \          /
+${bldylw}       (@${bldgrn}           '--------'
 
   WARNING:
 
@@ -81,13 +83,14 @@ echo -e "
   fix it.
 
   You can update your system along with installing those \"must have\"
-  programs by simply running this script with the --dry option.
+  programs by simply running this script with the --dry option (beta).
 
     Supported:                InProgress:
       Ubuntu 9.04 -> 10.10      OpenSUSE 11.3
       Debian 5.0  ->  6.0       ArchLinux
 
-  If your OS is not listed, this script will most likey explode. \n"
+  If your OS is not listed, this script will most likey explode.
+${rst}"
 
 echo -e " ${undred}_______________________${rst}"
 echo -e " Distro:${bldylw} $DISTRO $RELEASE ${rst}"
