@@ -115,7 +115,7 @@ mkpass() {  # generate a random password of user defined length
 }
 
 mksslcert() {  # use 2048 bit certs, use sha256, and regenerate
-	if [[ $1 = 'generate-default-snakeoil' ]]; then  # called once after questionaire exits
+	if [[ $1 = 'generate-default-snakeoil' && ! -f $LOG ]]; then  # do once and only once
 		sed -i 's:default_bits .*:default_bits = 2048:' /etc/ssl/openssl.cnf
 		sed -i 's:default_md .*:default_md = sha256:'   /etc/ssl/openssl.cnf
 		if which make-ssl-cert >/dev/null; then
@@ -124,6 +124,7 @@ mksslcert() {  # use 2048 bit certs, use sha256, and regenerate
 			make-ssl-cert $1 --force-overwrite
 			echo -e "${bldylw} done${rst}"
 		fi
+		MKSSLCERT_RUN=0
 	else
 		[[ $# = 1 ]] && openssl req -new -x509 -days 3650 -nodes -out $1 -keyout $1 -subj '/C=AN/ST=ON/L=YM/O=OU/CN=S/emailAddress=dev@slash.null'  # generate single key file
 		[[ $# = 2 ]] && openssl req -new -x509 -days 3650 -nodes -out $1 -keyout $2 -subj '/C=AN/ST=ON/L=YM/O=OU/CN=S/emailAddress=dev@slash.null'  # 2nd arg creates separate .pem and .key files
@@ -333,6 +334,7 @@ if [[ $OS = "Linux" ]] ; then
 
 	packages setvars  # just sets REPO_PATH= at the moment
 	readonly iP USER CORES BASE WEB HOME=/home/$USER LOG=$BASE/$LOG # make sure these variables aren't overwritten
+	mksslcert generate-default-snakeoil
 	else error "Unsupported OS"
 fi
 	echo -e "[${bldylw} done ${rst}]" ;sleep 1
@@ -341,6 +343,7 @@ fi
 ##[ VARiABLE iNiT ]##
 CORES=$(grep -c ^processor /proc/cpuinfo)
 SSLCERT=/usr/share/ssl-cert/ssleay.cnf
+MKSSLCERT_RUN=1
 LOG=logs/installer.log
 iFACE=eth0
 WEBUSER='www-data'

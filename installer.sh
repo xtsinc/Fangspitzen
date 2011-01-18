@@ -113,7 +113,6 @@ echo -e "\n********************************"
 echo -e   "****${bldred} BEGiNiNG iNSTALLATiON ${rst}*****"
 echo -e   "********************************\n"
 
-mksslcert generate-default-snakeoil
 base_install
 
 if [[ $DISTRO = @(SUSE|[Ss]use)* ]]; then
