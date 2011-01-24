@@ -1,15 +1,15 @@
 ##!=======================>> QUESTiONS <<========================!##
-while [[ $skip_ques = 'n' ]]; do
+while [[ "$skip_ques" = 'n' ]]; do
 echo -e "\n ${txtred}-------------->>${bldred} CONFiGURATiON ${txtred}<<---------------${rst}"
 
 read -p "[ HTTP SERVER ]     [apache|lighttp|cherokee|none]: " http
-[[ $http = 'lighttpd' ]] && http='lighttp'
-if [[ $http != @(none|[Nn]) && $DEBUG = 1 ]]; then
+[[ "$http" = 'lighttpd' ]] && http='lighttp'
+if [[ "$http" != @(none|[Nn]) && "$DEBUG" = 1 ]]; then
 read -p "[ Create info.php? ]                         [y|n]: " infophp ;fi
 read -p "[ FTP SERVER  ]        [vsftp|proftp|pureftp|none]: " ftpd
 read -p "[ Torrent App ]      [rtorrent|tranny|deluge|none]: " torrent
 
-if [[ $torrent = 'rtorrent' ]]; then
+if [[ "$torrent" = 'rtorrent' ]]; then
 read -p "[ compile from svn? ]                        [y|n]: " rtorrent_svn
 read -p "[ compile with pre allocation? ]             [y|n]: " alloc ;fi
 

@@ -18,7 +18,7 @@ if [[ -f /etc/ssh/sshd_config ]]; then
 fi
 
 cat /etc/sysctl.conf | grep '# added by autoscript' >/dev/null
-if [[ $? != 0 ]]; then  # Check if this has already been added or not
+if [[ "$?" != 0 ]]; then  # Check if this has already been added or not
 	echo '# added by autoscript' >> /etc/sysctl.conf
 	echo 'kernel.exec-shield=1'                    >> /etc/sysctl.conf  # Turn on execshield
 	echo 'kernel.randomize_va_space=1'             >> /etc/sysctl.conf
@@ -40,56 +40,56 @@ if [[ $? != 0 ]]; then  # Check if this has already been added or not
 	sysctl -p
 fi
 
-if [[ $http = 'apache'   ]]; then
+if [[ "$http" = 'apache'   ]]; then
 	/etc/init.d/apache2 restart
-elif [[ $http = 'lighttp'  ]]; then
+elif [[ "$http" = 'lighttp'  ]]; then
 	/etc/init.d/lighttpd restart
-elif [[ $http = 'cherokee' ]]; then
+elif [[ "$http" = 'cherokee' ]]; then
 	notice "Run sudo cherokee-admin -b to configure Cherokee."
 fi
 
-[[ $sql = 'mysql' ]] &&
+[[ "$sql" = 'mysql' ]] &&
 	/etc/init.d/mysql restart
 
-if [[ $sql = 'postgre' ]]; then  # This needs to change per version
+if [[ "$sql" = 'postgre' ]]; then  # This needs to change per version
 	post_ver=8.4
-	[[ $NAME = 'lenny' ]] &&
+	[[ "$NAME" = 'lenny' ]] &&
 		post_ver=8.3
-	post_conf=/etc/postgresql/$post_ver/main/postgresql.conf
+	post_conf=/etc/postgresql/${post_ver}/main/postgresql.conf
 	sed -i "s:#autovacuum .*:autovacuum = on:"     $post_conf
 	sed -i "s:#track_counts .*:track_counts = on:" $post_conf
-	/etc/init.d/postgresql-$post_ver restart
+	/etc/init.d/postgresql-${post_ver} restart
 fi
 
 #[ Add Some Useful Command Alias' ]#
-if [[ -f $HOME/.bashrc ]];then
-	cat $HOME/.bashrc | grep '# added by autoscript' >/dev/null
-if [[ $? != 0 ]]; then  # Check if this has already been added or not
-	sed -i 's:force_color_prompt=no:force_color_prompt=yes:' $HOME/.bashrc
-	echo "# added by autoscript">> $HOME/.bashrc
-	echo "alias install='$alias_install'"     >> $HOME/.bashrc
-	echo "alias remove='$alias_remove'"       >> $HOME/.bashrc
-	echo "alias update='$alias_update'"       >> $HOME/.bashrc
-	echo "alias upgrade='$alias_upgrade'"     >> $HOME/.bashrc
-	echo "alias autoclean='$alias_autoclean'" >> $HOME/.bashrc
+if [[ -f ${HOME}/.bashrc ]];then
+	cat ${HOME}/.bashrc | grep '# added by autoscript' >/dev/null
+if [[ "$?" != 0 ]]; then  # Check if this has already been added or not
+	sed -i 's:force_color_prompt=no:force_color_prompt=yes:' ${HOME}/.bashrc
+	echo "# added by autoscript">> ${HOME}/.bashrc
+	echo "alias install='$alias_install'"     >> ${HOME}/.bashrc
+	echo "alias remove='$alias_remove'"       >> ${HOME}/.bashrc
+	echo "alias update='$alias_update'"       >> ${HOME}/.bashrc
+	echo "alias upgrade='$alias_upgrade'"     >> ${HOME}/.bashrc
+	echo "alias autoclean='$alias_autoclean'" >> ${HOME}/.bashrc
 	
-	if [[ $torrent = 'rtorrent' ]];then
-		echo "alias rtorrent-start='dtach -n .dtach/rtorrent rtorrent'" >> $HOME/.bashrc
-		echo "alias rtorrent-resume='dtach -a .dtach/rtorrent'"         >> $HOME/.bashrc
+	if [[ "$torrent" = 'rtorrent' ]];then
+		echo "alias rtorrent-start='dtach -n .dtach/rtorrent rtorrent'" >> ${HOME}/.bashrc
+		echo "alias rtorrent-resume='dtach -a .dtach/rtorrent'"         >> ${HOME}/.bashrc
 	fi
 fi  # end `if $?`
 fi
 
-if [[ $torrent = 'rtorrent' ]]; then
+if [[ "$torrent" = 'rtorrent' ]]; then
 echo ; read -p "Start rtorrent now? [y/n]: " start_rt
-	if [[ $start_rt = 'y' ]]; then
-		mkdir -p $HOME/.dtach ; rm -f $HOME/.dtach/rtorrent
-		chmod -R 755 $HOME/.dtach
-		chown -R $USER $HOME/.dtach
-		sudo -u $USER dtach -n /home/$USER/.dtach/rtorrent rtorrent
+	if [[ "$start_rt" = 'y' ]]; then
+		mkdir -p ${HOME}/.dtach ; rm -f ${HOME}/.dtach/rtorrent
+		chmod -R 755 ${HOME}/.dtach
+		chown -R "$USER" ${HOME}/.dtach
+		sudo -u "$USER" dtach -n /home/${USER}/.dtach/rtorrent rtorrent
 
-		TESTrt=$(pgrep -u $USER rtorrent)
-		[[ $? = 0 ]] &&
+		TESTrt=$(pgrep -u "$USER" rtorrent)
+		[[ "$?" = 0 ]] &&
 			echo "rTorrent has been started with dtach in ~/.dtach/rtorrent" ||
 			echo "rtorrent FAILED to start!"
 	fi

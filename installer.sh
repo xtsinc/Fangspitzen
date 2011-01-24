@@ -22,15 +22,15 @@ trap ctrl_c SIGINT
 source includes/functions.sh || error "while loading functions.sh"  # Source in our functions
 
 ##[ Check command line switches ]##
-while [ $# -gt 0 ]; do
+while [ "$#" -gt 0 ]; do
   	case "$1" in
   		-d|--dry)  # TODO
   			checkroot && init
   			packages update ; base_install
   			exit ;;
 		-p|--pass)  # Generate strong random 'user defined length' passwords
-			if [[ $2 ]]
-				then passwdlength=$2 && mkpass
+			if [[ "$2" ]]
+				then passwdlength="$2" && mkpass
 				else error "Specify Length --pass x "
 			fi ;;
 		-v|--version)  # Output version and date
@@ -46,12 +46,12 @@ checkroot
 ##[ Find Config and Load it ]##
 if [[ -f config.ini ]]; then
 	source config.ini || error "while loading config.ini"
-	[[ $iDiDNTEDiTMYCONFiG ]] && error "PLEASE EDiT THE CONFiG" # Die if it hasnt been edited
-	[[ $PWD != "$BASE"     ]] && error "Does not match $BASE"   # Check if the user declared BASE correctly in the config
+	[[ "$iDiDNTEDiTMYCONFiG" ]] && error "PLEASE EDiT THE CONFiG"  # Die if it hasnt been edited
+	[[ "$PWD" != "$BASE"     ]] && error "Does not match $BASE "   # Check if the user declared BASE correctly in the config
 else error "config.ini not found!"  # Cant continue without a config so produce an error and exit
 fi
 
-if [[ $DEBUG = 1 ]]; then
+if [[ "$DEBUG" = 1 ]]; then
 	trap 'echo "ERROR ON LINE: $LINENO"' ERR
 	echo  -e ">>> Debug Mode .......[${bldylw} ON ${rst}]" 
 else echo -e ">>> Debug Mode .......[${bldylw} OFF ${rst}]"
@@ -59,7 +59,7 @@ fi
 init
 
 #!=======================>> DiSCLAiMER <<=======================!#
-if [[ ! -f $LOG ]]; then  # only show for first run
+if [[ ! -f "$LOG" ]]; then  # only show for first run
 echo -e "${bldgrn}
                       ______
                    .-\"      \"-.
@@ -93,7 +93,7 @@ ${bldylw}       (@${bldgrn}           '--------'
 ${rst}"
 
 echo -e " ${undred}_______________________${rst}"
-echo -e " Distro:${bldylw} $DISTRO $RELEASE ${rst}"
+echo -e " Distro:${bldylw} "$DISTRO" $RELEASE ${rst}"
 echo -e " Kernel:${bldylw} $KERNEL${rst}-${bldylw}$ARCH ${rst}"
 
 echo -en "\n Continue? [y/n]: "
@@ -118,24 +118,24 @@ echo -e   "********************************\n"
 
 base_install
 
-if [[ $DISTRO = @(SUSE|[Ss]use)* ]]; then
-	cd $BASE/tmp
+if [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]; then
+	cd ${BASE}/tmp
 	download http://sourceforge.net/projects/dtach/files/dtach/0.8/dtach-0.8.tar.gz && extract dtach-0.8.tar.gz
 	cd dtach-0.8
 	sh configure && make && cp dtach /usr/bin
 fi
 
-cd $BASE
+cd "$BASE"
 ##[ APACHE ]##
 if [[ $http = 'apache' ]]; then
 	notice "iNSTALLiNG APACHE"
-	if [[ $DISTRO = @(Ubuntu|[dD]ebian|*Mint) ]]; then
+	if [[ "$DISTRO" = @(Ubuntu|[dD]ebian|*Mint) ]]; then
 		packages install apache2 apache2-mpm-prefork libapache2-mod-python libapache2-mod-scgi apachetop &&
 		packages install $PHP_DEBIAN php5 libapache2-mod-php5 libapache2-mod-suphp suphp-common
-	elif [[ $DISTRO = @(SUSE|[Ss]use)* ]]; then
+	elif [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]; then
 		packages install apache2 apache2-mod_scgi apache2-prefork &&
 		packages install $PHP_SUSE php5 suphp apache2-mod_php5
-	elif [[ $DISTRO = @(ARCH|[Aa]rch)* ]]; then
+	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
 		packages install $PHP_ARCHLINUX apache php-apache
 	fi
 	if_error "Apache2 failed to install"
@@ -143,7 +143,7 @@ if [[ $http = 'apache' ]]; then
 	a2enmod auth_digest ssl php5 scgi expires deflate mem_cache  # Enable modules
 	a2dismod cgi
 
-	if [[ $DISTRO = @(Ubuntu|[dD]ebian|*Mint) ]]; then
+	if [[ "$DISTRO" = @(Ubuntu|[dD]ebian|*Mint) ]]; then
 		a2ensite default-ssl
 		cp modules/apache/scgi.conf /etc/apache2/mods-available/scgi.conf  # Add mountpoint
 		sed -i "/<Directory \/var\/www\/>/,/<\/Directory>/ s:AllowOverride .*:AllowOverride All:" /etc/apache2/sites-available/default*
@@ -153,7 +153,7 @@ if [[ $http = 'apache' ]]; then
 		sed -i "s:ServerTokens Full:ServerTokens Prod:"    /etc/apache2/apache2.conf
 		echo   "ServerName $HOSTNAME" >>                   /etc/apache2/apache2.conf
 		PHPini=/etc/php5/apache/php.ini
-	elif [[ $DISTRO = @(ARCH|[Aa]rch)* ]]; then
+	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
 		#echo -e "LoadModule php5_module modules/libphp5.so"  >> /etc/httpd/conf/httpd.conf
 		#echo -e "LoadModule scgi_module modules/mod_scgi.so" >> /etc/httpd/conf/httpd.conf
 		#echo -e "Include conf/extra/php5_module.conf"        >> /etc/httpd/conf/httpd.conf
@@ -162,7 +162,7 @@ if [[ $http = 'apache' ]]; then
 		sed -i "s:;extension=sockets.so:extension=sockets.so:" $PHPini
 		sed -i "s:;extension=xmlrpc.so:extension=xmlrpc.so:"   $PHPini
 		/etc/rc.d/httpd restart
-	elif [[ $DISTRO = @(SUSE|[Ss]use)* ]]; then
+	elif [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]; then
 		a2enflag SSL
 		sed -i "/<Directory \"\/srv\/www\/htdocs\">/,/<\/Directory>/ s:AllowOverride .*:AllowOverride All:" /etc/apache2/default-server.conf
 		sed -i "s:APACHE_SERVERSIGNATURE=\"on\":APACHE_SERVERSIGNATURE=\"off\":" /etc/sysconfig/apache2
@@ -175,12 +175,12 @@ if [[ $http = 'apache' ]]; then
 ##[ LiGHTTPd ]##
 elif [[ $http = 'lighttp' ]]; then
 	notice "iNSTALLiNG LiGHTTP"
-	if [[ $DISTRO = @(Ubuntu|[dD]ebian|*Mint) ]]; then
+	if [[ "$DISTRO" = @(Ubuntu|[dD]ebian|*Mint) ]]; then
 		packages install lighttpd php5-cgi &&
 		packages install $PHP_DEBIAN
-	elif [[ $DISTRO = @(SUSE|[Ss]use)* ]]; then
+	elif [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]; then
 		packages install $PHP_SUSE lighttpd
-	elif [[ $DISTRO = @(ARCH|[Aa]rch)* ]]; then
+	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
 		packages install $PHP_ARCHLINUX lighttpd fcgi
 	fi
 	if_error "Lighttpd failed to install"  # I wonder when the fam and gamin api will be compatible (this generates an error coce 100 so we are forced to ignore it)
@@ -204,12 +204,12 @@ elif [[ $http = 'cherokee' ]]; then
 	#if [[ $NAME = 'lenny' ]]; then
 	#	packages install cherokee spawn-fcgi
 	#fi
-	if [[ $DISTRO = @(Ubuntu|[dD]ebian|*Mint) ]]; then
+	if [[ "$DISTRO" = @(Ubuntu|[dD]ebian|*Mint) ]]; then
 		packages install cherokee libcherokee-mod-libssl libcherokee-mod-rrd libcherokee-mod-admin spawn-fcgi &&
 		packages install $PHP_DEBIAN
-	elif [[ $DISTRO = @(SUSE|[Ss]use)* ]]; then
+	elif [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]; then
 		echo # packages install $PHP_SUSE TODO
-	elif [[ $DISTRO = @(ARCH|[Aa]rch)* ]]; then
+	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
 		echo # packages install TODO
 	fi
 	if_error "Cherokee failed to install"
@@ -270,11 +270,11 @@ if [[ $ftpd = 'vsftp' ]]; then
 ##[ proFTP ]##
 elif [[ $ftpd = 'proftp' ]]; then
 	notice "iNSTALLiNG proFTPd"
-	if [[ $DISTRO = @(Ubuntu|[dD]ebian|*Mint) ]]; then
+	if [[ "$DISTRO" = @(Ubuntu|[dD]ebian|*Mint) ]]; then
 		packages install proftpd-basic
-	elif [[ $DISTRO = @(SUSE|[Ss]use)* ]]; then
+	elif [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]; then
 		packages install proftpd
-	elif [[ $DISTRO = @(ARCH|[Aa]rch)* ]]; then
+	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
 		echo # packages install TODO
 	fi
 	if_error "ProFTPd failed to install"
@@ -333,7 +333,7 @@ fi
 
 if [[ $buildtorrent = 'b' ]]; then
 #-->##[ BuildTorrent ]##
-cd $BASE/tmp
+cd ${BASE}/tmp
 	notice "iNSTALLiNG BuildTorrent"
 	if [[ ! -d buildtorrent ]]; then  # Checkout latest BuildTorrent source
 		git clone -q git://gitorious.org/buildtorrent/buildtorrent.git ; E_=$?
@@ -368,7 +368,7 @@ if [[ ! -f /usr/local/bin/mktorrent || $buildtorrent = 'm' ]]; then
 fi
 fi  # end `if $buildtorrent`
 
-cd $BASE
+cd "$BASE"
 ##[ Torrent Clients ]##
 if   [[ $torrent = 'rtorrent' ]]; then source modules/rtorrent/install.sh
 elif [[ $torrent = 'tranny'   ]]; then source modules/transmission/install.sh

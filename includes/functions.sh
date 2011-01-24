@@ -16,9 +16,9 @@ PHP_ARCHLINUX="php php-cgi"  # TODO
 	echo -en "\n${bldred} iNSTALLiNG BASE PACKAGES, this may take a while...${rst}"
 
 	case "$DISTRO" in
-		Ubuntu|[Dd]ebian|*Mint) packages install $DEBIAN    ;;
-		ARCH*|[Aa]rch*        ) packages install $ARCHLINUX ;;
-		SUSE*|[Ss]use*        ) packages install $SUSE      ;;
+		Ubuntu|[Dd]ebian|*Mint) packages install "$DEBIAN"    ;;
+		ARCH*|[Aa]rch*        ) packages install "$ARCHLINUX" ;;
+		SUSE*|[Ss]use*        ) packages install "$SUSE"      ;;
 	esac
 
 	if_error "Required system packages failed to install"
@@ -27,31 +27,31 @@ PHP_ARCHLINUX="php php-cgi"  # TODO
 }
 
 checkout() {  # increase verbosity
-	if [[ $DEBUG = 1 ]]; then svn co $@ ; E_=$?
-	else svn co -q $@ ; E_=$?
+	if [[ "$DEBUG" = 1 ]]; then svn co "$@" ; E_=$?
+	else svn co -q "$@" ; E_=$?
 	fi	
 }
 
 checkroot() {  # check if user is root
-	[[ $UID = 0 ]] &&
+	[[ "$UID" = 0 ]] &&
 		echo -e ">>> RooT USeR ChecK...[${bldylw} done ${rst}]" ||
 		error "PLEASE RUN WITH SUDO"
 }
 
 cleanup() {  # remove tmp folder and restore permissions
-	cd $BASE && rm --recursive --force tmp
-	chown -R $USER $BASE
+	cd "$BASE" && rm --recursive --force tmp
+	chown -R "$USER" "$BASE"
 	log "Removed tmp/ folder"
 }
 
 clear_logfile() {  # clear the logfile
-	[[ -f $LOG ]] && mv $LOG ${LOG}.bak
+	[[ -f "$LOG" ]] && mv "$LOG" "${LOG}.bak"
 }
 
 compile() {  # compile with num of threads as cpu cores and time it
-	compile_time=$SECONDS
-	make -j$CORES $@ ; E_=$?
-	let compile_time=$SECONDS-$compile_time
+	compile_time="$SECONDS"
+	make -j"$CORES" "$@" ; E_=$?
+	let compile_time=${SECONDS}-${compile_time}
 }
 
 ctrl_c() {  # interrupt trap
@@ -63,7 +63,7 @@ ctrl_c() {  # interrupt trap
 }
 
 debug_wait() {  # prints a message and wait for user before continuing
-	if [[ $DEBUG = '1' ]]; then
+	if [[ "$DEBUG" = '1' ]]; then
 		echo -e "${bldpur} DEBUG: $1"
 		echo -en "${bldpur} Press Enter...${rst}"
 		read ENTER
@@ -71,7 +71,7 @@ debug_wait() {  # prints a message and wait for user before continuing
 }
 
 download() {  # show progress bars if debug is on
-	if [[ $DEBUG = 1 ]]; then
+	if [[ "$DEBUG" = 1 ]]; then
 		 wget --no-verbose $1 ; E_=$?
 	else wget --quiet $1      ; E_=$?
 	fi
@@ -83,30 +83,30 @@ error() {  # call this when you know there will be an error
 
 extract() {  # find type of compression and extract accordingly
 	case "$1" in
-		*.tar.bz2) tar xjf    $1 ;;
-		*.tbz2   ) tar xjf    $1 ;;
-		*.tar.gz ) tar xzf    $1 ;;
-		*.tgz    ) tar xzf    $1 ;;
-		*.tar    ) tar xf     $1 ;;
-		*.gz     ) gunzip -q  $1 ;;
-		*.bz2    ) bunzip2 -q $1 ;;
-		*.rar    ) unrar x    $1 ;;
-		*.zip    ) unzip      $1 ;;
-		*.Z      ) uncompress $1 ;;
-		*.7z     ) 7z x       $1 ;;
+		*.tar.bz2) tar xjf    "$1" ;;
+		*.tbz2   ) tar xjf    "$1" ;;
+		*.tar.gz ) tar xzf    "$1" ;;
+		*.tgz    ) tar xzf    "$1" ;;
+		*.tar    ) tar xf     "$1" ;;
+		*.gz     ) gunzip -q  "$1" ;;
+		*.bz2    ) bunzip2 -q "$1" ;;
+		*.rar    ) unrar x    "$1" ;;
+		*.zip    ) unzip      "$1" ;;
+		*.Z      ) uncompress "$1" ;;
+		*.7z     ) 7z x       "$1" ;;
 	esac
 }
 
 if_error() {  # call this to catch a bad return code and log the error
-	if [[ $E_ != 0 && $E_ != 100 ]]; then
+	if [[ "$E_" != 0 && "$E_" != 100 ]]; then
 		echo -e " Error:${bldred} $1 ${rst} ($E_)"
 		log "Error: $1 ($E_)"
-		cleanup ;exit 1
+		cleanup ; exit 1
 	fi
 }
 
 log() {  # send to the logfile
-	echo -e "$1" >> $LOG
+	echo -e "$1" >> "$LOG"
 }
 
 mkpass() {  # generate a random password of user defined length
@@ -115,7 +115,7 @@ mkpass() {  # generate a random password of user defined length
 }
 
 mksslcert() {  # use 2048 bit certs, use sha256, and regenerate
-	if [[ $1 = 'generate-default-snakeoil' && ! -f $LOG ]]; then  # do once and only once
+	if [[ "$1" = 'generate-default-snakeoil' && ! -f "$LOG" ]]; then  # do once and only once
 		sed -i 's:default_bits .*:default_bits = 2048:' /etc/ssl/openssl.cnf
 		sed -i 's:default_md .*:default_md = sha256:'   /etc/ssl/openssl.cnf
 		if which make-ssl-cert >/dev/null; then
@@ -126,9 +126,9 @@ mksslcert() {  # use 2048 bit certs, use sha256, and regenerate
 		fi
 		MKSSLCERT_RUN=0
 	else
-		[[ $# = 1 ]] && openssl req -new -x509 -days 3650 -nodes -out $1 -keyout $1 -subj '/C=AN/ST=ON/L=YM/O=OU/CN=S/emailAddress=dev@slash.null'  # generate single key file
-		[[ $# = 2 ]] && openssl req -new -x509 -days 3650 -nodes -out $1 -keyout $2 -subj '/C=AN/ST=ON/L=YM/O=OU/CN=S/emailAddress=dev@slash.null'  # 2nd arg creates separate .pem and .key files
-		chmod 400 $@  # Read write permission for owner only
+		[[ "$#" = 1 ]] && openssl req -new -x509 -days 3650 -nodes -out "$1" -keyout "$1" -subj '/C=AN/ST=ON/L=YM/O=OU/CN=S/emailAddress=dev@slash.null'  # generate single key file
+		[[ "$#" = 2 ]] && openssl req -new -x509 -days 3650 -nodes -out "$1" -keyout "$2" -subj '/C=AN/ST=ON/L=YM/O=OU/CN=S/emailAddress=dev@slash.null'  # 2nd arg creates separate .pem and .key files
+		chmod 400 "$@"  # Read write permission for owner only
 	fi
 }
 
@@ -137,51 +137,51 @@ notice() {  # echo status or general info to stdout
 }
 
 packages() {  # use appropriate package manager depending on distro
-	if [[ $DISTRO = @(Ubuntu|[dD]ebian|*Mint) ]]; then
-		[[ $DEBUG != 1 ]] && quiet='-qq'
+	if [[ "$DISTRO" = @(Ubuntu|[dD]ebian|*Mint) ]]; then
+		[[ "$DEBUG" != 1 ]] && quiet='-qq'
 		case "$1" in
 			addkey )
-					apt-key adv --keyserver keyserver.ubuntu.com --recv-keys $2 ;;
+					apt-key adv --keyserver keyserver.ubuntu.com --recv-keys "$2" ;;
 			clean  )
 					apt-get -qq autoclean
 					alias_autoclean="apt-get autoremove && apt-get autoclean"   ;;
 			install) shift  # forget $1
-					apt-get install --yes $quiet $@ 2>> $LOG; E_=$?
+					apt-get install --yes "$quiet" "$@" 2>> "$LOG"; E_=$?
 					alias_install="apt-get install"    ;;
 			remove ) shift
-					apt-get autoremove --yes $quiet $@ 2>> $LOG; E_=$?
+					apt-get autoremove --yes "$quiet" "$@" 2>> "$LOG"; E_=$?
 					alias_remove="apt-get autoremove"  ;;
 			update )
-					apt-get update $quiet
+					apt-get update "$quiet"
 					alias_update="apt-get update"      ;;
 			upgrade) 
-					apt-get upgrade --yes $quiet
+					apt-get upgrade --yes "$quiet"
 					alias_upgrade="apt-get upgrade"    ;;
 			version)
-					aptitude show $2 | grep Version:   ;;
+					aptitude show "$2" | grep Version:   ;;
 			setvars)
 					REPO_PATH=/etc/apt/sources.list.d  ;;
 		esac
-	elif [[ $DISTRO = @(ARCH|[Aa]rch)* ]]; then
-		[[ $DEBUG != 1 ]] && quiet='--noconfirm'
+	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
+		[[ "$DEBUG" != 1 ]] && quiet='--noconfirm'
 		case "$1" in
 			clean  )
-					pacman --sync --clean -c $quiet
+					pacman --sync --clean -c "$quiet"
 					alias_autoclean="pacman -Scc" ;;
 			install) shift
-					pacman --sync $quiet $@ 2>> $LOG; E_=$?
+					pacman --sync "$quiet" "$@" 2>> "$LOG"; E_=$?
 					alias_install="pacman -S"     ;;
 			remove ) shift
-					pacman --remove $@ 2>> $LOG; E_=$?
+					pacman --remove "$@" 2>> "$LOG"; E_=$?
 					alias_remove="pacman -R"      ;;
 			update )
-					pacman --sync --refresh $quiet
+					pacman --sync --refresh "$quiet"
 					alias_update="pacman -Sy"     ;;
 			upgrade)
-					pacman --sync --refresh --sysupgrade $quiet
+					pacman --sync --refresh --sysupgrade "$quiet"
 					alias_upgrade="pacman -Syu"   ;;
 			version)
-					pacman -Qi $2 | grep Version: ;;
+					pacman -Qi "$2" | grep Version: ;;
 			setvars)
 					REPO_PATH=/etc/pacman.conf
 					WEB=/srv/http WEBUSER='http' WEBGROUP='http' ;;
@@ -190,40 +190,40 @@ packages() {  # use appropriate package manager depending on distro
 		[[ $DEBUG != 1 ]] && quiet='--quiet'
 		case "$1" in
 			addrepo) shift
-					zypper --no-gpg-checks --gpg-auto-import-keys addrepo --refresh $@ 2>> $LOG ;;
+					zypper --no-gpg-checks --gpg-auto-import-keys addrepo --refresh "$@" 2>> "$LOG" ;;
 			clean  )
-					zypper $quiet clean
+					zypper "$quiet" clean
 					alias_autoclean="zypper clean" ;;
 			install) shift
-					zypper $quiet --non-interactive install $@ 2>> $LOG; E_=$?
+					zypper "$quiet" --non-interactive install "$@" 2>> "$LOG"; E_=$?
 					alias_install="zypper install" ;;
 			remove ) shift
-					zypper $quiet remove $@ 2>> $LOG; E_=$?
+					zypper "$quiet" remove "$@" 2>> "$LOG"; E_=$?
 					alias_remove="zypper remove"   ;;
 			update )
-					zypper $quiet refresh
+					zypper "$quiet" refresh
 					alias_update="zypper refresh"  ;;
 			upgrade)
-					zypper $quiet --non-interactive update --auto-agree-with-licenses
+					zypper "$quiet" --non-interactive update --auto-agree-with-licenses
 					alias_upgrade="zypper update"  ;;
 			version)
-					zypper info $2 | grep Version: ;;
+					zypper info "$2" | grep Version: ;;
 			setvars)
 					REPO_PATH=/etc/zypp/repos.d
 					WEB=/srv/www/htdocs WEBUSER='wwwrun' WEBGROUP='www' ;;
 		esac
 
-	elif [[ $DISTRO = "Fedora" ]]; then
-		[[ $DEBUG != 1 ]] && quiet=''
+	elif [[ "$DISTRO" = "Fedora" ]]; then
+		[[ "$DEBUG" != 1 ]] && quiet=''
 		case "$1" in
 			clean  )
 					yum clean all -y
 					alias_autoclean="yum clean all" ;;
 			install) shift
-					yum install -y $@ 2>> $LOG; E_=$?
+					yum install -y "$@" 2>> "$LOG"; E_=$?
 					alias_install="yum install"     ;;
 			remove ) shift
-					yum remove -y $@ 2>> $LOG; E_=$?
+					yum remove -y "$@" 2>> "$LOG"; E_=$?
 					alias_remove="yum remove"       ;;
 			update )
 					yum check-update -y
@@ -232,28 +232,28 @@ packages() {  # use appropriate package manager depending on distro
 					yum upgrade -y
 					alias_upgrade="yum upgrade"     ;;
 			version)
-					yum info $2 | grep Version:     ;;
+					yum info "$2" | grep Version:     ;;
 			setvars)
 					REPO_PATH=/etc/yum/repos.d/     ;;
 		esac
 
-	elif [[ $DISTRO = "Gentoo" ]]; then
-		[[ $DEBUG != 1 ]] && quiet='--quiet'
+	elif [[ "$DISTRO" = "Gentoo" ]]; then
+		[[ "$DEBUG" != 1 ]] && quiet='--quiet'
 		case "$1" in
 			clean  )
 					emerge --clean  # --depclean
 					alias_autoclean="emerge --clean" ;;
 			install) shift
-					emerge $quiet --jobs=$CORES $@ 2>> $LOG; E_=$?
+					emerge "$quiet" --jobs="$CORES" "$@" 2>> "$LOG"; E_=$?
 					alias_install="emerge"           ;;
 			remove ) shift
-					emerge --unmerge $quiet $@ 2>> $LOG; E=$?
+					emerge --unmerge "$quiet" "$@" 2>> "$LOG"; E=$?
 					alias_remove="emerge -C"         ;;
 			update )
 					emerge --sync
 					alias_update="emerge --sync"     ;;
 			upgrade)
-					emerge --update world $quiet  # --deep
+					emerge --update world "$quiet"  # --deep
 					alias_upgrade="emerge -u world"  ;;
 			version)
 					emerge -S or emerge -pv          ;;
@@ -270,7 +270,7 @@ spanner() {
 			((SP_COUNT++))
 		done
 		until [[ "$SP_COUNT" -eq 0 ]]; do
-			echo -en "\b\b $rst" ;sleep 0.1
+			echo -en "\b\b ${rst}" ;sleep 0.1
 			((SP_COUNT -= 1))
 		done
 	done
@@ -287,7 +287,7 @@ spinner() {
 }
 
 usage() {  # help screen
-	echo -e "\n${bldpur} Usage:${bldred} $0 ${bldpur}[${bldred}option${bldpur}]"
+	echo -e "\n${bldpur} Usage:${bldred} "$0" ${bldpur}[${bldred}option${bldpur}]"
 	echo -e " Options:"
 	echo -e " ${bldred}  -p,  --pass ${bldpur}[${bldred}length${bldpur}] ${bldylw}   Generate a strong password"
 	echo -e " ${bldred}  -v,  --version ${bldylw}         Show version number\n ${rst}"
@@ -308,7 +308,7 @@ init() {
 	OS=$(uname -s)
 
 	##[ Determine OS ]##
-if [[ $OS = "Linux" ]] ; then
+if [[ "$OS" = "Linux" ]] ; then
 	[[ -f /etc/fedora-release ]] && error "TODO - Fedora"
 	[[ -f /etc/gentoo-release ]] && error "TODO - Gentoo"
 
@@ -330,7 +330,7 @@ if [[ $OS = "Linux" ]] ; then
 	mkdir --parents logs/
 
 	iP=$(wget --quiet --timeout=30 www.whatismyip.com/automation/n09230945.asp -O - 2)
-	[[ $iP != *.*.* ]] && error "Unable to find ip from outside"
+	[[ "$iP" != *.*.* ]] && error "Unable to find ip from outside"
 
 	packages setvars  # just sets REPO_PATH= at the moment
 	readonly iP USER CORES BASE WEB HOME=/home/$USER LOG=$BASE/$LOG # make sure these variables aren't overwritten
