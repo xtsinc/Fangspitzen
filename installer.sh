@@ -130,7 +130,7 @@ cd "$BASE"
 if [[ $http = 'apache' ]]; then
 	notice "iNSTALLiNG APACHE"
 	if [[ "$DISTRO" = @(Ubuntu|[dD]ebian|*Mint) ]]; then
-		packages install apache2 apache2-mpm-prefork libapache2-mod-python libapache2-mod-scgi apachetop &&
+		packages install apache2 apache2-mpm-prefork libapache2-mod-python apachetop &&
 		packages install $PHP_DEBIAN php5 libapache2-mod-php5 libapache2-mod-suphp suphp-common
 	elif [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]; then
 		packages install apache2 apache2-mod_scgi apache2-prefork &&
@@ -140,12 +140,12 @@ if [[ $http = 'apache' ]]; then
 	fi
 	if_error "Apache2 failed to install"
 
-	a2enmod auth_digest ssl php5 scgi expires deflate mem_cache  # Enable modules
+	a2enmod auth_digest ssl php5 expires deflate mem_cache  # Enable modules
 	a2dismod cgi
 
 	if [[ "$DISTRO" = @(Ubuntu|[dD]ebian|*Mint) ]]; then
 		a2ensite default-ssl
-		cp modules/apache/scgi.conf /etc/apache2/mods-available/scgi.conf  # Add mountpoint
+		#cp modules/apache/scgi.conf /etc/apache2/mods-available/scgi.conf  # Add mountpoint (disabled in favor of rpc plugin)
 		sed -i "/<Directory \/var\/www\/>/,/<\/Directory>/ s:AllowOverride .*:AllowOverride All:" /etc/apache2/sites-available/default*
 		sed -i "s:ServerSignature On:ServerSignature Off:" /etc/apache2/apache2.conf
 		sed -i "s:Timeout 300:Timeout 30:"                 /etc/apache2/apache2.conf
@@ -190,9 +190,9 @@ elif [[ $http = 'lighttp' ]]; then
 		log "Lighttpd SSL Key created"
 	fi
 
-	cp modules/lighttp/scgi.conf /etc/lighttpd/conf-available/20-scgi.conf        # Add mountpoint and secure it with auth
+	#cp modules/lighttp/scgi.conf /etc/lighttpd/conf-available/20-scgi.conf       # Add mountpoint and secure it with auth (disabled in favor of rpc plugin)
 	cat < modules/lighttp/auth.conf >> /etc/lighttpd/conf-available/05-auth.conf  # Apend contents of our auth.conf into lighttp's auth.conf
-	lighty-enable-mod scgi fastcgi fastcgi-php auth access accesslog compress ssl # Enable modules
+	lighty-enable-mod fastcgi fastcgi-php auth access accesslog compress ssl      # Enable modules
 
 	PHPini=/etc/php5/cgi/php.ini
 	#PHPini=/etc/php5/fastcgi/php.ini  # opensuse
