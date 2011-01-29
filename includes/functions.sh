@@ -5,7 +5,7 @@ DYNAMIC="libcurl3 libcurl3-gnutls libcurl4-openssl-dev libncurses5 libncurses5-d
 
 DEBIAN="$COMMON $DYNAMIC aptitude autotools-dev build-essential cfv comerr-dev dtach g++ libcppunit-dev libperl-dev libssl-dev libterm-readline-gnu-perl libtorrent-rasterbar-dev ncurses-base ncurses-bin ncurses-term perl-modules ssl-cert"
 SUSE="$COMMON libcppunit-devel libcurl-devel libopenssl-devel libtorrent-rasterbar-devel gcc-c++ ncurses-devel libncurses6 libsigc++2-devel"
-ARCHLINUX="autoconf automake base-devel binutils curl dtach freetype2 gcc geoip libsigc++ libmcrypt libxslt make ncurses openssl patch perl perl-xml-libxml perl-digest-sha1 perl-html-parser perl-json perl-json-xs perl-xml-libxslt perl-net-ssleay pkgconfig pcre popt subversion sudo t1lib unrar unzip yaourt"  # TODO
+ARCHLINUX="base-devel binutils curl dtach freetype2 geoip libsigc++ libmcrypt libxslt ncurses openssl perl perl-xml-libxml perl-digest-sha1 perl-html-parser perl-json perl-json-xs perl-xml-libxslt perl-net-ssleay pcre popt subversion sudo t1lib unrar unzip yaourt"
 
 PHP_COMMON="php5-curl php5-gd php5-mcrypt php5-mysql php5-suhosin php5-xmlrpc"
 
