@@ -93,7 +93,7 @@ ${bldylw}       (@${bldgrn}           '--------'
 ${rst}"
 
 echo -e " ${undred}_______________________${rst}"
-echo -e " Distro:${bldylw} "$DISTRO" $RELEASE ${rst}"
+echo -e " Distro:${bldylw} $DISTRO $RELEASE ${rst}"
 echo -e " Kernel:${bldylw} $KERNEL${rst}-${bldylw}$ARCH ${rst}"
 
 echo -en "\n Continue? [y/n]: "

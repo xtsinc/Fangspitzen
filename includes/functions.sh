@@ -337,7 +337,8 @@ if [[ "$OS" = "Linux" ]] ; then
 	mksslcert generate-default-snakeoil
 	else error "Unsupported OS"
 fi
-	echo -e "[${bldylw} done ${rst}]" ;sleep 1
+	echo -e "[${bldylw} done ${rst}]"
+	sleep 1
 }
 
 ##[ VARiABLE iNiT ]##
