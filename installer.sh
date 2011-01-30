@@ -69,8 +69,8 @@ echo -e "${bldgrn}
                  | )(__/  \__)( |
                  |/     /\     \|
 ${bldylw}       (@_${bldgrn}       (_     ^^     _)
-${bldylw}  _     ) \${bldgrn}_______\__|${bldred}IIIIII${bldgrn}|__/__________________________
-${bldylw} (_)@8@8{}<${bldgrn}________|-\\${bldredIIIII${bldgrn}/-|___________________________>
+${bldylw}  _     ) \\ ${bldgrn}______\__|IIIIII|__/__________________________
+${bldylw} (_)@8@8{}<${bldgrn}________|-\\IIIIII/-|___________________________>
 ${bldylw}        )_/${bldgrn}        \          /
 ${bldylw}       (@${bldgrn}           '--------'
 
