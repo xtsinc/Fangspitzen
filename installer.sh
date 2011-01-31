@@ -209,9 +209,11 @@ elif [[ $http = 'cherokee' ]]; then
 		packages install cherokee libcherokee-mod-libssl libcherokee-mod-rrd libcherokee-mod-admin spawn-fcgi &&
 		packages install $PHP_DEBIAN
 	elif [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]; then
-		echo # packages install $PHP_SUSE TODO
+		packages install cherokee
+		packages install $PHP_SUSE
 	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
-		echo # packages install TODO
+		packages install cherokee
+		packages install $PHP_ARCHLINUX
 	fi
 	if_error "Cherokee failed to install"
 
@@ -276,7 +278,7 @@ elif [[ $ftpd = 'proftp' ]]; then
 	elif [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]; then
 		packages install proftpd
 	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
-		echo # packages install TODO
+		packages install proftpd
 	fi
 	if_error "ProFTPd failed to install"
 

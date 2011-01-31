@@ -23,12 +23,10 @@ if [[ $cache = 'xcache' ]]; then
 ##[ APC ]##
 elif [[ $cache = 'apc' ]]; then
 	notice "iNSTALLiNG APC"
-	if [[ $DISTRO = @(Ubuntu|[dD]ebian|*Mint) ]]; then
+	if [[ $DISTRO = @(Ubuntu|[dD]ebian|*Mint|ARCH*|[Aa]rch*) ]]; then
 		packages install php-apc
 	elif [[ $DISTRO = @(SUSE|[Ss]use)* ]]; then
-		echo "TODO" # packages install
-	elif [[ $DISTRO = @(ARCH|[Aa]rch)* ]]; then
-		echo "TODO" # packages install
+		packages install php5-APC
 	fi
 	if_error "PHP-APC failed to install"
 	log "APC Installation | Completed" ; debug_wait "apc.installed"
@@ -65,13 +63,10 @@ elif [[ $sql = 'sqlite' ]]; then
 ##[ PostGreSQL ]##
 elif [[ $sql = 'postgre' ]]; then
 	notice "iNSTALLiNG PostgreSQL"
-	if [[ $DISTRO = @(Ubuntu|[dD]ebian|*Mint) ]]; then
+	if [[ $DISTRO = @(Ubuntu|[dD]ebian|*Mint|ARCH*|[Aa]rch*) ]]; then
 		packages install postgresql
 	elif [[ $DISTRO = @(SUSE|[Ss]use)* ]]; then
 		packages install postgresql postgresql-server
-	elif [[ $DISTRO = @(ARCH|[Aa]rch)* ]]; then
-		echo "TODO" # packages install
-	fi
 	if_error "PostgreSQL failed to install"
 	log "PostgreSQL Installation | Completed" ; debug_wait "postgresql.installed"
 fi
@@ -84,7 +79,7 @@ if [[ $bnc != @(none|no|[Nn]) ]]; then
 	elif [[ $DISTRO = @(SUSE|[Ss]use)* ]]; then
 		packages install libcares-devel tcl tcl-devel
 	elif [[ $DISTRO = @(ARCH|[Aa]rch)* ]]; then
-		echo "TODO" # packages install
+		packages install c-ares tcl
 	fi
 	if_error "Required packages failed to install"
 fi
@@ -234,7 +229,7 @@ if [[ $webmin = 'y' ]]; then
 	elif [[ $DISTRO = @(SUSE|[Ss]use)* ]]; then
 		packages install webmin perl-Net-SSLeay
 	elif [[ $DISTRO = @(ARCH|[Aa]rch)* ]]; then
-		echo "TODO" # packages install
+		packages install webmin
 	fi
 	if_error "Webmin failed to install"
 	log "WebMin Installation | Completed" ; debug_wait "webmin.installed"
@@ -247,9 +242,9 @@ if [[ $vnstat = 'y' ]]; then
 	if [[ $DISTRO = @(Ubuntu|[dD]ebian|*Mint) ]]; then
 		packages install libgd2-xpm libgd2-xpm-dev
 	elif [[ $DISTRO = @(SUSE|[Ss]use)* ]]; then
-		echo "TODO" # packages install
+		packages install gd gd-devel
 	elif [[ $DISTRO = @(ARCH|[Aa]rch)* ]]; then
-		echo "TODO" # packages install
+		packages install gd
 	fi
 	if_error "vnStat deps failed to install"
 	
@@ -266,10 +261,11 @@ if [[ $vnstat = 'y' ]]; then
 	# cd ..
 	# mv jsvnstat $WEB
 
-	compile
+	compile all
 		if_error "VnStat Build Failed"
 		log "VnStat Compile | Completed in $compile_time seconds" ; debug_wait "vnstat.compiled"
-	make install && cd ..                                                 # Install
+	make install
+	cd ..
 		log "VnStat Installation | Completed"
 
 	if [[ ! -f /etc/init.d/vnstat ]]; then
@@ -312,7 +308,7 @@ if [[ $sabnzbd = 'y' ]]; then
 	elif [[ $DISTRO = @(SUSE|[Ss]use)* ]]; then
 		echo "TODO" # packages install
 	elif [[ $DISTRO = @(ARCH|[Aa]rch)* ]]; then
-		echo "TODO" # packages install
+		echo "TODO" # packages install libpar2 python-cheetah
 	fi
 	if_error "Sabnzbd failed to install"
 
@@ -357,9 +353,9 @@ if [[ $ipblock = 'y' ]]; then
 		fi
 		packages install iplist
 	elif [[ $DISTRO = @(SUSE|[Ss]use)* ]]; then
-		echo "TODO" # packages install
+		packages install iplist libpcre0 libnfnetlink0 libnetfilter-queue1
 	elif [[ $DISTRO = @(ARCH|[Aa]rch)* ]]; then
-		echo "TODO" # packages install
+		yaourt --sync iplist libnetfilter_queue libnfnetlink
 	fi
 	if_error "iPBLOCK failed to install"
 

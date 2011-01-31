@@ -170,8 +170,13 @@ fi
 
 ##[ Check for SABnzbd ]##
 if [[ $sabnzbd = 'y' ]]; then
-	v1=$(packages version sabnzbdplus)
-	echo -e "${bldblu} SabNZBd: $v1 ${rst}"
+	if [[ $DISTRO != @([uU]buntu|[dD]ebian) ]]; then
+		echo -e "Only packaged for Ubuntu.\nSee  http://sabnzbd.org/download  for installing it manually."
+		sabnzbd = 'n'
+	else
+		v1=$(packages version sabnzbdplus)
+		echo -e "${bldblu} SabNZBd: $v1 ${rst}"
+	fi
 elif [[ $sabnzbd = @(none|no|[Nn]) ]]; then
 	echo -e "${bldylw} SABnzbd NOT BEiNG iNSTALLED ${rst}"
 else echo -e "${bldred}---> ERROR iN SABnzbd iNPUT! ${rst}"; sabnzbd='n'
