@@ -143,13 +143,13 @@ notice() {  # echo status or general info to stdout
 
 packages() {  # use appropriate package manager depending on distro
 	if [[ "$DISTRO" = @(Ubuntu|[dD]ebian|*Mint) ]]; then
-		[[ "$DEBUG" != 1 ]] && quiet='-qq'
+		[[ "$DEBUG" = 1 ]] && quiet='-qq' || quiet=
 		case "$1" in
 			addkey )
 					apt-key adv --keyserver keyserver.ubuntu.com --recv-keys "$2" ;;
 			clean  )
 					apt-get -qq autoclean
-					alias_autoclean="apt-get autoremove && apt-get autoclean"   ;;
+					alias_autoclean="apt-get autoremove && apt-get autoclean" ;;
 			install) shift  # forget $1
 					apt-get install --yes "$quiet" "$@" 2>> "$LOG"; E_=$?
 					alias_install="apt-get install"    ;;
@@ -163,12 +163,12 @@ packages() {  # use appropriate package manager depending on distro
 					apt-get upgrade --yes "$quiet"
 					alias_upgrade="apt-get upgrade"    ;;
 			version)
-					aptitude show "$2" | grep Version:   ;;
+					aptitude show "$2" | grep Version: ;;
 			setvars)
 					REPO_PATH=/etc/apt/sources.list.d  ;;
 		esac
 	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
-		[[ "$DEBUG" != 1 ]] && quiet='--noconfirm'
+		[[ "$DEBUG" = 1 ]] && quiet='--noconfirm' || quiet=
 		case "$1" in
 			clean  )
 					pacman --sync --clean -c "$quiet"
@@ -192,7 +192,7 @@ packages() {  # use appropriate package manager depending on distro
 					WEB=/srv/http WEBUSER='http' WEBGROUP='http' ;;
 		esac
 	elif [[ $DISTRO = @(SUSE|[Ss]use)* ]]; then
-		[[ $DEBUG != 1 ]] && quiet='--quiet'
+		[[ $DEBUG = 1 ]] && quiet='--quiet' || quiet=
 		case "$1" in
 			addrepo) shift
 					zypper --no-gpg-checks --gpg-auto-import-keys addrepo --refresh "$@" 2>> "$LOG" ;;
@@ -219,7 +219,7 @@ packages() {  # use appropriate package manager depending on distro
 		esac
 
 	elif [[ "$DISTRO" = "Fedora" ]]; then
-		[[ "$DEBUG" != 1 ]] && quiet=''
+		#[[ "$DEBUG" = 1 ]] && quiet='' || quiet=
 		case "$1" in
 			clean  )
 					yum clean all -y
@@ -237,13 +237,13 @@ packages() {  # use appropriate package manager depending on distro
 					yum upgrade -y
 					alias_upgrade="yum upgrade"     ;;
 			version)
-					yum info "$2" | grep Version:     ;;
+					yum info "$2" | grep Version:   ;;
 			setvars)
 					REPO_PATH=/etc/yum/repos.d/     ;;
 		esac
 
 	elif [[ "$DISTRO" = "Gentoo" ]]; then
-		[[ "$DEBUG" != 1 ]] && quiet='--quiet'
+		[[ "$DEBUG" = 1 ]] && quiet='--quiet' || quiet=
 		case "$1" in
 			clean  )
 					emerge --clean  # --depclean
