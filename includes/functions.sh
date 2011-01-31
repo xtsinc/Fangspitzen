@@ -9,16 +9,16 @@ ARCHLINUX="base-devel binutils curl dtach freetype2 geoip libsigc++ libmcrypt li
 
 PHP_COMMON="php5-curl php5-gd php5-mcrypt php5-mysql php5-suhosin php5-xmlrpc"
 
-PHP_DEBIAN="$PHP_COMMON php5-cgi php5-cli php5-common php5-dev php5-mhash"  # it might be worthy to note that php5-json is provided by php5-common
+PHP_DEBIAN="$PHP_COMMON php5-cgi php5-cli php5-common php5-dev php5-mhash"  # php5-json is provided by php5-common
 PHP_SUSE="$PHP_COMMON php5-devel php5-json"
 PHP_ARCHLINUX="php php-cgi"  # TODO
 
 	echo -en "\n${bldred} iNSTALLiNG BASE PACKAGES, this may take a while...${rst}"
 
 	case "$DISTRO" in
-		Ubuntu|[Dd]ebian|*Mint) packages install "$DEBIAN"    ;;
-		ARCH*|[Aa]rch*        ) packages install "$ARCHLINUX" ;;
-		SUSE*|[Ss]use*        ) packages install "$SUSE"      ;;
+		[uU]buntu|[Dd]ebian|*Mint) packages install "$DEBIAN"    ;;
+		ARCH*|[Aa]rch*           ) packages install "$ARCHLINUX" ;;
+		SUSE*|[Ss]use*           ) packages install "$SUSE"      ;;
 	esac
 
 	if_error "Required system packages failed to install"
@@ -30,6 +30,11 @@ checkout() {  # increase verbosity
 	if [[ "$DEBUG" = 1 ]]; then svn co "$@" ; E_=$?
 	else svn co -q "$@" ; E_=$?
 	fi	
+}
+
+checkbash() {  # check for bash verion 4+
+	[[ "$BASH_VERSION" = 4* ]] ||
+		error "SHELL: Bash v4.0+ is required. (Current: $(bash --version | head -n1 | cut -c 1-23))"
 }
 
 checkroot() {  # check if user is root

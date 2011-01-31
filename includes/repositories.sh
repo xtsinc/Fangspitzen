@@ -3,7 +3,7 @@ echo -e "\n********************************"
 echo -e   "*****${bldred} ADDiNG REPOSiTORiES  ${rst}*****"
 echo -e   "********************************\n"
 
-if [[ "$DISTRO" = 'Ubuntu' ]]; then
+if [[ "$DISTRO" = @([uU]buntu) ]]; then
 	echo "deb http://archive.ubuntu.com/ubuntu/ "$NAME" multiverse"                > $REPO_PATH/multiverse.list  # non-free
 	echo "deb-src http://archive.ubuntu.com/ubuntu/ "$NAME" multiverse"           >> $REPO_PATH/multiverse.list  # non-free
 	echo "deb http://archive.ubuntu.com/ubuntu/ ${NAME}-updates multiverse"       >> $REPO_PATH/multiverse.list  # non-free
@@ -20,7 +20,7 @@ if [[ "$DISTRO" = 'Ubuntu' ]]; then
 	echo "deb http://download.webmin.com/download/repository sarge contrib"       >> $REPO_PATH/autoinstaller.list  # Webmin
 	log "Repositories ADD | Success"
 
-elif [[ "$DISTRO" = @(Debian|LinuxMint) ]]; then
+elif [[ "$DISTRO" = @(Debian|*Mint) ]]; then
 	if [[ "$NAME" = 'lenny' ]]; then  # Bascially updates to squeeze since packages are so old on lenny
 #		touch /etc/apt/apt.conf
 #		echo 'APT::Default-Release "stable";' >> /etc/apt/apt.conf  # Make lenny the default for package installation
@@ -62,7 +62,7 @@ fi
 echo "" > $REPO_PATH/.autoinstalled
 
 ##!=====================>> PUBLiC KEYS <<========================!##
-if [[ "$DISTRO" = @(Ubuntu|Debian|LinuxMint) ]]; then  # Add signing keys
+if [[ "$DISTRO" = @([uU]buntu|[dD]ebian|*Mint) ]]; then  # Add signing keys
 	packages addkey EBA7BD49
 	packages addkey 5A43ED73
 	packages addkey 249AD24C

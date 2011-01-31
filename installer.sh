@@ -25,7 +25,7 @@ source includes/functions.sh || error "while loading functions.sh"  # Source in 
 while [ "$#" -gt 0 ]; do
   	case "$1" in
   		-d|--dry)  # TODO
-  			checkroot && init
+  			checkroot && checkbash && init
   			packages update ; base_install
   			exit ;;
 		-p|--pass)  # Generate strong random 'user defined length' passwords
@@ -42,6 +42,7 @@ while [ "$#" -gt 0 ]; do
 	esac
 done
 checkroot
+checkbash
 
 ##[ Find Config and Load it ]##
 if [[ -f config.ini ]]; then
@@ -69,7 +70,7 @@ echo -e "${bldgrn}
                  | )(__/  \__)( |
                  |/     /\     \|
 ${bldylw}       (@_${bldgrn}       (_     ^^     _)
-${bldylw}  _     ) \\ ${bldgrn}______\__|IIIIII|__/__________________________
+${bldylw}  _     )_\\ ${bldgrn}______\__|IIIIII|__/__________________________
 ${bldylw} (_)@8@8{}<${bldgrn}________|-\\IIIIII/-|___________________________>
 ${bldylw}        )_/${bldgrn}        \          /
 ${bldylw}       (@${bldgrn}           '--------'
@@ -129,7 +130,7 @@ cd "$BASE"
 ##[ APACHE ]##
 if [[ $http = 'apache' ]]; then
 	notice "iNSTALLiNG APACHE"
-	if [[ "$DISTRO" = @(Ubuntu|[dD]ebian|*Mint) ]]; then
+	if [[ "$DISTRO" = @([Uu]buntu|[dD]ebian|*Mint) ]]; then
 		packages install apache2 apache2-mpm-prefork libapache2-mod-python apachetop &&
 		packages install $PHP_DEBIAN php5 libapache2-mod-php5 libapache2-mod-suphp suphp-common
 	elif [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]; then
@@ -143,7 +144,7 @@ if [[ $http = 'apache' ]]; then
 	a2enmod auth_digest ssl php5 expires deflate mem_cache  # Enable modules
 	a2dismod cgi
 
-	if [[ "$DISTRO" = @(Ubuntu|[dD]ebian|*Mint) ]]; then
+	if [[ "$DISTRO" = @([Uu]buntu|[dD]ebian|*Mint) ]]; then
 		a2ensite default-ssl
 		#cp modules/apache/scgi.conf /etc/apache2/mods-available/scgi.conf  # Add mountpoint (disabled in favor of rpc plugin)
 		sed -i "/<Directory \/var\/www\/>/,/<\/Directory>/ s:AllowOverride .*:AllowOverride All:" /etc/apache2/sites-available/default*
@@ -175,7 +176,7 @@ if [[ $http = 'apache' ]]; then
 ##[ LiGHTTPd ]##
 elif [[ $http = 'lighttp' ]]; then
 	notice "iNSTALLiNG LiGHTTP"
-	if [[ "$DISTRO" = @(Ubuntu|[dD]ebian|*Mint) ]]; then
+	if [[ "$DISTRO" = @([Uu]buntu|[dD]ebian|*Mint) ]]; then
 		packages install lighttpd php5-cgi &&
 		packages install $PHP_DEBIAN
 	elif [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]; then
@@ -204,7 +205,7 @@ elif [[ $http = 'cherokee' ]]; then
 	#if [[ $NAME = 'lenny' ]]; then
 	#	packages install cherokee spawn-fcgi
 	#fi
-	if [[ "$DISTRO" = @(Ubuntu|[dD]ebian|*Mint) ]]; then
+	if [[ "$DISTRO" = @([Uu]buntu|[dD]ebian|*Mint) ]]; then
 		packages install cherokee libcherokee-mod-libssl libcherokee-mod-rrd libcherokee-mod-admin spawn-fcgi &&
 		packages install $PHP_DEBIAN
 	elif [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]; then
@@ -270,7 +271,7 @@ if [[ $ftpd = 'vsftp' ]]; then
 ##[ proFTP ]##
 elif [[ $ftpd = 'proftp' ]]; then
 	notice "iNSTALLiNG proFTPd"
-	if [[ "$DISTRO" = @(Ubuntu|[dD]ebian|*Mint) ]]; then
+	if [[ "$DISTRO" = @([Uu]buntu|[dD]ebian|*Mint) ]]; then
 		packages install proftpd-basic
 	elif [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]; then
 		packages install proftpd
