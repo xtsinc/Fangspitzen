@@ -25,7 +25,7 @@ source includes/functions.sh || error "while loading functions.sh"  # Source in 
 while [ "$#" -gt 0 ]; do
   	case "$1" in
   		-d|--dry)  # TODO
-  			checkroot && checkbash && init
+  			runchecks && init
   			packages update ; base_install
   			exit ;;
 		-p|--pass)  # Generate strong random 'user defined length' passwords
@@ -41,8 +41,7 @@ while [ "$#" -gt 0 ]; do
 			usage ;;
 	esac
 done
-checkroot
-checkbash
+runchecks
 
 ##[ Find Config and Load it ]##
 if [[ -f config.ini ]]; then
@@ -50,12 +49,6 @@ if [[ -f config.ini ]]; then
 	[[ "$iDiDNTEDiTMYCONFiG" ]] && error "PLEASE EDiT THE CONFiG"  # Die if it hasnt been edited
 	[[ "$PWD" != "$BASE"     ]] && error "Does not match $BASE "   # Check if the user declared BASE correctly in the config
 else error "config.ini not found!"  # Cant continue without a config so produce an error and exit
-fi
-
-if [[ "$DEBUG" = 1 ]]; then
-	trap 'echo "ERROR ON LINE: $LINENO"' ERR
-	echo  -e ">>> Debug Mode .......[${bldylw} ON ${rst}]" 
-else echo -e ">>> Debug Mode .......[${bldylw} OFF ${rst}]"
 fi
 init
 
@@ -101,6 +94,7 @@ echo -en "\n Continue? [y/n]: "
 	if ! yes; then  # Cleanup and die if no
 		cleanup ; clear ; exit
 	else log "\n*** SCRiPT STARTiNG | $(date) ***"
+		mksslcert 'generate-default-snakeoil'
 	fi
 fi  # end `if ! $LOG`
 

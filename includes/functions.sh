@@ -32,17 +32,6 @@ checkout() {  # increase verbosity
 	fi	
 }
 
-checkbash() {  # check for bash verion 4+
-	[[ "$BASH_VERSION" = 4* ]] ||
-		error "SHELL: Bash v4.0+ is required. (Current: $(bash --version | head -n1 | cut -c 1-23))"
-}
-
-checkroot() {  # check if user is root
-	[[ "$UID" = 0 ]] &&
-		echo -e ">>> RooT USeR ChecK...[${bldylw} done ${rst}]" ||
-		error "PLEASE RUN WITH SUDO"
-}
-
 cleanup() {  # remove tmp folder and restore permissions
 	cd "$BASE" && rm --recursive --force tmp
 	chown -R "$USER" "$BASE"
@@ -120,7 +109,7 @@ mkpass() {  # generate a random password of user defined length
 }
 
 mksslcert() {  # use 2048 bit certs, use sha256, and regenerate
-	if [[ "$1" = 'generate-default-snakeoil' && ! -f "$LOG" ]]; then  # do once and only once
+	if [[ "$1" = 'generate-default-snakeoil' ]]; then  # do once and only once
 		sed -i 's:default_bits .*:default_bits = 2048:' /etc/ssl/openssl.cnf
 		sed -i 's:default_md .*:default_md = sha256:'   /etc/ssl/openssl.cnf
 		if which make-ssl-cert >/dev/null; then
@@ -241,6 +230,20 @@ packages() {  # use appropriate package manager depending on distro
 	fi
 }
 
+runchecks() {
+	# check if user is root
+	[[ "$UID" = 0 ]] &&
+		echo -e ">>> RooT USeR ChecK...[${bldylw} done ${rst}]" ||
+		error "PLEASE RUN WITH SUDO"
+	# check for bash verion 4+
+	[[ "$BASH_VERSION" = 4* ]] ||
+		error "SHELL: Bash v4.0+ is required. (Current: $(bash --version | head -n1 | cut -c 1-23))"
+	# check if debug is on/off
+	[[ "$DEBUG" = 1 ]] &&
+		echo -e ">>> Debug Mode .......[${bldylw} ON ${rst}]" ||
+		echo -e ">>> Debug Mode .......[${bldylw} OFF ${rst}]"
+}
+
 spanner() {
 	SP_COUNT=0
 	while [[ -d /proc/$1 ]]; do
@@ -313,7 +316,6 @@ if [[ "$OS" = "Linux" ]] ; then
 
 	packages setvars  # just sets REPO_PATH= at the moment
 	readonly iP USER CORES BASE WEB HOME=/home/$USER LOG=$BASE/$LOG # make sure these variables aren't overwritten
-	mksslcert generate-default-snakeoil
 	else error "Unsupported OS"
 fi
 	echo -e "[${bldylw} done ${rst}]"
