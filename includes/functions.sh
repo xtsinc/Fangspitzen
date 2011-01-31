@@ -16,9 +16,9 @@ PHP_ARCHLINUX="php php-cgi"  # TODO
 	echo -en "\n${bldred} iNSTALLiNG BASE PACKAGES, this may take a while...${rst}"
 
 	case "$DISTRO" in
-		[uU]buntu|[Dd]ebian|*Mint) packages install "$DEBIAN"    ;;
-		ARCH*|[Aa]rch*           ) packages install "$ARCHLINUX" ;;
-		SUSE*|[Ss]use*           ) packages install "$SUSE"      ;;
+		[uU]buntu|[Dd]ebian|*Mint) packages install $DEBIAN    ;;
+		ARCH*|[Aa]rch*           ) packages install $ARCHLINUX ;;
+		SUSE*|[Ss]use*           ) packages install $SUSE      ;;
 	esac
 
 	if_error "Required system packages failed to install"
