@@ -231,17 +231,26 @@ packages() {  # use appropriate package manager depending on distro
 }
 
 runchecks() {
-	# check if user is root
-	[[ "$UID" = 0 ]] &&
-		echo -e ">>> RooT USeR ChecK...[${bldylw} done ${rst}]" ||
-		error "PLEASE RUN WITH SUDO"
+clear
+	# find Config and Load it
+	if [[ -f config.ini ]]; then
+		source config.ini || error "while loading config.ini"
+		[[ "$iDiDNTEDiTMYCONFiG" ]] && error "PLEASE EDiT THE CONFiG"  # Die if it hasnt been edited
+		[[ "$PWD" != "$BASE"     ]] && error "Does not match $BASE "   # Check if the user declared BASE correctly in the config
+	else error "config.ini not found!"  # Cant continue without a config so produce an error and exit
+	fi
 	# check for bash verion 4+
 	[[ "$BASH_VERSION" = 4* ]] ||
 		error "SHELL: Bash v4.0+ is required. (Current: $(bash --version | head -n1 | cut -c 1-23))"
+	# check if user is root
+	[[ "$UID" = 0 ]] &&
+		echo -e ">>> User Check .......[${bldylw} OK ${rst}]" ||
+		error "PLEASE RUN WITH SUDO"
 	# check if debug is on/off
 	[[ "$DEBUG" = 1 ]] &&
 		echo -e ">>> Debug Mode .......[${bldylw} ON ${rst}]" ||
 		echo -e ">>> Debug Mode .......[${bldylw} OFF ${rst}]"
+sleep 2
 }
 
 spanner() {

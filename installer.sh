@@ -42,14 +42,6 @@ while [ "$#" -gt 0 ]; do
 	esac
 done
 runchecks
-
-##[ Find Config and Load it ]##
-if [[ -f config.ini ]]; then
-	source config.ini || error "while loading config.ini"
-	[[ "$iDiDNTEDiTMYCONFiG" ]] && error "PLEASE EDiT THE CONFiG"  # Die if it hasnt been edited
-	[[ "$PWD" != "$BASE"     ]] && error "Does not match $BASE "   # Check if the user declared BASE correctly in the config
-else error "config.ini not found!"  # Cant continue without a config so produce an error and exit
-fi
 init
 
 #!=======================>> DiSCLAiMER <<=======================!#
