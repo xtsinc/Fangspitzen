@@ -41,7 +41,10 @@ if [[ "$?" != 0 ]]; then  # Check if this has already been added or not
 fi
 
 if [[ "$http" = 'apache'   ]]; then
-	/etc/init.d/apache2 restart
+	if [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
+		/etc/rc.d/httpd restart ||
+	else /etc/init.d/apache2 restart
+	fi
 elif [[ "$http" = 'lighttp'  ]]; then
 	/etc/init.d/lighttpd restart
 elif [[ "$http" = 'cherokee' ]]; then

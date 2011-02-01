@@ -123,7 +123,8 @@ if [[ $http = 'apache' ]]; then
 		packages install apache2 apache2-mod_scgi apache2-prefork &&
 		packages install $PHP_SUSE php5 suphp apache2-mod_php5
 	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
-		packages install $PHP_ARCHLINUX apache php-apache
+		packages install apache php-apache
+		packages install $PHP_ARCHLINUX
 	fi
 	if_error "Apache2 failed to install"
 
@@ -141,14 +142,13 @@ if [[ $http = 'apache' ]]; then
 		echo   "ServerName $HOSTNAME" >>                   /etc/apache2/apache2.conf
 		PHPini=/etc/php5/apache/php.ini
 	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
-		#echo -e "LoadModule php5_module modules/libphp5.so"  >> /etc/httpd/conf/httpd.conf
-		#echo -e "LoadModule scgi_module modules/mod_scgi.so" >> /etc/httpd/conf/httpd.conf
-		#echo -e "Include conf/extra/php5_module.conf"        >> /etc/httpd/conf/httpd.conf
-		echo -e "SCGIMount /rutorrent/master 127.0.0.1:5000" >> /etc/httpd/conf/httpd.conf  # Add mountpoint
+		#echo "SCGIMount /rutorrent/master 127.0.0.1:5000" >> /etc/httpd/conf/httpd.conf  # Add mountpoint
+		echo "LoadModule php5_module modules/libphp5.so"  >> /etc/httpd/conf/httpd.conf
+		echo "Include conf/extra/php5_module.conf"        >> /etc/httpd/conf/httpd.conf
+		echo "/etc/rc.d/httpd start" >> /etc/rc.local
 		PHPini=/etc/php/php.ini
 		sed -i "s:;extension=sockets.so:extension=sockets.so:" $PHPini
 		sed -i "s:;extension=xmlrpc.so:extension=xmlrpc.so:"   $PHPini
-		/etc/rc.d/httpd restart
 	elif [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]; then
 		a2enflag SSL
 		sed -i "/<Directory \"\/srv\/www\/htdocs\">/,/<\/Directory>/ s:AllowOverride .*:AllowOverride All:" /etc/apache2/default-server.conf
@@ -213,7 +213,8 @@ elif [[ $http != @(none|no|[Nn]) ]]; then  # Edit php config
 	sed -i 's:display_errors = On:display_errors = Off:'                               $PHPini
 	sed -i 's:log_errors = Off:log_errors = On:'                                       $PHPini
 	sed -i 's:;error_log .*:error_log = /var/log/php-error.log:'                       $PHPini
-	[[ $infophp = 'y' ]] && echo "<?php phpinfo(); ?>" > $WEB/info.php  # Create a phpinfo file
+	[[ $infophp = 'y' ]] &&
+		echo "<?php phpinfo(); ?>" > $WEB/info.php  # Create phpinfo file
 fi
 
 ##[ vsFTP ]##
@@ -374,7 +375,7 @@ fi
 source $BASE/includes/postprocess.sh || error "while loading postprocess.sh"
 echo -e "\n*******************************"
 echo -e   "******${bldred} SCRiPT COMPLETED! ${rst}******"
-echo -e   "****${bldred} FiNiSHED iN ${bldylw}$SECONDS ${bldred}SECONDS ${rst}**"
+echo -e   "****${bldred} FiNiSHED iN ${bldylw}$SECONDS ${bldred}SECONDS ${rst}*"
 echo -e   "*******************************\n"
 log "*** SCRiPT COMPLETED | $(date) ***\n<---------------------------------> \n"
 exit

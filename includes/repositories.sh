@@ -46,8 +46,7 @@ elif [[ "$DISTRO" = @(Debian|*Mint) ]]; then
 	log "Repositories ADD | Success"
 
 elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
-	echo '[archlinuxfr]'                           >> $REPO_PATH
-	echo 'Server = http://repo.archlinux.fr/$arch' >> $REPO_PATH
+	echo -e '[archlinuxfr]\nServer = http://repo.archlinux.fr/$arch' >> $REPO_PATH
 
 elif [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]; then
 	packages addrepo http://download.opensuse.org/repositories/openSUSE:/11.3:/Contrib/standard/      "Contrib"
