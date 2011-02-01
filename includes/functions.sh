@@ -303,12 +303,8 @@ if [[ "$OS" = "Linux" ]] ; then
 	[[ -f /etc/fedora-release ]] && error "TODO - Fedora"
 	[[ -f /etc/gentoo-release ]] && error "TODO - Gentoo"
 
-	if [[ -f /etc/SuSE-release ]]; then
-		if ! which lsb_release >/dev/null; then  # install lsb_release (distros dont like to keep things simple)
-			packages install lsb_release ;fi
-	else
-		if ! which lsb-release >/dev/null; then  # install lsb-release (debian stable doesnt package it)
-			packages install lsb-release lsb_release ;fi
+	if [[ ! -x /usr/bin/lsb_release ]]; then
+		packages install lsb-release
 	fi
 
 	# Distributor -i > Ubuntu  > Debian  > Debian   > LinuxMint     > Arch  > SUSE LINUX  (DISTRO)
