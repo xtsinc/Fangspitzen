@@ -132,34 +132,36 @@ notice() {  # echo status or general info to stdout
 
 packages() {  # use appropriate package manager depending on distro
 	if [[ "$DISTRO" = @(Ubuntu|[dD]ebian|*Mint) ]]; then
+		[[ "$DEBUG" = 1 ]] && quiet="-qq" || quiet=""
 		case "$1" in
 			addkey ) apt-key adv --keyserver keyserver.ubuntu.com --recv-keys $2 ;;
-			clean  ) apt-get -qq autoclean
+			clean  ) apt-get $quiet autoclean
 					 alias_autoclean="apt-get autoremove && apt-get autoclean" ;;
 			install) shift  # forget $1
-					 apt-get install --yes -qq $@ 2>> $LOG; E_=$?
+					 apt-get install --yes $quiet $@ 2>> $LOG; E_=$?
 					 alias_install="apt-get install"   ;;
 			remove ) shift
-					 apt-get autoremove --yes -qq $@ 2>> $LOG; E_=$?
+					 apt-get autoremove --yes $quiet $@ 2>> $LOG; E_=$?
 					 alias_remove="apt-get autoremove" ;;
-			update ) apt-get update -qq
+			update ) apt-get update $quiet
 					 alias_update="apt-get update"     ;;
-			upgrade) apt-get upgrade --yes -qq
+			upgrade) apt-get upgrade --yes $quiet
 					 alias_upgrade="apt-get upgrade"   ;;
 			version) aptitude show $2 | grep Version:  ;;
 			setvars) REPO_PATH=/etc/apt/sources.list.d ;;
 		esac
 	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
+		[[ "$DEBUG" = 1 ]] && quiet="--noconfirm" || quiet=""
 		case "$1" in
-			clean  ) pacman --sync --clean -c -noconfirm
+			clean  ) pacman --sync --clean -c $quiet
 					 alias_autoclean="pacman -Scc" ;;
 			install) shift
-					 pacman --sync -noconfirm $@ 2>> $LOG; E_=$?
+					 pacman --sync $quiet $@ 2>> $LOG; E_=$?
 					 alias_install="pacman -S"     ;;
 			remove ) shift
 					 pacman --remove $@ 2>> $LOG; E_=$?
 					 alias_remove="pacman -R"      ;;
-			update ) pacman --sync --refresh -noconfirm
+			update ) pacman --sync --refresh $quiet
 					 alias_update="pacman -Sy"     ;;
 			upgrade) pacman --sync --refresh --sysupgrade $quiet
 					 alias_upgrade="pacman -Syu"   ;;
@@ -170,20 +172,21 @@ packages() {  # use appropriate package manager depending on distro
 					 WEBGROUP='http' ;;
 		esac
 	elif [[ $DISTRO = @(SUSE|[Ss]use)* ]]; then
+		[[ "$DEBUG" = 1 ]] && quiet="--quiet" || quiet=""
 		case "$1" in
 			addrepo) shift
 					 zypper --no-gpg-checks --gpg-auto-import-keys addrepo --refresh $@ 2>> $LOG ;;
-			clean  ) zypper --quiet clean
+			clean  ) zypper $quiet clean
 					 alias_autoclean="zypper clean" ;;
 			install) shift
-					 zypper --quiet --non-interactive install $@ 2>> $LOG; E_=$?
+					 zypper $quiet --non-interactive install $@ 2>> $LOG; E_=$?
 					 alias_install="zypper install" ;;
 			remove ) shift
-					 zypper --quiet remove $@ 2>> $LOG; E_=$?
+					 zypper $quiet remove $@ 2>> $LOG; E_=$?
 					 alias_remove="zypper remove"   ;;
-			update ) zypper --quiet refresh
+			update ) zypper $quiet refresh
 					 alias_update="zypper refresh"  ;;
-			upgrade) zypper --quiet --non-interactive update --auto-agree-with-licenses
+			upgrade) zypper $quiet --non-interactive update --auto-agree-with-licenses
 					 alias_upgrade="zypper update"  ;;
 			version) zypper info $2 | grep Version: ;;
 			setvars) REPO_PATH=/etc/zypp/repos.d
@@ -193,14 +196,15 @@ packages() {  # use appropriate package manager depending on distro
 		esac
 
 	elif [[ "$DISTRO" = "Fedora" ]]; then
+		[[ "$DEBUG" = 1 ]] && quiet="-e 0" || quiet=""
 		case "$1" in
 			clean  ) yum clean all -y
 					 alias_autoclean="yum clean all" ;;
 			install) shift
-					 yum install -y $@ 2>> $LOG; E_=$?
+					 yum install $quiet -y $@ 2>> $LOG; E_=$?
 					 alias_install="yum install"     ;;
 			remove ) shift
-					 yum remove -y $@ 2>> $LOG; E_=$?
+					 yum remove $quiet -y $@ 2>> $LOG; E_=$?
 					 alias_remove="yum remove"       ;;
 			update ) yum check-update -y
 					 alias_update="yum check-update" ;;
@@ -211,18 +215,19 @@ packages() {  # use appropriate package manager depending on distro
 		esac
 
 	elif [[ "$DISTRO" = "Gentoo" ]]; then
+		[[ "$DEBUG" = 1 ]] && quiet="--quiet" || quiet=""
 		case "$1" in
 			clean  ) emerge --clean  # --depclean
 					 alias_autoclean="emerge --clean"  ;;
 			install) shift
-					 emerge --quiet --jobs=$CORES $@ 2>> $LOG; E_=$?
+					 emerge $quiet --jobs=$CORES $@ 2>> $LOG; E_=$?
 					 alias_install="emerge"            ;;
 			remove ) shift
-					 emerge --unmerge --quiet $@ 2>> $LOG; E=$?
+					 emerge --unmerge $quiet $@ 2>> $LOG; E=$?
 					 alias_remove="emerge -C"          ;;
 			update ) emerge --sync
 					 alias_update="emerge --sync"      ;;
-			upgrade) emerge --update world --quiet  # --deep
+			upgrade) emerge --update world $quiet  # --deep
 					 alias_upgrade="emerge -u world"   ;;
 			version) emerge -S or emerge -pv           ;;
 			setvars) REPO_PATH=/etc/portage/repos.conf ;;  # TODO
