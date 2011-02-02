@@ -255,7 +255,7 @@ clear
 	[[ "$DEBUG" = 1 ]] &&
 		echo -e ">>> Debug Mode .......[${bldylw} ON ${rst}]" ||
 		echo -e ">>> Debug Mode .......[${bldylw} OFF ${rst}]"
-sleep 2
+sleep 1
 }
 
 spanner() {

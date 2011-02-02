@@ -34,7 +34,6 @@ elif [[ $http = 'lighttp' ]]; then
 elif [[ $http = 'cherokee' ]]; then
 	v1=$(packages version cherokee)
 	echo -e "${bldblu} Cherokee: $v1 ${rst}"
-	http='none'
 elif [[ $http = @(none|no|[Nn]) ]]; then
 	echo -e "${bldylw} WEB SERVER NOT BEiNG iNSTALLED ${rst}"
 else echo -e "${bldred}--> ERROR iN HTTP iNPUT! ${rst}"; http='none'
