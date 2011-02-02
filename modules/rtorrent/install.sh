@@ -21,9 +21,9 @@ while [[ $compile_rtorrent = false ]]; do  # Ask to re-compile if rtorrent is al
 		fi
 	fi
 done
-cd $BASE/tmp
 	
 if [[ $compile_xmlrpc = 'true' ]]; then
+cd $BASE/tmp
 	notice "DOWNLOADiNG... XMLRPC"
 	checkout http://xmlrpc-c.svn.sourceforge.net/svnroot/xmlrpc-c/advanced xmlrpc  # Checkout xmlrpc ~advanced
 	if_error "XMLRPC Download Failed"
@@ -41,14 +41,14 @@ if [[ $compile_xmlrpc = 'true' ]]; then
 fi
 
 if [[ $compile_rtorrent = 'true' ]]; then
+cd $BASE/tmp
+	notice "DOWNLOADiNG... rTORRENT"
 	if [[ $rtorrent_svn = 'y' ]]; then
-		notice "DOWNLOADiNG... rTORRENT"
 		checkout -r 1180 svn://rakshasa.no/libtorrent/trunk
 		if_error "Lib|rTorrent Download Failed"
 		mv trunk/libtorrent libtorrent && mv trunk/rtorrent rtorrent && rm -r trunk
 		log "Lib|rTorrent | Downloaded" >> $LOG
 	else
-		notice "DOWNLOADiNG... rTORRENT"
 		download http://libtorrent.rakshasa.no/downloads/libtorrent-0.12.6.tar.gz  # Grab libtorrent
 			if_error "LibTorrent Download Failed"
 		download http://libtorrent.rakshasa.no/downloads/rtorrent-0.8.6.tar.gz     # Grab rtorrent
@@ -61,7 +61,7 @@ if [[ $compile_rtorrent = 'true' ]]; then
 
 	notice "COMPiLiNG... LiBTORRENT"
 #-->[ Compile libtorrent ]
-	cd ../libtorrent
+	cd libtorrent
 	[[ $NAME = 'lenny' ]] && rm -f scripts/{libtool,lt*}.m4
 	sh autogen.sh
 	[[ $alloc = 'y' ]] &&  # Use posix_fallocate
