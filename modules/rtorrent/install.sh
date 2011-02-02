@@ -1,40 +1,33 @@
-compile_rtorrent=false
-while [[ $compile_rtorrent = false ]]; do
-	if [[ ! -f /usr/bin/rtorrent ]]; then  # Compile rtorrent
-		compile_rtorrent='true'
-	else  # Ask to re-compile if rtorrent is already installed
-		echo -en "rTorrent already installed.... RE-INSTALL? [y/n]: "
+compile_xmlrpc=false
+while [[ $compile_xmlrpc = false ]]; do  # Ask to re-compile if xmlrpc is already installed
+	if [[ ! -f /usr/bin/xmlrpc-c-config ]]; then compile_xmlrpc='true'
+	else echo -en "XMLRPC is already installed.... overwrite? [y/n]: "
 		if  yes; then
-			compile_rtorrent='true'
+			compile_xmlrpc='true'
 			break
-		else
-			compile_rtorrent='break_loop'
+		else compile_xmlrpc='break_loop'
 		fi
 	fi
 done
 
-if [[ $compile_rtorrent = 'true' ]]; then
+compile_rtorrent=false
+while [[ $compile_rtorrent = false ]]; do  # Ask to re-compile if rtorrent is already installed
+	if [[ ! -f /usr/bin/rtorrent ]]; then compile_rtorrent='true'
+	else echo -en "rTorrent is already installed.... overwrite? [y/n]: "
+		if  yes; then
+			compile_rtorrent='true'
+			break
+		else compile_rtorrent='break_loop'
+		fi
+	fi
+done
 cd $BASE/tmp
-	notice "DOWNLOADiNG SOURCES"
+	
+if [[ $compile_xmlrpc = 'true' ]]; then
+	notice "DOWNLOADiNG... XMLRPC"
 	checkout http://xmlrpc-c.svn.sourceforge.net/svnroot/xmlrpc-c/advanced xmlrpc  # Checkout xmlrpc ~advanced
 	if_error "XMLRPC Download Failed"
 	log "XMLRPC | Downloaded" >> $LOG
-
-	if [[ $rtorrent_svn = 'y' ]]; then
-		checkout -r 1180 svn://rakshasa.no/libtorrent/trunk
-		if_error "Lib|rTorrent Download Failed"
-		mv trunk/libtorrent libtorrent && mv trunk/rtorrent rtorrent && rm -r trunk
-		log "Lib|rTorrent | Downloaded" >> $LOG
-	else
-		download http://libtorrent.rakshasa.no/downloads/libtorrent-0.12.6.tar.gz  # Grab libtorrent
-			if_error "LibTorrent Download Failed"
-		download http://libtorrent.rakshasa.no/downloads/rtorrent-0.8.6.tar.gz     # Grab rtorrent
-			if_error "rTorrent Download Failed"
-		log "Lib|rTorrent | Downloaded" >> $LOG
-		extract libtorrent-0.12.6.tar.gz && extract rtorrent-0.8.6.tar.gz          # Unpack
-		mv libtorrent-0.12.6 libtorrent && mv rtorrent-0.8.6 rtorrent
-		log "Lib|rTorrent | Unpacked"
-	fi
 
 	notice "COMPiLiNG... XMLRPC"
 #-->[ Compile xmlrpc ]
@@ -45,6 +38,26 @@ cd $BASE/tmp
 		log "XMLRPC Compile | Completed in $compile_time seconds"
 	make install
 		log "XMLRPC Installation | Completed" ; debug_wait "xmlrpc.installed"
+fi
+
+if [[ $compile_rtorrent = 'true' ]]; then
+	if [[ $rtorrent_svn = 'y' ]]; then
+		notice "DOWNLOADiNG... rTORRENT"
+		checkout -r 1180 svn://rakshasa.no/libtorrent/trunk
+		if_error "Lib|rTorrent Download Failed"
+		mv trunk/libtorrent libtorrent && mv trunk/rtorrent rtorrent && rm -r trunk
+		log "Lib|rTorrent | Downloaded" >> $LOG
+	else
+		notice "DOWNLOADiNG... rTORRENT"
+		download http://libtorrent.rakshasa.no/downloads/libtorrent-0.12.6.tar.gz  # Grab libtorrent
+			if_error "LibTorrent Download Failed"
+		download http://libtorrent.rakshasa.no/downloads/rtorrent-0.8.6.tar.gz     # Grab rtorrent
+			if_error "rTorrent Download Failed"
+		log "Lib|rTorrent | Downloaded" >> $LOG
+		extract libtorrent-0.12.6.tar.gz && extract rtorrent-0.8.6.tar.gz          # Unpack
+		mv libtorrent-0.12.6 libtorrent && mv rtorrent-0.8.6 rtorrent
+		log "Lib|rTorrent | Unpacked"
+	fi
 
 	notice "COMPiLiNG... LiBTORRENT"
 #-->[ Compile libtorrent ]
