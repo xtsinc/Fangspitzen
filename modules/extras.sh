@@ -4,8 +4,8 @@ if [[ $cache = 'xcache' ]]; then
 	packages install php5-xcache
 	if_error "X-Cache failed to install"
 
-	echo -e "\n${bldylw} Generate a User Name and Password for XCache-Admin"
-	echo -e " You can use www.trilug.org/~jeremy/md5.php to generate the password ${rst}\n"
+	echo -e "\n${bldylw} Generate a User Name and Password for XCache-Admin."
+	echo -e " You can use http://trilug.org/~jeremy/md5.php to generate the password. ${rst}\n"
 	read -p "   Login Name: " xUser  # Get UserName and Password
 	read -p " MD5 Password: " xPass  # For XCache-Admin
 
@@ -151,7 +151,7 @@ fi
 if [[ $fail2ban = 'y' ]]; then
 	notice "iNSTALLiNG Fail2Ban"
 	packages install fail2ban ; if_error "Fail2ban failed to install"
-		log "Fail2ban Installation | Completed" ; debug_wait "fail2ban.installed"
+
 	f2b_jail=/etc/fail2ban/jail.conf
 	cat $f2b_jail | grep '# added by autoscript' >/dev/null
 	if [[ $? != 0 ]]; then  # Check if this has already been added or not
@@ -199,6 +199,7 @@ EOF
 			/etc/init.d/fail2ban start
 		fi ; echo " done"
 	fi  # end `if $?`
+	log "Fail2ban Installation | Completed" ; debug_wait "fail2ban.installed"
 fi
 
 ##[ phpSysInfo ]##
@@ -218,7 +219,7 @@ if [[ $phpsysinfo = 'y' ]]; then
 
 	cd ..
 	mv phpsysinfo $WEB 
-	log "phpSysInfo Installation | Completed"
+	log "phpSysInfo Installation | Completed" ; debug_wait "phpsysinfo.installed"
 fi
 
 ##[ WebMiN ]##
@@ -294,7 +295,7 @@ if [[ $vnstat = 'y' ]]; then
 	log "Frontend Installed | http://$iP/vnstat-web"
 
 	[[ ! $(pgrep vnstatd) ]] &&
-		vnstat -u -i $iFACE &&
+		vnstat -u -i $iFACE
 		vnstatd -d  # Make database and start vnstatd
 
 	debug_wait "vnstat-web.installed"
@@ -305,7 +306,7 @@ cd $BASE/tmp
 if [[ $sabnzbd = 'y' ]]; then
 	notice "iNSTALLiNG SABnzbd"
 	if [[ $DISTRO = @(Ubuntu|[dD]ebian|*Mint) ]]; then
-			packages install sabnzbdplus par2 python-cheetah python-dbus python-yenc sabnzbdplus-theme-classic sabnzbdplus-theme-plush sabnzbdplus-theme-smpl
+			packages install par2 python-cheetah python-dbus python-feedparser python-memcache python-utidylib python-yenc sabnzbdplus sabnzbdplus-theme-classic sabnzbdplus-theme-plush sabnzbdplus-theme-smpl
 	elif [[ $DISTRO = @(SUSE|[Ss]use)* ]]; then
 		echo "TODO" # packages install
 	elif [[ $DISTRO = @(ARCH|[Aa]rch)* ]]; then
