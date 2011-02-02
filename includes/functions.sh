@@ -132,7 +132,7 @@ notice() {  # echo status or general info to stdout
 
 packages() {  # use appropriate package manager depending on distro
 	if [[ "$DISTRO" = @(Ubuntu|[dD]ebian|*Mint) ]]; then
-		[[ "$DEBUG" = 1 ]] && quiet="-qq" || quiet=""
+		[[ "$DEBUG" = 0 ]] && quiet="-qq" || quiet=""
 		case "$1" in
 			addkey ) apt-key adv --keyserver keyserver.ubuntu.com --recv-keys $2 ;;
 			clean  ) apt-get $quiet autoclean
@@ -151,7 +151,7 @@ packages() {  # use appropriate package manager depending on distro
 			setvars) REPO_PATH=/etc/apt/sources.list.d ;;
 		esac
 	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
-		[[ "$DEBUG" = 1 ]] && quiet="--noconfirm" || quiet=""
+		[[ "$DEBUG" = 0 ]] && quiet="--noconfirm" || quiet=""
 		case "$1" in
 			clean  ) pacman --sync --clean -c $quiet
 					 alias_autoclean="pacman -Scc" ;;
@@ -172,7 +172,7 @@ packages() {  # use appropriate package manager depending on distro
 					 WEBGROUP='http' ;;
 		esac
 	elif [[ $DISTRO = @(SUSE|[Ss]use)* ]]; then
-		[[ "$DEBUG" = 1 ]] && quiet="--quiet" || quiet=""
+		[[ "$DEBUG" = 0 ]] && quiet="--quiet" || quiet=""
 		case "$1" in
 			addrepo) shift
 					 zypper --no-gpg-checks --gpg-auto-import-keys addrepo --refresh $@ 2>> $LOG ;;
@@ -196,7 +196,7 @@ packages() {  # use appropriate package manager depending on distro
 		esac
 
 	elif [[ "$DISTRO" = "Fedora" ]]; then
-		[[ "$DEBUG" = 1 ]] && quiet="-e 0" || quiet=""
+		[[ "$DEBUG" = 0 ]] && quiet="-e 0" || quiet=""
 		case "$1" in
 			clean  ) yum clean all -y
 					 alias_autoclean="yum clean all" ;;
@@ -215,7 +215,7 @@ packages() {  # use appropriate package manager depending on distro
 		esac
 
 	elif [[ "$DISTRO" = "Gentoo" ]]; then
-		[[ "$DEBUG" = 1 ]] && quiet="--quiet" || quiet=""
+		[[ "$DEBUG" = 0 ]] && quiet="--quiet" || quiet=""
 		case "$1" in
 			clean  ) emerge --clean  # --depclean
 					 alias_autoclean="emerge --clean"  ;;
