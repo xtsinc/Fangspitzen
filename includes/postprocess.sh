@@ -42,7 +42,7 @@ fi
 
 if [[ "$http" = 'apache'   ]]; then
 	if [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
-		/etc/rc.d/httpd restart ||
+		/etc/rc.d/httpd restart
 	else /etc/init.d/apache2 restart
 	fi
 elif [[ "$http" = 'lighttp'  ]]; then
