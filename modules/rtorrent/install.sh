@@ -1,7 +1,7 @@
 compile_xmlrpc=false
 while [[ $compile_xmlrpc = false ]]; do  # Ask to re-compile if xmlrpc is already installed
 	if [[ ! -f /usr/bin/xmlrpc-c-config ]]; then compile_xmlrpc='true'
-	else echo -en "XMLRPC is already installed.... overwrite? [y/n]: "
+	else echo -en "XMLRPC-C is already installed.... overwrite? [y/n]: "
 		if  yes; then
 			compile_xmlrpc='true'
 			break

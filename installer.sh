@@ -153,7 +153,7 @@ if [[ $http = 'apache' ]]; then
 		a2enflag SSL
 		sed -i "/<Directory \"\/srv\/www\/htdocs\">/,/<\/Directory>/ s:AllowOverride .*:AllowOverride All:" /etc/apache2/default-server.conf
 		sed -i "s:APACHE_SERVERSIGNATURE=\"on\":APACHE_SERVERSIGNATURE=\"off\":" /etc/sysconfig/apache2
-		sed -i "s:APACHE_SERVERTOKENS=.*:APACHE_SERVERTOKENS="ProductOnly":"     /etc/sysconfig/apache2
+		sed -i "s:APACHE_SERVERTOKENS=.*:APACHE_SERVERTOKENS=\"ProductOnly\":"   /etc/sysconfig/apache2
 		sed -i "s:KeepAliveTimeout 15:KeepAliveTimeout 5:"                       /etc/apache2/server-tuning.conf
 		PHPini=/etc/php5/apache/php.ini
 	fi
@@ -179,7 +179,8 @@ elif [[ $http = 'lighttp' ]]; then
 
 	#cp modules/lighttp/scgi.conf /etc/lighttpd/conf-available/20-scgi.conf       # Add mountpoint and secure it with auth (disabled in favor of rpc plugin)
 	cat < modules/lighttp/auth.conf >> /etc/lighttpd/conf-available/05-auth.conf  # Apend contents of our auth.conf into lighttp's auth.conf
-	lighty-enable-mod fastcgi fastcgi-php auth access accesslog compress ssl      # Enable modules
+	sed -i "s:url.access-deny .*:url.access-deny = (\"~\", \".inc\", \".htaccess\") :" /etc/lighttpd/lighttpd.conf  # Deny listing of .htaccess files
+	lighty-enable-mod fastcgi fastcgi-php auth access accesslog compress ssl      # Enable modules	
 
 	PHPini=/etc/php5/cgi/php.ini
 	#PHPini=/etc/php5/fastcgi/php.ini  # opensuse
