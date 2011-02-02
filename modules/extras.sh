@@ -67,6 +67,7 @@ elif [[ $sql = 'postgre' ]]; then
 		packages install postgresql
 	elif [[ $DISTRO = @(SUSE|[Ss]use)* ]]; then
 		packages install postgresql postgresql-server
+	fi
 	if_error "PostgreSQL failed to install"
 	log "PostgreSQL Installation | Completed" ; debug_wait "postgresql.installed"
 fi
