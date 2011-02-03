@@ -143,11 +143,11 @@ packages() {  # use appropriate package manager depending on distro
 			version) aptitude show $2 | grep Version:                            ;;
 			setvars)
 				REPO_PATH=/etc/apt/sources.list.d 
-				alias_autoclean="apt-get autoremove && apt-get autoclean"
-				alias_install="apt-get install"
-				alias_remove="apt-get autoremove"
-				alias_update="apt-get update"
-				alias_upgrade="apt-get upgrade" ;;
+				alias_autoclean="sudo apt-get autoremove && sudo apt-get autoclean"
+				alias_install="sudo apt-get install"
+				alias_remove="sudo apt-get autoremove"
+				alias_update="sudo apt-get update"
+				alias_upgrade="sudo apt-get upgrade" ;;
 		esac
 	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
 		[[ "$DEBUG" = 0 ]] && quiet="--noconfirm" || quiet=
@@ -163,11 +163,11 @@ packages() {  # use appropriate package manager depending on distro
 				WEB=/srv/http
 				WEBUSER='http'
 				WEBGROUP='http'
-				alias_autoclean="pacman -Scc"
-				alias_install="pacman -S"
-				alias_remove="pacman -R"
-				alias_update="pacman -Sy"
-				alias_upgrade="pacman -Syu" ;;
+				alias_autoclean="sudo pacman -Scc"
+				alias_install="sudo pacman -S"
+				alias_remove="sudo pacman -R"
+				alias_update="sudo pacman -Sy"
+				alias_upgrade="sudo pacman -Syu" ;;
 		esac
 	elif [[ $DISTRO = @(SUSE|[Ss]use)* ]]; then
 		[[ "$DEBUG" = 0 ]] && quiet="--quiet" || quiet=
@@ -184,11 +184,11 @@ packages() {  # use appropriate package manager depending on distro
 				WEB=/srv/www/htdocs
 				WEBUSER='wwwrun'
 				WEBGROUP='www'
-				alias_autoclean="zypper clean"
-				alias_install="zypper install"
-				alias_remove="zypper remove"
-				alias_update="zypper refresh"
-				alias_upgrade="zypper update" ;;
+				alias_autoclean="sudo zypper clean"
+				alias_install="sudo zypper install"
+				alias_remove="sudo zypper remove"
+				alias_update="sudo zypper refresh"
+				alias_upgrade="sudo zypper update" ;;
 		esac
 
 	elif [[ "$DISTRO" = "Fedora" ]]; then
@@ -202,11 +202,11 @@ packages() {  # use appropriate package manager depending on distro
 			version) yum info $2 | grep Version:                     ;;
 			setvars)
 				REPO_PATH=/etc/yum/repos.d/
-				alias_autoclean="yum clean all"
-				alias_install="yum install"
-				alias_remove="yum remove"
-				alias_update="yum check-update"
-				alias_upgrade="yum upgrade" ;;
+				alias_autoclean="sudo yum clean all"
+				alias_install="sudo yum install"
+				alias_remove="sudo yum remove"
+				alias_update="sudo yum check-update"
+				alias_upgrade="sudo yum upgrade" ;;
 		esac
 
 	elif [[ "$DISTRO" = "Gentoo" ]]; then
@@ -220,11 +220,11 @@ packages() {  # use appropriate package manager depending on distro
 			version) emerge -S or emerge -pv                               ;;
 			setvars)
 				REPO_PATH=/etc/portage/repos.conf  # TODO
-				alias_autoclean="emerge --clean"
-				alias_install="emerge"
-				alias_remove="emerge -C"
-				alias_update="emerge --sync"
-				alias_upgrade="emerge -u world" ;;
+				alias_autoclean="sudo emerge --clean"
+				alias_install="sudo emerge"
+				alias_remove="sudo emerge -C"
+				alias_update="sudo emerge --sync"
+				alias_upgrade="sudo emerge -u world" ;;
 		esac
 	fi
 }
