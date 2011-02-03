@@ -112,7 +112,7 @@ mksslcert() {  # use 2048 bit certs, use sha256, and regenerate
 	if [[ "$1" = 'generate-default-snakeoil' ]]; then  # do once and only once
 		sed -i 's:default_bits .*:default_bits = 2048:' /etc/ssl/openssl.cnf
 		sed -i 's:default_md .*:default_md = sha256:'   /etc/ssl/openssl.cnf
-		if which make-ssl-cert >/dev/null; then
+		if [[ -x /usr/sbin/make-ssl-cert ]]; then
 			echo -en "${bldred} Generating SSL Certificate...${rst}"
 			sed -i 's:default_bits .*:default_bits = 2048:' $SSLCERT
 			make-ssl-cert $1 --force-overwrite
