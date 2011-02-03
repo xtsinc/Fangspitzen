@@ -26,7 +26,9 @@ echo -e   "*******************************\n"
 
 ##[ Check for HTTP ]##
 if [[ $http = 'apache' ]]; then
-	v1=$(packages version apache2)
+	[[ "$DISTRO" = @(ARCH|[Aa]rch)* ]] &&
+		v1=$(packages version apache) ||
+		v1=$(packages version apache2)
 	echo -e "${bldblu} Apache: $v1 ${rst}"
 elif [[ $http = 'lighttp' ]]; then
 	v1=$(packages version lighttpd)
@@ -44,7 +46,9 @@ if [[ $ftpd = 'vsftp' ]]; then
 	v1=$(packages version vsftpd)
 	echo -e "${bldblu} vsFTPd: $v1 ${rst}";
 elif [[ $ftpd = 'proftp' ]]; then
-	v1=$(packages version proftpd-basic)
+	[[ "$DISTRO" = @(ARCH|[Aa]rch)* ]] &&
+		v1=$(packages version proftpd) ||
+		v1=$(packages version proftpd-basic)
 	echo -e "${bldblu} ProFTPd: $v1 ${rst}"
 elif [[ $ftpd = 'pureftp' ]]; then
 	v1=$(packages version pure-ftpd)
@@ -117,12 +121,14 @@ fi
 
 ##[ Check for SQL ]##
 if [[ $sql = 'mysql' ]]; then
-	v1=$(packages version mysql-server)
+	[[ "$DISTRO" = @(ARCH|[Aa]rch)* ]] &&
+		v1=$(packages version mysql) ||
+		v1=$(packages version mysql-server)
 	echo -e "${bldblu} MySQL: $v1 ${rst}"
 elif [[ $sql = 'sqlite' ]]; then
 	v1=$(packages version sqlite3)
 	echo -e "${bldblu} SQLite: $v1 ${rst}"
-elif [[ $sql = 'postgre' ]]; then
+elif [[ $sql = @(postgre|postgresql) ]]; then
 	v1=$(packages version postgresql)
 	echo -e "${bldblu} PostgreSQL: $v1 ${rst}"
 elif [[ $sql = @(none|no|[Nn]) ]]; then

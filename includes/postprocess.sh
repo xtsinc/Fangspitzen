@@ -55,6 +55,7 @@ fi
 if [[ "$sql" = 'postgre' ]]; then  # This needs to change per version
 	post_ver=8.4
 	[[ "$NAME" = 'lenny' ]] && post_ver=8.3
+	[[ "$DISTRO" = @(ARCH|[Aa]rch)* ]] && post_ver=9.0
 	post_conf=/etc/postgresql/${post_ver}/main/postgresql.conf
 	sed -i "s:#autovacuum .*:autovacuum = on:"     $post_conf
 	sed -i "s:#track_counts .*:track_counts = on:" $post_conf

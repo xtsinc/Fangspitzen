@@ -157,7 +157,7 @@ packages() {  # use appropriate package manager depending on distro
 			remove ) shift; pacman --remove $@ 2>> $LOG; E_=$?               ;;
 			update ) pacman --sync --refresh $quiet                          ;;
 			upgrade) pacman --sync --refresh --sysupgrade $quiet             ;;
-			version) pacman -Qi $2 | grep Version:                           ;;
+			version) pacman -Si $2 | grep Version                            ;;
 			setvars)
 				REPO_PATH=/etc/pacman.conf
 				WEB=/srv/http
@@ -306,7 +306,7 @@ if [[ "$OS" = "Linux" ]] ; then
 	# Release     -r > 10.04   > 5.0.6   > testing  > 1|10          > n/a   > 11.3        (RELASE)
 	# Codename    -c > lucid   > lenny   > squeeze  > debian|julia  > n/a   > n/a         (NAME)
 	readonly DISTRO=$(lsb_release -is) RELEASE=$(lsb_release -rs) NAME=$(lsb_release -cs) ARCH=$(uname -m) KERNEL=$(uname -r)
-	[[ "$NAME" = 'n/a' ]] && $NAME=''
+	[[ "$NAME" = 'n/a' ]] && NAME=''
 
 	##[ Create folders if not already created ]##
 	mkdir --parents tmp/
