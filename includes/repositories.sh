@@ -46,7 +46,9 @@ elif [[ "$DISTRO" = @(Debian|*Mint) ]]; then
 	log "Repositories ADD | Success"
 
 elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
-	echo -e '[archlinuxfr]\nServer = http://repo.archlinux.fr/$arch' >> $REPO_PATH
+	archrepo_test=$(cat $REPO_PATH | grep '[archlinuxfr]')
+	[[ ! $vsftpd_test ]] &&
+		echo -e '[archlinuxfr]\nServer = http://repo.archlinux.fr/$arch' >> $REPO_PATH
 
 elif [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]; then
 	packages addrepo http://download.opensuse.org/repositories/openSUSE:/11.3:/Contrib/standard/      "Contrib"
@@ -61,7 +63,7 @@ elif [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]; then
 else
 	error "Failed to add repositories to unknown distro... exiting (${DISTRO})"
 fi
-echo "" > $REPO_PATH/.autoinstalled
+echo $(date) > $BASE/logs/repos.installed
 
 ##!=====================>> PUBLiC KEYS <<========================!##
 if [[ "$DISTRO" = @([uU]buntu|[dD]ebian|*Mint) ]]; then  # Add signing keys

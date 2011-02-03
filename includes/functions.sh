@@ -201,7 +201,7 @@ packages() {  # use appropriate package manager depending on distro
 			upgrade) yum upgrade -y                                  ;;
 			version) yum info $2 | grep Version:                     ;;
 			setvars)
-				REPO_PATH=/etc/yum/repos.d/
+				REPO_PATH=/etc/yum/repos.d
 				alias_autoclean="sudo yum clean all"
 				alias_install="sudo yum install"
 				alias_remove="sudo yum remove"
@@ -230,26 +230,26 @@ packages() {  # use appropriate package manager depending on distro
 }
 
 runchecks() {
-clear
-	# find Config and Load it
-	if [[ -f config.ini ]]; then
+	clear
+	if [[ -f config.ini ]]; then  # Find Config and Load it
 		source config.ini || error "while loading config.ini"
 		[[ "$iDiDNTEDiTMYCONFiG" ]] && error "PLEASE EDiT THE CONFiG"  # Die if it hasnt been edited
 		[[ "$PWD" != "$BASE"     ]] && error "Does not match $BASE "   # Check if the user declared BASE correctly in the config
 	else error "config.ini not found!"  # Cant continue without a config so produce an error and exit
 	fi
-	# check for bash verion 4+
-	[[ "$BASH_VERSION" = 4* ]] ||
-		error "SHELL: Bash v4.0+ is required. (Current: $(bash --version | head -n1 | cut -c 1-23))"
-	# check if user is root
-	[[ "$UID" = 0 ]] &&
-		echo -e ">>> User Check .......[${bldylw} OK ${rst}]" ||
+	echo -n "Checking Dependencies..."
+		[[ "$BASH_VERSION" = 4* ]] ||  # Check for bash verion 4+
+			error "Please install package: bash, version 4.0 or higher. (Current: $(bash --version | head -n1 | cut -c 1-23))"
+		[[ -x /usr/bin/lsb_release ]] ||  # Check if lsb-release is installed
+			error "Please install package: lsb-release"
+	echo -e "[${bldylw} OK ${rst}]"
+	[[ "$UID" = 0 ]] &&  # Check if user is root
+		echo -e ">>> User Check .........[${bldylw} OK ${rst}]" ||
 		error "PLEASE RUN WITH SUDO"
-	# check if debug is on/off
-	[[ "$DEBUG" = 1 ]] &&
-		echo -e ">>> Debug Mode .......[${bldylw} ON ${rst}]" ||
-		echo -e ">>> Debug Mode .......[${bldylw} OFF ${rst}]"
-sleep 1
+	[[ "$DEBUG" = 1 ]] &&  # Check if debug is on/off
+		echo -e ">>> Debug Mode .........[${bldylw} ON ${rst}]" ||
+		echo -e ">>> Debug Mode .........[${bldylw} OFF ${rst}]"
+	sleep 1
 }
 
 spanner() {
@@ -301,10 +301,6 @@ init() {
 if [[ "$OS" = "Linux" ]] ; then
 	[[ -f /etc/fedora-release ]] && error "TODO - Fedora"
 	[[ -f /etc/gentoo-release ]] && error "TODO - Gentoo"
-
-	if [[ ! -x /usr/bin/lsb_release ]]; then
-		packages install lsb-release
-	fi
 
 	# Distributor -i > Ubuntu  > Debian  > Debian   > LinuxMint     > Arch  > SUSE LINUX  (DISTRO)
 	# Release     -r > 10.04   > 5.0.6   > testing  > 1|10          > n/a   > 11.3        (RELASE)

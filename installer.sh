@@ -90,7 +90,7 @@ echo -en "\n Continue? [y/n]: "
 	fi
 fi  # end `if ! $LOG`
 
-if [[ ! -f $REPO_PATH/.autoinstalled ]]; then  # Add repositories if not already present
+if [[ ! -f $BASE/logs/repos.installed ]]; then  # Add repositories if not already present
 	source $BASE/includes/repositories.sh || error "while loading repositories.sh"
 else log "Repositories Already Present, skipping"
 fi
