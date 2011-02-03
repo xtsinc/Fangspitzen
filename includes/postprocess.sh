@@ -12,8 +12,9 @@ if [[ -f /etc/ssh/sshd_config ]]; then
 	sed -i 's:[#]*ServerKeyBits .*:ServerKeyBits 1024:'          /etc/ssh/sshd_config
 	sed -i 's:[#]*AllowTcpForwarding yes:AllowTcpForwarding no:' /etc/ssh/sshd_config
 	sed -i 's:[#]*X11Forwarding yes:X11Forwarding no:'           /etc/ssh/sshd_config
-	[[ -f /etc/init.d/ssh ]] && /etc/init.d/ssh restart ||
-		[[ -f /etc/init.d/sshd ]] && /etc/init.d/sshd restart
+	[[ -d /etc/rc.d/ ]] && /etc/rc.d/sshd restart ||
+		[[ -f /etc/init.d/ssh ]] && /etc/init.d/ssh restart ||
+			[[ -f /etc/init.d/sshd ]] && /etc/init.d/sshd restart
 fi
 
 cat /etc/sysctl.conf | grep '# added by autoscript' >/dev/null
@@ -40,18 +41,18 @@ if [[ "$?" != 0 ]]; then  # Check if this has already been added or not
 fi
 
 if [[ "$http" = 'apache'   ]]; then
-	[[ "$DISTRO" = @(ARCH|[Aa]rch)* ]] &&
-		/etc/rc.d/httpd restart ||
+	[[ -d /etc/rc.d/ ]] && /etc/rc.d/httpd restart ||
 		/etc/init.d/apache2 restart
 elif [[ "$http" = 'lighttp'  ]]; then
-	/etc/init.d/lighttpd restart
+	[[ -d /etc/rc.d/ ]] && /etc/rc.d/lighttpd restart ||
+		/etc/init.d/lighttpd restart
 elif [[ "$http" = 'cherokee' ]]; then
 	notice "Run sudo cherokee-admin -b to configure Cherokee."
 fi
 
 [[ "$sql" = 'mysql' ]] &&
-	/etc/init.d/mysql restart
-
+	[[ -d /etc/rc.d/ ]] && /etc/rc.d/mysqld restart ||
+		/etc/init.d/mysql restart
 if [[ "$sql" = 'postgre' ]]; then  # This needs to change per version
 	post_ver=8.4
 	[[ "$NAME" = 'lenny' ]] && post_ver=8.3
@@ -59,7 +60,8 @@ if [[ "$sql" = 'postgre' ]]; then  # This needs to change per version
 	post_conf=/etc/postgresql/${post_ver}/main/postgresql.conf
 	sed -i "s:#autovacuum .*:autovacuum = on:"     $post_conf
 	sed -i "s:#track_counts .*:track_counts = on:" $post_conf
-	/etc/init.d/postgresql-${post_ver} restart
+	[[ -d /etc/rc.d/ ]] && /etc/rc.d/postgresql restart ||
+		/etc/init.d/postgresql-${post_ver} restart
 fi
 
 #[ Add Some Useful Command Alias' ]#
