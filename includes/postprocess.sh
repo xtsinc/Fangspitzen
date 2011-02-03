@@ -4,17 +4,16 @@ echo -e   "******${bldred} POST PROCESSiNG ${rst}********"
 echo -e   "*******************************\n"
 
 if [[ -f /etc/ssh/sshd_config ]]; then
-	sed -i 's:Protocol .*:Protocol 2:'                       /etc/ssh/sshd_config
-	sed -i 's:IgnoreRhosts no:IgnoreRhosts yes:'             /etc/ssh/sshd_config
-	sed -i 's:PermitRootLogin yes:PermitRootLogin no:'       /etc/ssh/sshd_config
-	sed -i 's:LoginGraceTime 120:LoginGraceTime 30:'         /etc/ssh/sshd_config
-	sed -i 's:StrictModes no:StrictModes yes:'               /etc/ssh/sshd_config
-	sed -i 's:ServerKeyBits .*:ServerKeyBits 1024:'          /etc/ssh/sshd_config
-	sed -i 's:AllowTcpForwarding yes:AllowTcpForwarding no:' /etc/ssh/sshd_config
-	sed -i 's:X11Forwarding yes:X11Forwarding no:'           /etc/ssh/sshd_config
-	if [[ -f /etc/init.d/ssh ]]; then /etc/init.d/ssh restart
-	elif [[ -f /etc/init.d/sshd ]]; then /etc/init.d/sshd restart
-	fi
+	sed -i 's:[#]*Protocol .*:Protocol 2:'                       /etc/ssh/sshd_config
+	sed -i 's:[#]*IgnoreRhosts no:IgnoreRhosts yes:'             /etc/ssh/sshd_config
+	sed -i 's:[#]*PermitRootLogin yes:PermitRootLogin no:'       /etc/ssh/sshd_config
+	sed -i 's:[#]*LoginGraceTime 120:LoginGraceTime 30:'         /etc/ssh/sshd_config
+	sed -i 's:[#]*StrictModes no:StrictModes yes:'               /etc/ssh/sshd_config
+	sed -i 's:[#]*ServerKeyBits .*:ServerKeyBits 1024:'          /etc/ssh/sshd_config
+	sed -i 's:[#]*AllowTcpForwarding yes:AllowTcpForwarding no:' /etc/ssh/sshd_config
+	sed -i 's:[#]*X11Forwarding yes:X11Forwarding no:'           /etc/ssh/sshd_config
+	[[ -f /etc/init.d/ssh ]] && /etc/init.d/ssh restart ||
+		[[ -f /etc/init.d/sshd ]] && /etc/init.d/sshd restart
 fi
 
 cat /etc/sysctl.conf | grep '# added by autoscript' >/dev/null
@@ -41,10 +40,9 @@ if [[ "$?" != 0 ]]; then  # Check if this has already been added or not
 fi
 
 if [[ "$http" = 'apache'   ]]; then
-	if [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
-		/etc/rc.d/httpd restart
-	else /etc/init.d/apache2 restart
-	fi
+	[[ "$DISTRO" = @(ARCH|[Aa]rch)* ]] &&
+		/etc/rc.d/httpd restart ||
+		/etc/init.d/apache2 restart
 elif [[ "$http" = 'lighttp'  ]]; then
 	/etc/init.d/lighttpd restart
 elif [[ "$http" = 'cherokee' ]]; then
@@ -56,8 +54,7 @@ fi
 
 if [[ "$sql" = 'postgre' ]]; then  # This needs to change per version
 	post_ver=8.4
-	[[ "$NAME" = 'lenny' ]] &&
-		post_ver=8.3
+	[[ "$NAME" = 'lenny' ]] && post_ver=8.3
 	post_conf=/etc/postgresql/${post_ver}/main/postgresql.conf
 	sed -i "s:#autovacuum .*:autovacuum = on:"     $post_conf
 	sed -i "s:#track_counts .*:track_counts = on:" $post_conf
@@ -65,7 +62,7 @@ if [[ "$sql" = 'postgre' ]]; then  # This needs to change per version
 fi
 
 #[ Add Some Useful Command Alias' ]#
-if [[ -f ${HOME}/.bashrc ]];then
+[[ -f ${HOME}/.bashrc ]] &&
 	cat ${HOME}/.bashrc | grep '# added by autoscript' >/dev/null
 if [[ "$?" != 0 ]]; then  # Check if this has already been added or not
 	sed -i 's:force_color_prompt=no:force_color_prompt=yes:' ${HOME}/.bashrc
@@ -81,10 +78,9 @@ if [[ "$?" != 0 ]]; then  # Check if this has already been added or not
 		echo "alias rtorrent-resume='dtach -a .dtach/rtorrent'"         >> ${HOME}/.bashrc
 	fi
 fi  # end `if $?`
-fi
 
 if [[ "$torrent" = 'rtorrent' ]]; then
-echo ; read -p "Start rtorrent now? [y/n]: " start_rt
+	echo ; read -n1 -p "Start rtorrent now? [y/n]: " start_rt
 	if [[ "$start_rt" = 'y' ]]; then
 		mkdir -p ${HOME}/.dtach ; rm -f ${HOME}/.dtach/rtorrent
 		chmod -R 755 ${HOME}/.dtach

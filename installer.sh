@@ -105,7 +105,7 @@ echo -e   "********************************\n"
 
 base_install
 
-if [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]; then
+if [[ "$DISTRO" = @(SUSE|[Ss]use)* && ! -f /usr/bin/dtach ]]; then
 	cd ${BASE}/tmp
 	download http://sourceforge.net/projects/dtach/files/dtach/0.8/dtach-0.8.tar.gz && extract dtach-0.8.tar.gz
 	cd dtach-0.8
