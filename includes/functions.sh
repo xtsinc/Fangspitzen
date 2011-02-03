@@ -152,7 +152,7 @@ packages() {  # use appropriate package manager depending on distro
 	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
 		[[ "$DEBUG" = 0 ]] && quiet="--noconfirm" || quiet=
 		case "$1" in
-			clean  ) pacman --sync --clean -c $quiet                         ;;
+			clean  ) pacman --sync --clean -c --noconfirm                    ;;
 			install) shift; pacman --sync $quiet $@ --needed 2>> $LOG; E_=$? ;;
 			remove ) shift; pacman --remove $@ 2>> $LOG; E_=$?               ;;
 			update ) pacman --sync --refresh $quiet                          ;;
