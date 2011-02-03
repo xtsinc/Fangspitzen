@@ -132,105 +132,99 @@ notice() {  # echo status or general info to stdout
 
 packages() {  # use appropriate package manager depending on distro
 	if [[ "$DISTRO" = @(Ubuntu|[dD]ebian|*Mint) ]]; then
-		[[ "$DEBUG" = 0 ]] && quiet="-qq" || quiet=""
+		[[ "$DEBUG" = 0 ]] && quiet="-qq" || quiet=
 		case "$1" in
 			addkey ) apt-key adv --keyserver keyserver.ubuntu.com --recv-keys $2 ;;
-			clean  ) apt-get $quiet autoclean
-					 alias_autoclean="apt-get autoremove && apt-get autoclean" ;;
-			install) shift  # forget $1
-					 apt-get install --yes $quiet $@ 2>> $LOG; E_=$?
-					 alias_install="apt-get install"   ;;
-			remove ) shift
-					 apt-get autoremove --yes $quiet $@ 2>> $LOG; E_=$?
-					 alias_remove="apt-get autoremove" ;;
-			update ) apt-get update $quiet
-					 alias_update="apt-get update"     ;;
-			upgrade) apt-get upgrade --yes $quiet
-					 alias_upgrade="apt-get upgrade"   ;;
-			version) aptitude show $2 | grep Version:  ;;
-			setvars) REPO_PATH=/etc/apt/sources.list.d ;;
+			clean  ) apt-get $quiet autoclean                                    ;;
+			install) shift; apt-get install --yes $quiet $@ 2>> $LOG; E_=$?      ;;
+			remove ) shift; apt-get autoremove --yes $quiet $@ 2>> $LOG; E_=$?   ;;
+			update ) apt-get update $quiet                                       ;;
+			upgrade) apt-get upgrade --yes $quiet                                ;;
+			version) aptitude show $2 | grep Version:                            ;;
+			setvars)
+				REPO_PATH=/etc/apt/sources.list.d 
+				alias_autoclean="apt-get autoremove && apt-get autoclean"
+				alias_install="apt-get install"
+				alias_remove="apt-get autoremove"
+				alias_update="apt-get update"
+				alias_upgrade="apt-get upgrade" ;;
 		esac
 	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
-		[[ "$DEBUG" = 0 ]] && quiet="--noconfirm" || quiet=""
+		[[ "$DEBUG" = 0 ]] && quiet="--noconfirm" || quiet=
 		case "$1" in
-			clean  ) pacman --sync --clean -c $quiet
-					 alias_autoclean="pacman -Scc" ;;
-			install) shift
-					 pacman --sync $quiet $@ 2>> $LOG; E_=$?
-					 alias_install="pacman -S"     ;;
-			remove ) shift
-					 pacman --remove $@ 2>> $LOG; E_=$?
-					 alias_remove="pacman -R"      ;;
-			update ) pacman --sync --refresh $quiet
-					 alias_update="pacman -Sy"     ;;
-			upgrade) pacman --sync --refresh --sysupgrade $quiet
-					 alias_upgrade="pacman -Syu"   ;;
-			version) pacman -Qi $2 | grep Version: ;;
-			setvars) REPO_PATH=/etc/pacman.conf
-					 WEB=/srv/http
-					 WEBUSER='http'
-					 WEBGROUP='http' ;;
+			clean  ) pacman --sync --clean -c $quiet                ;;
+			install) shift; pacman --sync $quiet $@ 2>> $LOG; E_=$? ;;
+			remove ) shift; pacman --remove $@ 2>> $LOG; E_=$?      ;;
+			update ) pacman --sync --refresh $quiet                 ;;
+			upgrade) pacman --sync --refresh --sysupgrade $quiet    ;;
+			version) pacman -Qi $2 | grep Version:                  ;;
+			setvars)
+				REPO_PATH=/etc/pacman.conf
+				WEB=/srv/http
+				WEBUSER='http'
+				WEBGROUP='http'
+				alias_autoclean="pacman -Scc"
+				alias_install="pacman -S"
+				alias_remove="pacman -R"
+				alias_update="pacman -Sy"
+				alias_upgrade="pacman -Syu" ;;
 		esac
 	elif [[ $DISTRO = @(SUSE|[Ss]use)* ]]; then
-		[[ "$DEBUG" = 0 ]] && quiet="--quiet" || quiet=""
+		[[ "$DEBUG" = 0 ]] && quiet="--quiet" || quiet=
 		case "$1" in
-			addrepo) shift
-					 zypper --no-gpg-checks --gpg-auto-import-keys addrepo --refresh $@ 2>> $LOG ;;
-			clean  ) zypper $quiet clean
-					 alias_autoclean="zypper clean" ;;
-			install) shift
-					 zypper $quiet --non-interactive install $@ 2>> $LOG; E_=$?
-					 alias_install="zypper install" ;;
-			remove ) shift
-					 zypper $quiet remove $@ 2>> $LOG; E_=$?
-					 alias_remove="zypper remove"   ;;
-			update ) zypper $quiet refresh
-					 alias_update="zypper refresh"  ;;
-			upgrade) zypper $quiet --non-interactive update --auto-agree-with-licenses
-					 alias_upgrade="zypper update"  ;;
-			version) zypper info $2 | grep Version: ;;
-			setvars) REPO_PATH=/etc/zypp/repos.d
-					 WEB=/srv/www/htdocs
-					 WEBUSER='wwwrun'
-					 WEBGROUP='www' ;;
+			addrepo) shift; zypper --no-gpg-checks addrepo --refresh $@ 2>> $LOG       ;;
+			clean  ) zypper $quiet clean                                               ;;
+			install) shift; zypper $quiet --non-interactive install $@ 2>> $LOG; E_=$? ;;
+			remove ) shift; zypper $quiet remove $@ 2>> $LOG; E_=$?                    ;;
+			update ) zypper $quiet refresh                                             ;;
+			upgrade) zypper $quiet --non-interactive update --auto-agree-with-licenses ;;
+			version) zypper info $2 | grep Version:                                    ;;
+			setvars)
+				REPO_PATH=/etc/zypp/repos.d
+				WEB=/srv/www/htdocs
+				WEBUSER='wwwrun'
+				WEBGROUP='www'
+				alias_autoclean="zypper clean"
+				alias_install="zypper install"
+				alias_remove="zypper remove"
+				alias_update="zypper refresh"
+				alias_upgrade="zypper update" ;;
 		esac
 
 	elif [[ "$DISTRO" = "Fedora" ]]; then
-		[[ "$DEBUG" = 0 ]] && quiet="-e 0" || quiet=""
+		[[ "$DEBUG" = 0 ]] && quiet="-e 0" || quiet=
 		case "$1" in
-			clean  ) yum clean all -y
-					 alias_autoclean="yum clean all" ;;
-			install) shift
-					 yum install $quiet -y $@ 2>> $LOG; E_=$?
-					 alias_install="yum install"     ;;
-			remove ) shift
-					 yum remove $quiet -y $@ 2>> $LOG; E_=$?
-					 alias_remove="yum remove"       ;;
-			update ) yum check-update -y
-					 alias_update="yum check-update" ;;
-			upgrade) yum upgrade -y
-					 alias_upgrade="yum upgrade"     ;;
-			version) yum info $2 | grep Version:     ;;
-			setvars) REPO_PATH=/etc/yum/repos.d/     ;;
+			clean  ) yum clean all -y                                ;;
+			install) shift; yum install $quiet -y $@ 2>> $LOG; E_=$? ;;
+			remove ) shift; yum remove $quiet -y $@ 2>> $LOG; E_=$?  ;;
+			update ) yum check-update -y                             ;;
+			upgrade) yum upgrade -y                                  ;;
+			version) yum info $2 | grep Version:                     ;;
+			setvars)
+				REPO_PATH=/etc/yum/repos.d/
+				alias_autoclean="yum clean all"
+				alias_install="yum install"
+				alias_remove="yum remove"
+				alias_update="yum check-update"
+				alias_upgrade="yum upgrade" ;;
 		esac
 
 	elif [[ "$DISTRO" = "Gentoo" ]]; then
-		[[ "$DEBUG" = 0 ]] && quiet="--quiet" || quiet=""
+		[[ "$DEBUG" = 0 ]] && quiet="--quiet" || quiet=
 		case "$1" in
-			clean  ) emerge --clean  # --depclean
-					 alias_autoclean="emerge --clean"  ;;
-			install) shift
-					 emerge $quiet --jobs=$CORES $@ 2>> $LOG; E_=$?
-					 alias_install="emerge"            ;;
-			remove ) shift
-					 emerge --unmerge $quiet $@ 2>> $LOG; E=$?
-					 alias_remove="emerge -C"          ;;
-			update ) emerge --sync
-					 alias_update="emerge --sync"      ;;
-			upgrade) emerge --update world $quiet  # --deep
-					 alias_upgrade="emerge -u world"   ;;
-			version) emerge -S or emerge -pv           ;;
-			setvars) REPO_PATH=/etc/portage/repos.conf ;;  # TODO
+			clean  ) emerge --clean                                        ;;
+			install) shift; emerge $quiet --jobs=$CORES $@ 2>> $LOG; E_=$? ;;
+			remove ) shift; emerge --unmerge $quiet $@ 2>> $LOG; E=$?      ;;
+			update ) emerge --sync                                         ;;
+			upgrade) emerge --update world $quiet                          ;;
+			version) emerge -S or emerge -pv                               ;;
+			setvars)
+				REPO_PATH=/etc/portage/repos.conf  # TODO
+				alias_autoclean="emerge --clean"
+				alias_install="emerge"
+				alias_remove="emerge -C"
+				alias_update="emerge --sync"
+				alias_upgrade="emerge -u world" ;;
 		esac
 	fi
 }
