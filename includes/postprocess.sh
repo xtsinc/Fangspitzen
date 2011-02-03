@@ -65,22 +65,22 @@ if [[ "$sql" = 'postgre' ]]; then  # This needs to change per version
 fi
 
 #[ Add Some Useful Command Alias' ]#
-[[ -f ${HOME}/.bashrc ]] &&
-	cat ${HOME}/.bashrc | grep '# added by autoscript' >/dev/null
-if [[ "$?" != 0 ]]; then  # Check if this has already been added or not
-	sed -i 's:force_color_prompt=no:force_color_prompt=yes:' ${HOME}/.bashrc
-	echo "# added by autoscript">> ${HOME}/.bashrc
-	echo "alias install='$alias_install'"     >> ${HOME}/.bashrc
-	echo "alias remove='$alias_remove'"       >> ${HOME}/.bashrc
-	echo "alias update='$alias_update'"       >> ${HOME}/.bashrc
-	echo "alias upgrade='$alias_upgrade'"     >> ${HOME}/.bashrc
-	echo "alias autoclean='$alias_autoclean'" >> ${HOME}/.bashrc
-	
-	if [[ "$torrent" = 'rtorrent' ]];then
-		echo "alias rtorrent-start='dtach -n .dtach/rtorrent rtorrent'" >> ${HOME}/.bashrc
-		echo "alias rtorrent-resume='dtach -a .dtach/rtorrent'"         >> ${HOME}/.bashrc
+if [[ -f $HOME/.bashrc ]]; then
+	cat $HOME/.bashrc | grep '# added by autoscript' >/dev/null
+	if [[ "$?" != 0 ]]; then  # Check if this has already been added or not
+		sed -i 's:force_color_prompt=no:force_color_prompt=yes:' $HOME/.bashrc
+		echo "# added by autoscript">> $HOME/.bashrc
+		echo "alias install='$alias_install'"     >> $HOME/.bashrc
+		echo "alias remove='$alias_remove'"       >> $HOME/.bashrc
+		echo "alias update='$alias_update'"       >> $HOME/.bashrc
+		echo "alias upgrade='$alias_upgrade'"     >> $HOME/.bashrc
+		echo "alias autoclean='$alias_autoclean'" >> $HOME/.bashrc
+		if [[ "$torrent" = 'rtorrent' ]];then
+			echo "alias rtorrent-start='dtach -n .dtach/rtorrent rtorrent'" >> $HOME/.bashrc
+			echo "alias rtorrent-resume='dtach -a .dtach/rtorrent'"         >> $HOME/.bashrc
+		fi
 	fi
-fi  # end `if $?`
+fi
 
 if [[ "$torrent" = 'rtorrent' ]]; then
 	echo ; read -n1 -p "Start rtorrent now? [y/n]: " start_rt
