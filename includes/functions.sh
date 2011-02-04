@@ -5,7 +5,7 @@ ARCHLINUX_PRE="pacman-color perl-crypt-ssleay powerpill yaourt"
 	case "$DISTRO" in
 		# [uU]buntu|[Dd]ebian|*Mint) ;;
 		# SUSE*|[Ss]use* ) ;;
-		ARCH*|[Aa]rch* ) packages install $ARCHLINUX_PRE
+		ARCH*|[Aa]rch* ) pacman --sync --noconfirm $ARCHLINUX_PRE --needed 2>> $LOG ; E_=$?
 					echo -en "${bldred} CONFiGURiNG PACKAGE MANAGER...${rst}"
 						 sed -i "s:#USECOLOR=.*:USERCOLOR=1:"                       /etc/yaourtrc        # use color
 						 sed -i "s:[#]*PACMAN=.*:PACMAN=powerpill:"                 /etc/yaourtrc        # tell yaourt to use powerpill
@@ -178,7 +178,7 @@ packages() {  # use appropriate package manager depending on distro
 			clean  ) powerpill --sync --clean $quiet -c $noconfirm ; pacman-optimize       ;;
 			install) shift; powerpill --sync $quiet $noconfirm $@ --needed 2>> $LOG; E_=$? ;;
 			remove ) shift; powerpill --remove $@ 2>> $LOG; E_=$?                          ;;
-			update ) powerpill --sync --refresh $quiet                                     ;;
+			update ) pacman --sync --refresh $quiet                                     ;;
 			upgrade) powerpill --sync --refresh --sysupgrade $quiet $noconfirm             ;;
 			version) powerpill -Si $2 | grep Version                                       ;;
 			setvars)
