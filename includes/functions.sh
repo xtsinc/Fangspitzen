@@ -251,8 +251,10 @@ runchecks() {
 	[[ "$DEBUG" = 1 ]] &&  # Check if debug is on/off
 		echo -e ">>> Debug Mode .........[${bldylw} ON ${rst}]" ||
 		echo -e ">>> Debug Mode .........[${bldylw} OFF ${rst}]"
-		log "runchecks() completed"
-	sleep 1
+
+	LOG=$BASE/logs/installer.log
+	mkdir --parents logs/ ; touch $LOG
+	log "runchecks() completed" ; sleep 1
 }
 
 spanner() {
@@ -310,8 +312,8 @@ if [[ "$OS" = "Linux" ]] ; then
 	# Codename    -c > lucid   > lenny   > squeeze  > debian|julia  > n/a   > n/a         (NAME)
 	readonly DISTRO=$(lsb_release -is) RELEASE=$(lsb_release -rs) ARCH=$(uname -m) KERNEL=$(uname -r)
 	NAME=$(lsb_release -cs)
-	[[ "$NAME" = 'n/a' ]] && NAME= ||
-		readonly NAME
+	[[ "$NAME" = 'n/a' ]] && NAME=
+	readonly NAME
 
 	##[ Create folders if not already created ]##
 	mkdir --parents tmp/
@@ -336,9 +338,6 @@ iFACE=eth0
 WEBUSER='www-data'
 WEBGROUP='www-data'
 WEB=/var/www
-LOG=$BASE/logs/installer.log
-	mkdir --parents logs/
-		touch $LOG
 
 #!=====================>> COLOR CONTROL <<=====================!#
 ##[ echo -e "${txtblu}test ${rst}" ]##
