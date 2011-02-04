@@ -239,7 +239,7 @@ runchecks() {
 		[[ "$PWD" != "$BASE"     ]] && error "Does not match $BASE "   # Check if the user declared BASE correctly in the config
 	else error "config.ini not found!"  # Cant continue without a config so produce an error and exit
 	fi
-	echo -n "Checking Dependencies..."
+	echo -n ">>> Checking Requires..."
 		[[ "$BASH_VERSION" = 4* ]] ||  # Check for bash verion 4+
 			error "Please install package: bash, version 4.0 or higher. (Current: $(bash --version | head -n1 | cut -c 1-23))"
 		[[ -x /usr/bin/lsb_release ]] ||  # Check if lsb-release is installed
