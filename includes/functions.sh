@@ -1,11 +1,11 @@
 ##!=======================>> FUNCTiONS <<=======================!##
 base_install() {  # install dependencies
-COMMON="apache2-utils autoconf automake binutils bzip2 ca-certificates cpp curl file gamin gcc git-core gzip htop iptables libexpat1 libtool libxml2 m4 make openssl patch perl pkg-config python python-gamin python-openssl python-setuptools screen subversion sudo unrar unzip zip"
+COMMON="apache2-utils autoconf automake binutils bzip2 ca-certificates cpp curl file gamin gcc git-core gzip htop iptables libexpat1 libtool libxml2 m4 make openssl patch perl pkg-config python python-gamin python-openssl python-setuptools rsync screen subversion sudo unrar unzip zip"
 DYNAMIC="libcurl3 libcurl3-gnutls libcurl4-openssl-dev libncurses5 libncurses5-dev libsigc++-2.0-dev"
 
 DEBIAN="$COMMON $DYNAMIC aptitude autotools-dev build-essential cfv comerr-dev dtach g++ libcppunit-dev libperl-dev libssl-dev libterm-readline-gnu-perl libtorrent-rasterbar-dev ncurses-base ncurses-bin ncurses-term perl-modules ssl-cert"
 SUSE="$COMMON libcppunit-devel libcurl-devel libopenssl-devel libtorrent-rasterbar-devel gcc-c++ ncurses-devel libncurses6 libsigc++2-devel"
-ARCHLINUX="base-devel binutils curl dtach freetype2 geoip libsigc++ libmcrypt libxslt ncurses openssl perl perl-xml-libxml perl-digest-sha1 perl-html-parser perl-json perl-json-xs perl-xml-libxslt perl-net-ssleay pcre popt subversion sudo t1lib unrar unzip yaourt"
+ARCHLINUX="base-devel binutils curl dtach freetype2 geoip libsigc++ libmcrypt libxslt ncurses openssl pacman-color perl perl-xml-libxml perl-digest-sha1 perl-html-parser perl-json perl-json-xs perl-xml-libxslt perl-net-ssleay pcre popt rsync subversion sudo t1lib unrar unzip yaourt"
 
 PHP_COMMON="php5-curl php5-gd php5-mcrypt php5-mysql php5-suhosin php5-xmlrpc"
 
@@ -154,22 +154,22 @@ packages() {  # use appropriate package manager depending on distro
 	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
 		[[ "$DEBUG" = 0 ]] && quiet="--quiet" || quiet=
 		case "$1" in
-			clean  ) pacman --sync --clean $quiet -c --noconfirm                         ;;
-			install) shift; pacman --sync $quiet --noconfirm $@ --needed 2>> $LOG; E_=$? ;;
-			remove ) shift; pacman --remove $@ 2>> $LOG; E_=$?                           ;;
-			update ) pacman --sync --refresh $quiet                                      ;;
-			upgrade) pacman --sync --refresh --sysupgrade $quiet --noconfirm             ;;
-			version) pacman -Si $2 | grep Version                                        ;;
+			clean  ) pacman-color --sync --clean $quiet -c --noconfirm ; pacman-optimize       ;;
+			install) shift; pacman-color --sync $quiet --noconfirm $@ --needed 2>> $LOG; E_=$? ;;
+			remove ) shift; pacman-color --remove $@ 2>> $LOG; E_=$?                           ;;
+			update ) pacman-color --sync --refresh $quiet                                      ;;
+			upgrade) pacman-color --sync --refresh --sysupgrade $quiet --noconfirm             ;;
+			version) pacman-color -Si $2 | grep Version                                        ;;
 			setvars)
 				REPO_PATH=/etc/pacman.conf
 				WEB=/srv/http
 				WEBUSER='http'
 				WEBGROUP='http'
-				alias_autoclean="sudo pacman -Scc"
-				alias_install="sudo pacman -S"
-				alias_remove="sudo pacman -R"
-				alias_update="sudo pacman -Sy"
-				alias_upgrade="sudo pacman -Syu" ;;
+				alias_autoclean="sudo pacman-color -Scc"
+				alias_install="sudo pacman-color -S"
+				alias_remove="sudo pacman-color -R"
+				alias_update="sudo pacman-color -Sy"
+				alias_upgrade="sudo pacman-color -Syu" ;;
 		esac
 	elif [[ $DISTRO = @(SUSE|[Ss]use)* ]]; then
 		[[ "$DEBUG" = 0 ]] && quiet="--quiet" || quiet=
