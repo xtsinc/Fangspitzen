@@ -47,7 +47,7 @@ elif [[ "$DISTRO" = @(Debian|*Mint) ]]; then
 
 elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
 	archrepo_test=$(cat $REPO_PATH | grep '[archlinuxfr]')
-	[[ ! $vsftpd_test ]] &&
+	[[ ! $archrepo_test ]] &&
 		echo -e '[archlinuxfr]\nServer = http://repo.archlinux.fr/$arch' >> $REPO_PATH
 	log "Repositories ADD | Success"
 
