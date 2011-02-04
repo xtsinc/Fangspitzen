@@ -22,7 +22,7 @@ DYNAMIC="libcurl3 libcurl3-gnutls libcurl4-openssl-dev libncurses5 libncurses5-d
 DEBIAN="$COMMON $DYNAMIC aptitude autotools-dev build-essential cfv comerr-dev dtach g++ libcppunit-dev libperl-dev libssl-dev libterm-readline-gnu-perl libtorrent-rasterbar-dev ncurses-base ncurses-bin ncurses-term perl-modules ssl-cert"
 SUSE="$COMMON libcppunit-devel libcurl-devel libopenssl-devel libtorrent-rasterbar-devel gcc-c++ ncurses-devel libncurses6 libsigc++2-devel"
 
-ARCHLINUX="base-devel binutils curl dtach freetype2 geoip libsigc++ libmcrypt libxslt ncurses openssl perl perl-xml-libxml perl-digest-sha1 perl-html-parser perl-json perl-json-xs perl-xml-libxslt perl-net-ssleay pcre popt rsync subversion sudo t1lib unrar unzip"
+ARCHLINUX="base-devel binutils curl dtach freetype2 geoip libsigc++ libmcrypt libxslt ncurses openssl perl perl-digest-sha1 perl-json perl-json-xs perl-xml-libxslt perl-net-ssleay pcre popt rsync subversion sudo t1lib unrar unzip"
 
 PHP_COMMON="php5-curl php5-gd php5-mcrypt php5-mysql php5-suhosin php5-xmlrpc"
 
@@ -32,8 +32,8 @@ PHP_ARCHLINUX="php php-cgi"  # TODO
 
 	echo -en "${bldred} iNSTALLiNG BASE PACKAGES, this may take a while...${rst}"
 	case "$DISTRO" in
-		[uU]buntu|[Dd]ebian|*Mint) packages install $DEBIAN    ;;
-		ARCH*|[Aa]rch* ) packages install $ARCHLINUX ;;
+		[uU]buntu|[Dd]ebian|*Mint) packages install $DEBIAN ;;
+		ARCH*|[Aa]rch* ) packages install $ARCHLINUX        ;;
 		SUSE*|[Ss]use* ) packages install $SUSE
 						 if [[ ! -f /usr/bin/dtach ]]; then
 							cd ${BASE}/tmp
@@ -172,15 +172,14 @@ packages() {  # use appropriate package manager depending on distro
 				alias_upgrade="sudo apt-get upgrade" ;;
 		esac
 	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
-		noconfirm="--pacman-noconfirm"
 		[[ "$DEBUG" = 0 ]] && quiet="--quiet" || quiet=
 		case "$1" in
-			clean  ) powerpill --sync --clean $quiet -c $noconfirm ; pacman-optimize       ;;
-			install) shift; powerpill --sync $quiet $noconfirm $@ --needed 2>> $LOG; E_=$? ;;
-			remove ) shift; powerpill --remove $@ 2>> $LOG; E_=$?                          ;;
-			update ) pacman --sync --refresh $quiet                                     ;;
-			upgrade) powerpill --sync --refresh --sysupgrade $quiet $noconfirm             ;;
-			version) powerpill -Si $2 | grep Version                                       ;;
+			clean  ) powerpill --sync --clean $quiet -c --noconfirm ; pacman-optimize       ;;
+			install) shift; powerpill --sync $quiet --noconfirm $@ --needed 2>> $LOG; E_=$? ;;
+			remove ) shift; powerpill --remove $@ 2>> $LOG; E_=$?                           ;;
+			update ) pacman --sync --refresh $quiet                                         ;;
+			upgrade) powerpill --sync --refresh --sysupgrade $quiet --noconfirm             ;;
+			version) powerpill -Si $2 | grep Version                                        ;;
 			setvars)
 				REPO_PATH=/etc/pacman.conf
 				WEB=/srv/http
