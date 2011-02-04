@@ -1,6 +1,6 @@
 ##!=======================>> FUNCTiONS <<=======================!##
 base_configure() {  # do this before base_install()
-ARCHLINUX_PRE="pacman-color perl-crypt-ssleay powerpill yaourt"
+ARCHLINUX_PRE="perl-crypt-ssleay powerpill yaourt"
 
 	case "$DISTRO" in
 		# [uU]buntu|[Dd]ebian|*Mint) ;;
@@ -9,7 +9,6 @@ ARCHLINUX_PRE="pacman-color perl-crypt-ssleay powerpill yaourt"
 						 pacman --sync --noconfirm $ARCHLINUX_PRE --needed 2>> $LOG ; E_=$?
 						 sed -i "s:#USECOLOR=.*:USERCOLOR=1:"                       /etc/yaourtrc        # use color
 						 sed -i "s:[#]*PACMAN=.*:PACMAN=powerpill:"                 /etc/yaourtrc        # tell yaourt to use powerpill
-						 sed -i "s:PacmanBin=.*:PacmanBin = /usr/bin/pacman-color:" /etc/powerpill.conf  # tell powerpill to use pacman-color
 						 echo -e "${bldylw} done${rst}\n" ;;
 	esac
 	log "Base Configuration | Completed"
