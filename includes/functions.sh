@@ -34,7 +34,7 @@ checkout() {  # increase verbosity
 
 cleanup() {  # remove tmp folder and restore permissions
 	cd "$BASE" && rm --recursive --force tmp
-	chown -R "$USER" "$BASE"
+	chown -R "$USER:$USER" "$BASE"
 	log "Removed tmp/ folder"
 }
 
@@ -315,7 +315,6 @@ if [[ "$OS" = "Linux" ]] ; then
 
 	##[ Create folders if not already created ]##
 	mkdir --parents tmp/
-	mkdir --parents logs/
 
 	iP=$(wget --quiet --timeout=30 www.whatismyip.com/automation/n09230945.asp -O - 2)
 	[[ "$iP" != *.*.* ]] && error "Unable to find ip from outside"
@@ -333,11 +332,13 @@ fi
 CORES=$(grep -c ^processor /proc/cpuinfo)
 SSLCERT=/usr/share/ssl-cert/ssleay.cnf
 MKSSLCERT_RUN=1
-LOG=$BASE/logs/installer.log
 iFACE=eth0
 WEBUSER='www-data'
 WEBGROUP='www-data'
 WEB=/var/www
+LOG=$BASE/logs/installer.log
+	mkdir --parents logs/
+		touch $LOG
 
 #!=====================>> COLOR CONTROL <<=====================!#
 ##[ echo -e "${txtblu}test ${rst}" ]##
