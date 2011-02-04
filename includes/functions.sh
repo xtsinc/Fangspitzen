@@ -1,11 +1,28 @@
 ##!=======================>> FUNCTiONS <<=======================!##
+base_configure() {  # do this before base_install()
+ARCHLINUX_PRE="pacman-color perl-crypt-ssleay powerpill yaourt"
+
+	case "$DISTRO" in
+		# [uU]buntu|[Dd]ebian|*Mint) ;;
+		# SUSE*|[Ss]use* ) ;;
+		ARCH*|[Aa]rch* ) packages install $ARCHLINUX_PRE
+					echo -en "${bldred} CONFiGURiNG PACKAGE MANAGER...${rst}"
+						 sed -i "s:#USECOLOR=.*:USERCOLOR=1:"                       /etc/yaourtrc           # use color
+						 sed -i "s:[#]*PACMAN=.*:PACMAN=powerpill:"                 /etc/yaourtrc           # tell yaourt to use powerpill
+						 sed -i "s:PacmanBin=.*:PacmanBin = /usr/bin/pacman-color:" /etc/powerpill.conf ;;  # tell powerpill to use pacman-color
+					echo -e "${bldylw} done${rst}"
+	esac
+	log "Base Configuration | Completed"
+}
+
 base_install() {  # install dependencies
 COMMON="apache2-utils autoconf automake binutils bzip2 ca-certificates cpp curl file gamin gcc git-core gzip htop iptables libexpat1 libtool libxml2 m4 make openssl patch perl pkg-config python python-gamin python-openssl python-setuptools rsync screen subversion sudo unrar unzip zip"
 DYNAMIC="libcurl3 libcurl3-gnutls libcurl4-openssl-dev libncurses5 libncurses5-dev libsigc++-2.0-dev"
 
 DEBIAN="$COMMON $DYNAMIC aptitude autotools-dev build-essential cfv comerr-dev dtach g++ libcppunit-dev libperl-dev libssl-dev libterm-readline-gnu-perl libtorrent-rasterbar-dev ncurses-base ncurses-bin ncurses-term perl-modules ssl-cert"
 SUSE="$COMMON libcppunit-devel libcurl-devel libopenssl-devel libtorrent-rasterbar-devel gcc-c++ ncurses-devel libncurses6 libsigc++2-devel"
-ARCHLINUX="base-devel binutils curl dtach freetype2 geoip libsigc++ libmcrypt libxslt ncurses openssl pacman-color perl perl-xml-libxml perl-digest-sha1 perl-html-parser perl-json perl-json-xs perl-xml-libxslt perl-net-ssleay pcre popt rsync subversion sudo t1lib unrar unzip yaourt"
+
+ARCHLINUX="base-devel binutils curl dtach freetype2 geoip libsigc++ libmcrypt libxslt ncurses openssl perl perl-xml-libxml perl-digest-sha1 perl-html-parser perl-json perl-json-xs perl-xml-libxslt perl-net-ssleay pcre popt rsync subversion sudo t1lib unrar unzip"
 
 PHP_COMMON="php5-curl php5-gd php5-mcrypt php5-mysql php5-suhosin php5-xmlrpc"
 
@@ -14,13 +31,16 @@ PHP_SUSE="$PHP_COMMON php5-devel php5-json"
 PHP_ARCHLINUX="php php-cgi"  # TODO
 
 	echo -en "${bldred} iNSTALLiNG BASE PACKAGES, this may take a while...${rst}"
-
 	case "$DISTRO" in
 		[uU]buntu|[Dd]ebian|*Mint) packages install $DEBIAN    ;;
-		ARCH*|[Aa]rch*           ) packages install $ARCHLINUX ;;
-		SUSE*|[Ss]use*           ) packages install $SUSE      ;;
+		ARCH*|[Aa]rch* ) packages install $ARCHLINUX ;;
+		SUSE*|[Ss]use* ) packages install $SUSE
+						 if [[ ! -f /usr/bin/dtach ]]; then
+							cd ${BASE}/tmp
+							download http://sourceforge.net/projects/dtach/files/dtach/0.8/dtach-0.8.tar.gz && extract dtach-0.8.tar.gz
+							cd dtach-0.8 && sh configure && make && cp dtach /usr/bin
+						 fi ;;
 	esac
-
 	if_error "Required system packages failed to install"
 	log "Base Installation | Completed"
 	echo -e "${bldylw} done${rst}"
@@ -152,24 +172,25 @@ packages() {  # use appropriate package manager depending on distro
 				alias_upgrade="sudo apt-get upgrade" ;;
 		esac
 	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
+		noconfirm="--pacman-noconfirm"
 		[[ "$DEBUG" = 0 ]] && quiet="--quiet" || quiet=
 		case "$1" in
-			clean  ) pacman-color --sync --clean $quiet -c --noconfirm ; pacman-optimize       ;;
-			install) shift; pacman-color --sync $quiet --noconfirm $@ --needed 2>> $LOG; E_=$? ;;
-			remove ) shift; pacman-color --remove $@ 2>> $LOG; E_=$?                           ;;
-			update ) pacman-color --sync --refresh $quiet                                      ;;
-			upgrade) pacman-color --sync --refresh --sysupgrade $quiet --noconfirm             ;;
-			version) pacman-color -Si $2 | grep Version                                        ;;
+			clean  ) powerpill --sync --clean $quiet -c $noconfirm ; pacman-optimize       ;;
+			install) shift; powerpill --sync $quiet $noconfirm $@ --needed 2>> $LOG; E_=$? ;;
+			remove ) shift; powerpill --remove $@ 2>> $LOG; E_=$?                          ;;
+			update ) powerpill --sync --refresh $quiet                                     ;;
+			upgrade) powerpill --sync --refresh --sysupgrade $quiet $noconfirm             ;;
+			version) powerpill -Si $2 | grep Version                                       ;;
 			setvars)
 				REPO_PATH=/etc/pacman.conf
 				WEB=/srv/http
 				WEBUSER='http'
 				WEBGROUP='http'
-				alias_autoclean="sudo pacman-color -Scc"
-				alias_install="sudo pacman-color -S"
-				alias_remove="sudo pacman-color -R"
-				alias_update="sudo pacman-color -Sy"
-				alias_upgrade="sudo pacman-color -Syu" ;;
+				alias_autoclean="sudo powerpill -Scc"
+				alias_install="sudo powerpill -S"
+				alias_remove="sudo powerpill -R"
+				alias_update="sudo powerpill -Sy"
+				alias_upgrade="sudo powerpill -Syu" ;;
 		esac
 	elif [[ $DISTRO = @(SUSE|[Ss]use)* ]]; then
 		[[ "$DEBUG" = 0 ]] && quiet="--quiet" || quiet=

@@ -103,14 +103,8 @@ echo -e "\n********************************"
 echo -e   "****${bldred} BEGiNiNG iNSTALLATiON ${rst}*****"
 echo -e   "********************************\n"
 
+base_configure
 base_install
-
-if [[ "$DISTRO" = @(SUSE|[Ss]use)* && ! -f /usr/bin/dtach ]]; then
-	cd ${BASE}/tmp
-	download http://sourceforge.net/projects/dtach/files/dtach/0.8/dtach-0.8.tar.gz && extract dtach-0.8.tar.gz
-	cd dtach-0.8
-	sh configure && make && cp dtach /usr/bin
-fi
 
 cd "$BASE"
 ##[ APACHE ]##
