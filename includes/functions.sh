@@ -117,12 +117,14 @@ mksslcert() {  # use 2048 bit certs, use sha256, and regenerate
 			sed -i 's:default_bits .*:default_bits = 2048:' $SSLCERT
 			make-ssl-cert $1 --force-overwrite
 			echo -e "${bldylw} done${rst}"
+			log "mksslcert() completed"
 		fi
 		MKSSLCERT_RUN=0
 	else
 		[[ "$#" = 1 ]] && openssl req -new -x509 -days 3650 -nodes -out "$1" -keyout "$1" -subj '/C=AN/ST=ON/L=YM/O=OU/CN=S/emailAddress=dev@slash.null'  # generate single key file
 		[[ "$#" = 2 ]] && openssl req -new -x509 -days 3650 -nodes -out "$1" -keyout "$2" -subj '/C=AN/ST=ON/L=YM/O=OU/CN=S/emailAddress=dev@slash.null'  # 2nd arg creates separate .pem and .key files
 		chmod 400 "$@"  # Read write permission for owner only
+		log "mksslcert() completed"
 	fi
 }
 
@@ -249,6 +251,7 @@ runchecks() {
 	[[ "$DEBUG" = 1 ]] &&  # Check if debug is on/off
 		echo -e ">>> Debug Mode .........[${bldylw} ON ${rst}]" ||
 		echo -e ">>> Debug Mode .........[${bldylw} OFF ${rst}]"
+		log "runchecks() completed"
 	sleep 1
 }
 
@@ -305,8 +308,10 @@ if [[ "$OS" = "Linux" ]] ; then
 	# Distributor -i > Ubuntu  > Debian  > Debian   > LinuxMint     > Arch  > SUSE LINUX  (DISTRO)
 	# Release     -r > 10.04   > 5.0.6   > testing  > 1|10          > n/a   > 11.3        (RELASE)
 	# Codename    -c > lucid   > lenny   > squeeze  > debian|julia  > n/a   > n/a         (NAME)
-	readonly DISTRO=$(lsb_release -is) RELEASE=$(lsb_release -rs) NAME=$(lsb_release -cs) ARCH=$(uname -m) KERNEL=$(uname -r)
-	[[ "$NAME" = 'n/a' ]] && NAME=''
+	readonly DISTRO=$(lsb_release -is) RELEASE=$(lsb_release -rs) ARCH=$(uname -m) KERNEL=$(uname -r)
+	NAME=$(lsb_release -cs)
+	[[ "$NAME" = 'n/a' ]] && NAME= ||
+		readonly NAME
 
 	##[ Create folders if not already created ]##
 	mkdir --parents tmp/
@@ -315,11 +320,12 @@ if [[ "$OS" = "Linux" ]] ; then
 	iP=$(wget --quiet --timeout=30 www.whatismyip.com/automation/n09230945.asp -O - 2)
 	[[ "$iP" != *.*.* ]] && error "Unable to find ip from outside"
 
-	packages setvars  # just sets REPO_PATH= at the moment
-	readonly iP USER CORES BASE WEB HOME=/home/$USER LOG=$BASE/$LOG # make sure these variables aren't overwritten
+	packages setvars
+	readonly iP USER CORES BASE WEB HOME=/home/$USER LOG  # make sure these variables aren't overwritten
 	else error "Unsupported OS"
 fi
 	echo -e "[${bldylw} done ${rst}]"
+	log "init() completed"
 	sleep 1
 }
 
@@ -327,7 +333,7 @@ fi
 CORES=$(grep -c ^processor /proc/cpuinfo)
 SSLCERT=/usr/share/ssl-cert/ssleay.cnf
 MKSSLCERT_RUN=1
-LOG=logs/installer.log
+LOG=$BASE/logs/installer.log
 iFACE=eth0
 WEBUSER='www-data'
 WEBGROUP='www-data'

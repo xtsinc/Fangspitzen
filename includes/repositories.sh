@@ -49,6 +49,7 @@ elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
 	archrepo_test=$(cat $REPO_PATH | grep '[archlinuxfr]')
 	[[ ! $vsftpd_test ]] &&
 		echo -e '[archlinuxfr]\nServer = http://repo.archlinux.fr/$arch' >> $REPO_PATH
+	log "Repositories ADD | Success"
 
 elif [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]; then
 	packages addrepo http://download.opensuse.org/repositories/openSUSE:/11.3:/Contrib/standard/      "Contrib"
@@ -60,6 +61,7 @@ elif [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]; then
 	packages addrepo http://download.opensuse.org/repositories/server:/http/openSUSE_11.3/            "Cherokee"
 	packages addrepo http://download.opensuse.org/repositories/filesharing/openSUSE_11.3/             "Transmission"
 	packages addrepo http://download.opensuse.org/repositories/home:/uljanow/openSUSE_11.2/           "iPList"
+	log "Repositories ADD | Success"
 else
 	error "Failed to add repositories to unknown distro... exiting (${DISTRO})"
 fi
@@ -76,7 +78,7 @@ if [[ "$DISTRO" = @([uU]buntu|[dD]ebian|*Mint) ]]; then  # Add signing keys
 	wget -q http://download.virtualbox.org/virtualbox/debian/oracle_vbox.asc -O- | apt-key add -
 	wget -q http://www.webmin.com/jcameron-key.asc -O- | apt-key add -
 fi
-	packages update	 # refresh our package list
-	log "Repositories Added and Updated"
+	packages update	&& # refresh our package list
+	log "Repositories Refresh | Success"
 	debug_wait "repos.added"
 clear
