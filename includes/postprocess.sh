@@ -50,10 +50,11 @@ elif [[ "$http" = 'cherokee' ]]; then
 	notice "Run sudo cherokee-admin -b to configure Cherokee."
 fi
 
-[[ "$sql" = 'mysql' ]] &&
-	[[ -d /etc/rc.d/ ]] && /etc/rc.d/mysqld restart ||
+if [[ "$sql" = 'mysql' ]]; then
+	[[ -d /etc/rc.d/ ]] &&
+		/etc/rc.d/mysqld restart ||
 		/etc/init.d/mysql restart
-if [[ "$sql" = 'postgre' ]]; then  # This needs to change per version
+elif [[ "$sql" = 'postgre' ]]; then  # This needs to change per version
 	post_ver=8.4
 	[[ "$NAME" = 'lenny' ]] && post_ver=8.3
 	[[ "$DISTRO" = @(ARCH|[Aa]rch)* ]] && post_ver=9.0

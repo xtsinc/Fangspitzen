@@ -7,10 +7,10 @@ ARCHLINUX_PRE="pacman-color perl-crypt-ssleay powerpill yaourt"
 		# SUSE*|[Ss]use* ) ;;
 		ARCH*|[Aa]rch* ) packages install $ARCHLINUX_PRE
 					echo -en "${bldred} CONFiGURiNG PACKAGE MANAGER...${rst}"
-						 sed -i "s:#USECOLOR=.*:USERCOLOR=1:"                       /etc/yaourtrc           # use color
-						 sed -i "s:[#]*PACMAN=.*:PACMAN=powerpill:"                 /etc/yaourtrc           # tell yaourt to use powerpill
-						 sed -i "s:PacmanBin=.*:PacmanBin = /usr/bin/pacman-color:" /etc/powerpill.conf ;;  # tell powerpill to use pacman-color
-					echo -e "${bldylw} done${rst}"
+						 sed -i "s:#USECOLOR=.*:USERCOLOR=1:"                       /etc/yaourtrc        # use color
+						 sed -i "s:[#]*PACMAN=.*:PACMAN=powerpill:"                 /etc/yaourtrc        # tell yaourt to use powerpill
+						 sed -i "s:PacmanBin=.*:PacmanBin = /usr/bin/pacman-color:" /etc/powerpill.conf  # tell powerpill to use pacman-color
+					echo -e "${bldylw} done${rst}" ;;
 	esac
 	log "Base Configuration | Completed"
 }
