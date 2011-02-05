@@ -15,8 +15,8 @@
 # Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 ##################################################################
-VERSION='0.9.9~git'                                              #
-DATE='Dec 24 2010'                                               #
+VERSION='1.0.0~git'                                              #
+DATE='Feb 05 2011'                                               #
 ##################################################################
 trap ctrl_c SIGINT
 source includes/functions.sh || error "while loading functions.sh"  # Source in our functions
