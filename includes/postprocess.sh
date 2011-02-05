@@ -12,9 +12,12 @@ if [[ -f /etc/ssh/sshd_config ]]; then
 	sed -i 's:[#]*ServerKeyBits .*:ServerKeyBits 1024:'          /etc/ssh/sshd_config
 	sed -i 's:[#]*AllowTcpForwarding yes:AllowTcpForwarding no:' /etc/ssh/sshd_config
 	sed -i 's:[#]*X11Forwarding yes:X11Forwarding no:'           /etc/ssh/sshd_config
-	[[ -d /etc/rc.d/ ]] && /etc/rc.d/sshd restart ||
-		[[ -f /etc/init.d/ssh ]] && /etc/init.d/ssh restart ||
-			[[ -f /etc/init.d/sshd ]] && /etc/init.d/sshd restart
+	if [[ -d /etc/rc.d/ ]]
+		then /etc/rc.d/sshd restart
+		elif [[ -f /etc/init.d/ssh ]]
+			then /etc/init.d/ssh restart
+			else /etc/init.d/sshd restart
+	fi
 fi
 
 cat /etc/sysctl.conf | grep '# added by autoscript' >/dev/null
