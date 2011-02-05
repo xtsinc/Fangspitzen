@@ -31,19 +31,18 @@ init_variables()
 
 assumption_check()
 {
-	err=0
-	if [[ ! -f $htpasswd ]]; then
-		echo -e "- htpasswd....[${bldred} FAILED ${rst}]" ;err=1
+	ERROR=0
+	if [[ ! -f $htpasswd ]]
+		then echo -e "- htpasswd....[${bldred} FAILED ${rst}]" ; ERROR=1
 		else echo -e "- htpasswd....[${bldpur} OK ${rst}]" ;fi
 	if [[ $webserver = 'apache2' ]]; then
-	if [[ ! -f $htaccess ]]; then
-		echo -e "- htaccess....[${bldred} FAILED ${rst}]" ;err=1
+	if [[ ! -f $htaccess ]]
+		then echo -e "- htaccess....[${bldred} FAILED ${rst}]" ; ERROR=1
 		else echo -e "- htaccess....[${bldpur} OK ${rst}]" ;fi
-	fi
-	if [[ ! -d $rutorrent ]]; then
-		echo -e "- ruTorrent...[${bldred} FAILED ${rst}]" ;err=1
-		else echo -e "- ruTorrent...[${bldpur} OK ${rst}] \n" ;fi
-	if [[ $err = 1 ]]; then echo; exit 0 ;fi
+	if [[ ! -d $rutorrent ]]
+		then echo -e "- ruTorrent...[${bldred} FAILED ${rst}]" ; ERROR=1
+		else echo -e "- ruTorrent...[${bldpur} OK ${rst}]\n" ;fi
+	if [[ $ERROR = 1 ]]; then echo ; exit 0 ;fi
 }
 
 chown_rutorrent()
@@ -57,26 +56,25 @@ get_username()
 {
 	read -p "User Name: " user_name
 	read -p "Give shell access? y|n: " shell_reply
-	if [[ $shell_reply = 'n' ]]; then
-		user_shell='/usr/sbin/nologin'
-	else user_shell='/bin/bash'
+	if [[ $shell_reply = 'n' ]]
+		then user_shell='/usr/sbin/nologin'
+		else user_shell='/bin/bash'
 	fi
 }
 
 create_user()
 {
 	useradd --create-home --shell $user_shell $user_name
-	if [[ $? = 0 ]]; then
-		echo -e "\n${bldred}-${rst} System User .........[${bldpur} CREATED ${rst}]"
-	else
-		echo -e "\n${bldred}-${rst} System User .........[${bldred} FAILED ${rst}]"
-	fi;echo
-
+	if [[ $? = 0 ]]
+		then echo -e "\n${bldred}-${rst} System User .........[${bldpur} CREATED ${rst}]"
+		else echo -e "\n${bldred}-${rst} System User .........[${bldred} FAILED ${rst}]"
+	fi ; echo
+	
 	passwd $user_name
-	if [[ $? = 0 ]]; then
-		echo -e "\n${bldred}-${rst} User Password .......[${bldpur} CREATED ${rst}]"
-	else
-		echo -e "\n${bldred}-${rst} User Password .......[${bldred} FAILED ${rst}]"
+	
+	if [[ $? = 0 ]]
+		then echo -e "\n${bldred}-${rst} User Password .......[${bldpur} CREATED ${rst}]"
+		else echo -e "\n${bldred}-${rst} User Password .......[${bldred} FAILED ${rst}]"
 	fi
 }
 
@@ -122,8 +120,7 @@ make_rtorrent_init()
 		sudo -u $user_name echo "config=(\"\$base/.rtorrent.rc\")"            >> .rtorrent.init.conf
 		sudo -u $user_name echo "logfile=/home/$user_name/.rtorrent.init.log" >> .rtorrent.init.conf
 		echo -e "${bldred}-${rst} rTorrent Init Script.[${bldpur} CREATED ${rst}]\n"
-	else
-		echo -e "${bldred}-${rst} rTorrent Init Script.[${bldpur} SKIPPED ${rst}]\n"
+	else echo -e "${bldred}-${rst} rTorrent Init Script.[${bldpur} SKIPPED ${rst}]\n"
 	fi
 }
 
@@ -153,10 +150,9 @@ EOF
 	echo -e "${bldred}-${rst} ruTorrent Config ....[${bldpur} CREATED ${rst}]\n"
 
 	htdigest $htpasswd "ruTorrent" $user_name
-	if [[ $? = 0 ]]; then
-		echo -e "\n${bldred}-${rst} ruTorrent Password ..[${bldpur} CREATED ${rst}]"
-	else
-		echo -e "\n${bldred}-${rst} ruTorrent Password ..[${bldred} FAILED ${rst}]"
+	if [[ $? = 0 ]]
+		then echo -e "\n${bldred}-${rst} ruTorrent Password ..[${bldpur} CREATED ${rst}]"
+		else echo -e "\n${bldred}-${rst} ruTorrent Password ..[${bldred} FAILED ${rst}]"
 	fi
 }
 
@@ -174,14 +170,14 @@ get_scgi_port()
 httpd_scgi()
 {
 	cd /home/$user_name
-	if [[ $webserver = 'apache2' ]]; then
-		echo "SCGIMount $scgi_mount 127.0.0.1:$scgi_port" >> /etc/apache2/mods-available/scgi.conf
+	#if [[ $webserver = 'apache2' ]]; then
+		#echo "SCGIMount $scgi_mount 127.0.0.1:$scgi_port" >> /etc/apache2/mods-available/scgi.conf
 		sudo -u $user_name echo "scgi_port = localhost:$scgi_port" >> .rtorrent.rc
-		echo -e "${bldred}-${rst} Apache SCGi Mount ...[${bldpur} CREATED ${rst}]"
-		echo -e "${bldred}-${rst} Apache SCGi Port ....[${bldpur} $scgi_port ${rst}]\n"
-	elif [[ $webserver = 'lighttpd' ]]; then
-		sudo -u $user_name echo "scgi_port = localhost:$scgi_port" >> .rtorrent.rc
-		sed -i "s:),:),\n\t\"/rutorrent/$user_name\" =>\n\t( \n\t\t\"127.0.0.1\" =>\n\t\t(\n\t\t\"host\"         => \"127.0.0.1\",\n\t\t\"port\"         => $scgi_port,\n\t\t\"check-local\"  => \"disable\",\n\t\t)\n\t):" /etc/lighttpd/conf-available/20-scgi.conf
+		echo -e "${bldred}-${rst} SCGi Mount ..........[${bldpur} CREATED ${rst}]"
+		echo -e "${bldred}-${rst} SCGi Port ...........[${bldpur} $scgi_port ${rst}]\n"
+	#elif [[ $webserver = 'lighttpd' ]]; then
+		#sudo -u $user_name echo "scgi_port = localhost:$scgi_port" >> .rtorrent.rc
+		#sed -i "s:),:),\n\t\"/rutorrent/$user_name\" =>\n\t( \n\t\t\"127.0.0.1\" =>\n\t\t(\n\t\t\"host\"         => \"127.0.0.1\",\n\t\t\"port\"         => $scgi_port,\n\t\t\"check-local\"  => \"disable\",\n\t\t)\n\t):" /etc/lighttpd/conf-available/20-scgi.conf
 	fi
 	/etc/init.d/$webserver restart
 }
@@ -195,9 +191,9 @@ start_rtorrent()
 
 		TESTrt=$(pgrep -u $user_name rtorrent)
 		echo -en "${bldred}-${rst} rTorrent Starting ...["
-		if [[ $? = 0 ]]; then
-			echo -e "${bldpur} SUCCESS ${rst}]"
-		else echo -e "${bldred} FAiLED ${rst}]"
+		if [[ $? = 0 ]]
+			then echo -e "${bldpur} SUCCESS ${rst}]"
+			else echo -e "${bldred} FAiLED ${rst}]"
 		fi
 	fi
 }
