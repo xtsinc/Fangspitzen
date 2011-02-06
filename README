@@ -1,10 +1,12 @@
+This is the graphical branch which uses dialog.
+
 INSTALLATION NOTES
 
 1. git clone git://github.com/Voruse/Fangspitzen.git <dir>
-2. cd <dir> && nano config.ini
-3. ./installer.sh -help
-4. Report errors and bugs!
-
+2. cd <dir> && git checkout -b dialog
+3. nano config.ini
+4. ./installer.sh --help
+5. Report errors and bugs!
 
 
 SUPPORT
