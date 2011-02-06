@@ -93,11 +93,11 @@ if [[ "$torrent" = 'rtorrent' ]]; then
 		chmod -R 755 ${HOME}/.dtach
 		chown -R "$USER" ${HOME}/.dtach
 		sudo -u "$USER" dtach -n /home/${USER}/.dtach/rtorrent rtorrent
-
-		TESTrt=$(pgrep -u "$USER" rtorrent)
-		[[ "$?" = 0 ]] &&
-			echo "rTorrent has been started with dtach in ~/.dtach/rtorrent" ||
-			echo "rtorrent FAILED to start!"
+		
+		if is_running "$USER" "rtorrent"
+  			then echo "rTorrent has been started with dtach in ~/.dtach/rtorrent"
+  			else echo "rtorrent FAILED to start!"
+		fi
 	fi
 fi
 

@@ -188,10 +188,9 @@ start_rtorrent()
 	if [[ $start_rt = 'y' ]]; then
 		sudo -u $user_name mkdir -p /home/$user_name/.dtach
 		sudo -u $user_name dtach -n /home/$user_name/.dtach/rtorrent rtorrent
-
-		TESTrt=$(pgrep -u $user_name rtorrent)
+		
 		echo -en "${bldred}-${rst} rTorrent Starting ...["
-		if [[ $? = 0 ]]
+		if [[ ! -z $(pgrep -u $user_name rtorrent) ]]
 			then echo -e "${bldpur} SUCCESS ${rst}]"
 			else echo -e "${bldred} FAiLED ${rst}]"
 		fi

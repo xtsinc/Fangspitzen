@@ -294,9 +294,10 @@ if [[ $vnstat = 'y' ]]; then
 	mv vnstat-web $WEB  # Copy VnStat-web to WebRoot
 	log "Frontend Installed | http://$iP/vnstat-web"
 
-	[[ ! $(pgrep vnstatd) ]] &&
+	if is_running "root" "vnstatd" ; then
 		vnstat -u -i $iFACE
 		vnstatd -d  # Make database and start vnstatd
+	fi
 
 	debug_wait "vnstat-web.installed"
 fi

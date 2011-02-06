@@ -251,7 +251,7 @@ if [[ $ftpd = 'vsftp' ]]; then
 	fi
 
 	echo -n "Allow FXP? [y/n]: "
-	if yes; then  # allow toggling of forcing ssl
+	if yes; then  # enable pasv_promiscuous
 		sed -i 's:[#]*pasv_enable.*:pasv_enable=YES:'           /etc/vsftpd.conf
 		sed -i 's:[#]*pasv_promiscuous.*:pasv_promiscuous=YES:' /etc/vsftpd.conf
 	fi
