@@ -249,6 +249,12 @@ if [[ $ftpd = 'vsftp' ]]; then
 		sed -i 's:force_local_logins_ssl.*:force_local_logins_ssl=NO:'  /etc/vsftpd.conf
 		sed -i 's:force_local_data_ssl.*:force_local_data_ssl=NO:'      /etc/vsftpd.conf
 	fi
+
+	echo -n "Allow FXP? [y/n]: "
+	if yes; then  # allow toggling of forcing ssl
+		sed -i 's:[#]*pasv_enable.*:pasv_enable=YES:'           /etc/vsftpd.conf
+		sed -i 's:[#]*pasv_promiscuous.*:pasv_promiscuous=YES:' /etc/vsftpd.conf
+	fi
 	[[ -d /etc/rc.d/ ]] &&
 		/etc/rc.d/vsftpd restart ||
 		/etc/init.d/vsftpd restart
