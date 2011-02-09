@@ -47,7 +47,8 @@ if [[ $sql = 'mysql' ]]; then
 	elif [[ $DISTRO = @(ARCH|[Aa]rch)* ]]; then
 		packages install mysql
 		echo "/etc/rc.d/mysqld start" >> /etc/rc.local
-		sed -i "s:;extension=mysql.so:extension=mysql.so:" $PHPini
+		sed -i "s:;extension=mysql.so:extension=mysql.so:"   $PHPini
+		sed -i "s:;extension=mysqli.so:extension=mysqli.so:" $PHPini
 	fi
 	if_error "MySQL failed to install"
 
@@ -60,6 +61,7 @@ elif [[ $sql = 'sqlite' ]]; then
 	notice "iNSTALLiNG SQLite"
 	packages install sqlite3 php5-sqlite
 	if_error "SQLite failed to install"
+	[[ $DISTRO = @(ARCH|[Aa]rch)* ]] && sed -i "s:;extension=sqlite3.so:extension=sqlite3.so:" $PHPini
 	log "SQLite Installation | Completed" ; debug_wait "sqlite.installed"
 
 ##[ PostGreSQL ]##
@@ -70,6 +72,7 @@ elif [[ $sql = 'postgre' ]]; then
 	elif [[ $DISTRO = @(SUSE|[Ss]use)* ]]; then
 		packages install postgresql postgresql-server
 		echo "/etc/rc.d/postgresql start" >> /etc/rc.local
+		sed -i "s:;extension=pgsql.so:extension=pgsql.so:" $PHPini
 	fi
 	if_error "PostgreSQL failed to install"
 	log "PostgreSQL Installation | Completed" ; debug_wait "postgresql.installed"
