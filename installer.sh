@@ -145,7 +145,7 @@ if [[ $http = 'apache' ]]; then
 		sed -i "s:ServerSignature On:ServerSignature Off:" /etc/httpd/conf/extra/httpd-default.conf
 		touch $WEB/index.html
 		PHPini=/etc/php/php.ini
-		
+		sed -i "s:;extension=curl.so:extension=curl.so:"                $PHPini
 		sed -i "s:;extension=json.so:extension=json.so:"                $PHPini
 		sed -i "s:;extension=sockets.so:extension=sockets.so:"          $PHPini
 		sed -i "s:;extension=xmlrpc.so:extension=xmlrpc.so:"            $PHPini
