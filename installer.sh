@@ -149,7 +149,7 @@ if [[ $http = 'apache' ]]; then
 		sed -i "s:;extension=xmlrpc.so:extension=xmlrpc.so:"            $PHPini
 		sed -i "s:;date.timezone .*:date.timezone = Europe/Luxembourg:" $PHPini
 
-		if [[ ! -f /etc/httpd/conf/server.key
+		if [[ ! -f /etc/httpd/conf/server.key ]]; then
 			mksslcert "/etc/httpd/conf/server.crt" "/etc/httpd/conf/server.key"
 			log "Lighttpd SSL Key created"
 		fi
