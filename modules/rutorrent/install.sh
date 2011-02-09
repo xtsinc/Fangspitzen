@@ -1,8 +1,8 @@
 install_rutorrent=false
 while [[ $install_rutorrent = false ]]; do
-	if [[ ! -d $WEB/rutorrent ]]; then  # Compile rtorrent
+	if [[ ! -d $WEB/rutorrent ]]; then
 		install_rutorrent='true'
-	else  # Ask to re-compile if rtorrent is already installed
+	else  # Ask to update rutorrent if exists
 		echo -en "ruTorrent Found => Updating...  " ; sleep 1
 		cd $WEB/rutorrent && svn up
 		break

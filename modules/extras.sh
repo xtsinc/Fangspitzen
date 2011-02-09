@@ -46,6 +46,8 @@ if [[ $sql = 'mysql' ]]; then
 		mysql_secure_installation
 	elif [[ $DISTRO = @(ARCH|[Aa]rch)* ]]; then
 		packages install mysql
+		echo "/etc/rc.d/mysqld start" >> /etc/rc.local
+		sed -i "s:;extension=mysql.so:extension=mysql.so:" $PHPini
 	fi
 	if_error "MySQL failed to install"
 
@@ -67,6 +69,7 @@ elif [[ $sql = 'postgre' ]]; then
 		packages install postgresql
 	elif [[ $DISTRO = @(SUSE|[Ss]use)* ]]; then
 		packages install postgresql postgresql-server
+		echo "/etc/rc.d/postgresql start" >> /etc/rc.local
 	fi
 	if_error "PostgreSQL failed to install"
 	log "PostgreSQL Installation | Completed" ; debug_wait "postgresql.installed"
@@ -151,6 +154,7 @@ fi
 if [[ $fail2ban = 'y' ]]; then
 	notice "iNSTALLiNG Fail2Ban"
 	packages install fail2ban ; if_error "Fail2ban failed to install"
+	[[ $DISTRO = @(ARCH|[Aa]rch)* ]] && echo "/etc/rc.d/fail2ban start" >> /etc/rc.local
 
 	f2b_jail=/etc/fail2ban/jail.conf
 	cat $f2b_jail | grep '# added by autoscript' >/dev/null
@@ -232,6 +236,7 @@ if [[ $webmin = 'y' ]]; then
 		packages install webmin perl-Net-SSLeay
 	elif [[ $DISTRO = @(ARCH|[Aa]rch)* ]]; then
 		packages install webmin
+		echo "/etc/rc.d/webmin start" >> /etc/rc.local
 	fi
 	if_error "Webmin failed to install"
 	log "WebMin Installation | Completed" ; debug_wait "webmin.installed"
@@ -269,10 +274,13 @@ if [[ $vnstat = 'y' ]]; then
 	make install
 	cd ..
 		log "VnStat Installation | Completed"
-
-	if [[ ! -f /etc/init.d/vnstat ]]; then
-		cp vnstat-1.10/examples/init.d/debian/vnstat /etc/init.d/         # Copy init script if one doesnt exist
-		chmod a+x /etc/init.d/vnstat && update-rc.d vnstat defaults       # Start at boot
+	if [[ $DISTRO = @(ARCH|[Aa]rch)* && ! -f /etc/rc.d/vnstat ]]; then
+		cp vnstat-1.10/examples/init.d/arch/vnstat /etc/rc.d/                         # Copy init script if one doesnt exist
+		chmod a+x /etc/rc.d/vnstat && echo "/etc/rc.d/vnstat start" >> /etc/rc.local  # Start at boot
+		log "VnStat | Created RC Script"
+	elif [[ ! -f /etc/init.d/vnstat ]]; then
+		cp vnstat-1.10/examples/init.d/debian/vnstat /etc/init.d/    # Copy init script if one doesnt exist
+		chmod a+x /etc/init.d/vnstat && update-rc.d vnstat defaults  # Start at boot
 		log "VnStat | Created Init Script"
 	else log "VnStat | Previous Init Script Found, skipping..."
 	fi
@@ -359,6 +367,7 @@ if [[ $ipblock = 'y' ]]; then
 		packages install iplist libpcre0 libnfnetlink0 libnetfilter-queue1
 	elif [[ $DISTRO = @(ARCH|[Aa]rch)* ]]; then
 		yaourt --sync iplist libnetfilter_queue libnfnetlink
+		echo "/etc/rc.d/iplist start" >> /etc/rc.local
 	fi
 	if_error "iPBLOCK failed to install"
 

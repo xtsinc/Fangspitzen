@@ -119,6 +119,7 @@ if [[ $http = 'apache' ]]; then
 	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
 		packages install apache php-apache
 		packages install $PHP_ARCHLINUX
+		echo "/etc/rc.d/httpd start" >> /etc/rc.local
 	fi
 	if_error "Apache2 failed to install"
 
@@ -137,10 +138,21 @@ if [[ $http = 'apache' ]]; then
 		#echo "SCGIMount /rutorrent/master 127.0.0.1:5000" >> /etc/httpd/conf/httpd.conf  # Add mountpoint
 		echo "LoadModule php5_module modules/libphp5.so"  >> /etc/httpd/conf/httpd.conf
 		echo "Include conf/extra/php5_module.conf"        >> /etc/httpd/conf/httpd.conf
-		echo "/etc/rc.d/httpd start" >> /etc/rc.local
+		sed -i "s:Include conf/extra/httpd-userdir.conf:#Include conf/extra/httpd-userdir.conf:" /etc/httpd/conf/httpd.conf  # Disable User-Dir
+		sed -i "s:#Include conf/extra/httpd-ssl.conf:Include conf/extra/httpd-ssl.conf:"         /etc/httpd/conf/httpd.conf  # Enable SSL
+		sed -i "s:Timeout 300:Timeout 30:"                 /etc/httpd/conf/extra/httpd-default.conf
+		sed -i "s:ServerTokens .*:ServerTokens Prod:"      /etc/httpd/conf/extra/httpd-default.conf
+		sed -i "s:ServerSignature On:ServerSignature Off:" /etc/httpd/conf/extra/httpd-default.conf
+		touch $WEB/index.html
 		PHPini=/etc/php/php.ini
-		sed -i "s:;extension=sockets.so:extension=sockets.so:" $PHPini
-		sed -i "s:;extension=xmlrpc.so:extension=xmlrpc.so:"   $PHPini
+		sed -i "s:;extension=sockets.so:extension=sockets.so:"          $PHPini
+		sed -i "s:;extension=xmlrpc.so:extension=xmlrpc.so:"            $PHPini
+		sed -i "s:;date.timezone .*:date.timezone = Europe/Luxembourg:" $PHPini
+
+		if [[ ! -f /etc/httpd/conf/server.key
+			mksslcert "/etc/httpd/conf/server.crt" "/etc/httpd/conf/server.key"
+			log "Lighttpd SSL Key created"
+		fi
 	elif [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]; then
 		a2enmod auth_digest ssl php5 expires deflate mem_cache
 		a2enflag SSL
@@ -162,6 +174,7 @@ elif [[ $http = 'lighttp' ]]; then
 		packages install $PHP_SUSE lighttpd
 	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
 		packages install $PHP_ARCHLINUX lighttpd fcgi
+		echo "/etc/rc.d/lighttpd start" >> /etc/rc.local
 	fi
 	if_error "Lighttpd failed to install"  # I wonder when the fam and gamin api will be compatible (this generates an error coce 100 so we are forced to ignore it)
 
@@ -194,6 +207,7 @@ elif [[ $http = 'cherokee' ]]; then
 	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
 		packages install cherokee
 		packages install $PHP_ARCHLINUX
+		echo "/etc/rc.d/cherokee start" >> /etc/rc.local
 	fi
 	if_error "Cherokee failed to install"
 
@@ -215,6 +229,7 @@ fi
 if [[ $ftpd = 'vsftp' ]]; then
 	notice "iNSTALLiNG vsFTPd"
 	packages install vsftpd
+	[[ $DISTRO = @(ARCH|[Aa]rch)* ]] && echo "/etc/rc.d/vsftpd start" >> /etc/rc.local
 	if_error "vsFTPd failed to install"
 	sed -i 's:anonymous_enable.*:anonymous_enable=NO:'           /etc/vsftpd.conf
 	sed -i 's:#local_enable.*:local_enable=YES:'                 /etc/vsftpd.conf
@@ -268,6 +283,7 @@ elif [[ $ftpd = 'proftp' ]]; then
 		packages install proftpd
 	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
 		packages install proftpd
+		echo "/etc/rc.d/proftpd start" >> /etc/rc.local
 	fi
 	if_error "ProFTPd failed to install"
 
@@ -307,6 +323,7 @@ EOF
 elif [[ $ftpd = 'pureftp' ]]; then
 	notice "iNSTALLiNG Pure-FTPd"
 	packages install pure-ftpd
+	[[ $DISTRO = @(ARCH|[Aa]rch)* ]] && echo "/etc/rc.d/pure-ftpd start" >> /etc/rc.local
 	if_error "PureFTP failed to install"
 	
 	if [[ ! -f /etc/ssl/private/pure-ftpd.pem ]]; then  # Create SSL Certificate
