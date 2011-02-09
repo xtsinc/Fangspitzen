@@ -87,7 +87,7 @@ if [[ -f $HOME/.bashrc ]]; then
 fi
 
 if [[ "$torrent" = 'rtorrent' ]]; then
-	echo ; read -n1 -p "Start rtorrent now? [y/n]: " start_rt
+	echo ; read -p "Start rtorrent now? [y/n]: " start_rt
 	if [[ "$start_rt" = 'y' ]]; then
 		mkdir -p ${HOME}/.dtach ; rm -f ${HOME}/.dtach/rtorrent
 		chmod -R 755 ${HOME}/.dtach

@@ -369,7 +369,7 @@ if [[ $ipblock = 'y' ]]; then
 	elif [[ $DISTRO = @(SUSE|[Ss]use)* ]]; then
 		packages install iplist libpcre0 libnfnetlink0 libnetfilter-queue1
 	elif [[ $DISTRO = @(ARCH|[Aa]rch)* ]]; then
-		yaourt --sync iplist libnetfilter_queue libnfnetlink
+		yaourt -S --noconfirm iplist libnetfilter_queue libnfnetlink
 		echo "/etc/rc.d/iplist start" >> /etc/rc.local
 	fi
 	if_error "iPBLOCK failed to install"
@@ -385,3 +385,67 @@ if [[ $ipblock = 'y' ]]; then
 
 	log "iPBLOCK Installation | Completed" ; debug_wait "ipblock.installed"
 fi
+
+##[ ViRTUALBOX ]##
+cd $BASE/tmp
+if [[ $virtualbox = 'y' ]]; then  # TODO
+	notice "iNSTALLiNG ViRTUALBOX"
+	if [[ "$DISTRO" = @([uU]buntu|[dD]ebian|*Mint) ]]; then
+		echo "deb http://download.virtualbox.org/virtualbox/debian "$NAME" contrib" >> $REPO_PATH/autoinstaller.list  # Add repo
+		wget -q http://download.virtualbox.org/virtualbox/debian/oracle_vbox.asc -O- | apt-key add -                  # Add key
+		packages update && packages install linux-headers-$(uname -r) dkms virtualbox-4.0                             # Install virtualbox
+		download http://download.virtualbox.org/virtualbox/4.0.2/Oracle_VM_VirtualBox_Extension_Pack-4.0.2-69518.vbox-extpack
+		VBoxManage extpack install Oracle_VM_VirtualBox_Extension_Pack-4.0.2-69518.vbox-extpack  # Install extention pack for remote support
+		adduser $USER vboxusers  # Let our user use virtualbox
+	elif [[ $DISTRO = @(SUSE|[Ss]use)* ]]; then
+		packages install  # TODO
+	elif [[ $DISTRO = @(ARCH|[Aa]rch)* ]]; then
+		yaourt -S --noconfirm kernel26-headers virtualbox virtualbox-ext-oracle
+		gpasswd -a $USER vboxusers
+		/etc/rc.d/vboxdrv setup  # Build kernel modules
+		modprobe vboxdrv && archlinux_add_module "vboxdrv"
+	fi
+	if_error "ViRTUALBOX failed to install"
+	
+	notice "VBoxManage --help\nVBoxHeadless --help"
+	log "ViRTUALBOX Installation | Completed" ; debug_wait "virtualbox.installed"
+	
+	echo -en "\n Install php-virtualbox frontend? [y/n]: "
+	if yes
+		then phpvirtualbox='y'
+		else phpvirtualbox='n'
+	fi
+
+##[ PHP-ViRTUALBOX ]##
+if [[ $phpvirtualbox = 'y' ]]; then  # TODO
+	#if [[ $DISTRO = @(Ubuntu|[dD]ebian|*Mint) ]]; then
+	#	packages install
+	#elif [[ $DISTRO = @(SUSE|[Ss]use)* ]]; then
+	#	packages install
+	#elif [[ $DISTRO = @(ARCH|[Aa]rch)* ]]; then
+	#	yaourt -S --noconfirm phpvirtualbox
+	#	sed -i "s:;extension=json.so:extension=json.so:" /etc/php/php.ini
+	#	sed -i "s:;extension=soap.so:extension=soap.so:" /etc/php/php.ini
+	#fi
+fi
+fi  # end `if $virtualbox`
+		
+		
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	

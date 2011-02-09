@@ -45,6 +45,14 @@ PHP_ARCHLINUX="php php-cgi"  # TODO
 	echo -e "${bldylw} done${rst}"
 }
 
+archlinux_add_module() {
+	cp /etc/rc.conf /etc/rc.conf.bak
+	source /etc/rc.conf
+	MODULES+=($@)
+	NEWMODULES="MODULES=(${MODULES[@]})"
+	sed -i "s:MODULES=.*:$NEWMODULES:" /etc/rc.conf
+}
+
 checkout() {  # increase verbosity
 	if [[ "$DEBUG" = 1 ]]; then svn co "$@" ; E_=$?
 	else svn co -q "$@" ; E_=$?

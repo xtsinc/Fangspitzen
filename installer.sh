@@ -83,12 +83,12 @@ echo -e " Distro:${bldylw} $DISTRO $RELEASE ${rst}"
 echo -e " Kernel:${bldylw} $KERNEL${rst}-${bldylw}$ARCH ${rst}"
 
 echo -en "\n Continue? [y/n]: "
-	if ! yes; then  # Cleanup and die if no
-		cleanup ; clear ; exit
-	else log "\n*** SCRiPT STARTiNG | $(date) ***"
-		mksslcert 'generate-default-snakeoil'
+	if ! yes ;then
+		cleanup ; clear ; exit  # Cleanup and die if no
 	fi
+	mksslcert 'generate-default-snakeoil'
 fi  # end `if ! $LOG`
+log "\n*** SCRiPT STARTiNG | $(date) ***"
 
 if [[ ! -f $BASE/logs/repos.installed ]]; then  # Add repositories if not already present
 	source $BASE/includes/repositories.sh || error "while loading repositories.sh"
@@ -312,9 +312,9 @@ EOF
 	sed -i 's:ServerIdent .*:ServerIdent on "FTP Server ready.":' /etc/proftpd/proftpd.conf
 
 	echo -en "\n Force SSL? [y/n]: "
-	if yes; then  # allow toggling of forcing ssl
-		 sed -i 's:TLSRequired .*:TLSRequired on:'  /etc/proftpd/proftpd.conf
-	else sed -i 's:TLSRequired .*:TLSRequired off:' /etc/proftpd/proftpd.conf
+	if yes  # allow toggling of forcing ssl
+		then sed -i 's:TLSRequired .*:TLSRequired on:'  /etc/proftpd/proftpd.conf
+		else sed -i 's:TLSRequired .*:TLSRequired off:' /etc/proftpd/proftpd.conf
 	fi
 	[[ -d /etc/rc.d/ ]] &&
 		/etc/rc.d/proftpd restart ||
@@ -336,9 +336,9 @@ elif [[ $ftpd = 'pureftp' ]]; then
 	[[ -f /etc/default/pure-ftpd-common ]] && sed -i 's:STANDALONE_OR_INETD=.*:STANDALONE_OR_INETD=standalone:' /etc/default/pure-ftpd-common
 
 	echo -en "\n Force SSL? [y/n]: "
-	if ! yes; then  # allow toggling of forcing ssl
-		 echo 1 > /etc/pure-ftpd/conf/TLS  # Allow TLS+FTP
-	else echo 2 > /etc/pure-ftpd/conf/TLS  # Force TLS
+	if yes  # allow toggling of forcing ssl
+		then echo 2 > /etc/pure-ftpd/conf/TLS  # Force TLS
+		else echo 1 > /etc/pure-ftpd/conf/TLS  # Allow TLS+FTP
 	fi
 	[[ -d /etc/rc.d/ ]] &&
 		/etc/rc.d/pure-ftpd restart ||
