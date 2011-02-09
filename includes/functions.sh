@@ -121,7 +121,7 @@ if_error() {  # call this to catch a bad return code and log the error
 is_running() {  # check if a program is running or not
 	# $1 = the user
 	# $2 = the program
-	if [[ -z $(pgrep -u $1 $2) ]]
+	if [[ ! -z $(pgrep -u $1 $2) ]]
 		then return 0 # is NOT running
 		else return 1 # IS running
 	fi

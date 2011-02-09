@@ -1,5 +1,5 @@
 compile_xmlrpc=false
-while [[ $compile_xmlrpc = false ]]; do  # Ask to re-compile if xmlrpc is already installed
+while [[ $compile_xmlrpc = false ]]; do  # Ask to re-compile xmlrpc if already installed
 	if [[ ! -f /usr/bin/xmlrpc-c-config ]]; then compile_xmlrpc='true'
 	else echo -en "XMLRPC-C is already installed.... overwrite? [y/n]: "
 		if  yes; then
@@ -11,7 +11,7 @@ while [[ $compile_xmlrpc = false ]]; do  # Ask to re-compile if xmlrpc is alread
 done
 
 compile_rtorrent=false
-while [[ $compile_rtorrent = false ]]; do  # Ask to re-compile if rtorrent is already installed
+while [[ $compile_rtorrent = false ]]; do  # Ask to re-compile rtorrent if already installed
 	if [[ ! -f /usr/bin/rtorrent ]]; then compile_rtorrent='true'
 	else echo -en "rTorrent is already installed.... overwrite? [y/n]: "
 		if  yes; then
@@ -116,17 +116,18 @@ fi
 [[ $alloc = 'y' ]] &&
 	echo "system.file_allocate.set = yes" >> $PATH_rt  # Enable file pre-allocation
 
-if [[ -d /etc/apache2 ]]; then
+#if [[ -d /etc/apache2 ]]; then
 	echo 'scgi_port = 127.0.0.1:5000'     >> $PATH_rt  # Create scgi port
-elif [[ -d /etc/lighttpd || -d /etc/cherokee ]]; then
+#elif [[ -d /etc/lighttpd || -d /etc/cherokee ]]; then
 	#echo "scgi_local = /tmp/rpc.socket"                             >> $PATH_rt  # Create sgci socket
 	#echo 'schedule = chmod,0,0,"execute=chmod,777,/tmp/rpc.socket"' >> $PATH_rt  # Make socket readable
-	echo 'scgi_port = 127.0.0.1:5000'     >> $PATH_rt  # Create scgi port
-else debug_wait "No httpd found: Make sure to add sgci mounts to .rtorrent.rc"
-fi
+#	echo 'scgi_port = 127.0.0.1:5000'     >> $PATH_rt  # Create scgi port
+#else debug_wait "No httpd found: Make sure to add sgci mounts to .rtorrent.rc"
+#fi
 log "rTorrent Config | Created" ; log "rTorrent listening on port: $NUMBER"
 
-if [[ ! -f /etc/init.d/rtorrent ]]; then  # Copy init script
+
+if [[ $DISTRO != @(ARCH|[Aa]rch)* && ! -f /etc/init.d/rtorrent ]]; then  # Copy init script
 	cp modules/rtorrent/rtorrent-init /etc/init.d/rtorrent
 	cp modules/rtorrent/rtorrent-init-conf "$HOME"/.rtorrent.init.conf
 

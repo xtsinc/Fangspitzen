@@ -122,10 +122,8 @@ if [[ $http = 'apache' ]]; then
 	fi
 	if_error "Apache2 failed to install"
 
-	a2enmod auth_digest ssl php5 expires deflate mem_cache  # Enable modules
-	a2dismod cgi
-
 	if [[ "$DISTRO" = @([Uu]buntu|[dD]ebian|*Mint) ]]; then
+		a2enmod auth_digest ssl php5 expires deflate mem_cache  # Enable modules
 		a2ensite default-ssl
 		#cp modules/apache/scgi.conf /etc/apache2/mods-available/scgi.conf  # Add mountpoint (disabled in favor of rpc plugin)
 		sed -i "/<Directory \/var\/www\/>/,/<\/Directory>/ s:AllowOverride .*:AllowOverride All:" /etc/apache2/sites-available/default*
@@ -144,6 +142,7 @@ if [[ $http = 'apache' ]]; then
 		sed -i "s:;extension=sockets.so:extension=sockets.so:" $PHPini
 		sed -i "s:;extension=xmlrpc.so:extension=xmlrpc.so:"   $PHPini
 	elif [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]; then
+		a2enmod auth_digest ssl php5 expires deflate mem_cache
 		a2enflag SSL
 		sed -i "/<Directory \"\/srv\/www\/htdocs\">/,/<\/Directory>/ s:AllowOverride .*:AllowOverride All:" /etc/apache2/default-server.conf
 		sed -i "s:APACHE_SERVERSIGNATURE=\"on\":APACHE_SERVERSIGNATURE=\"off\":" /etc/sysconfig/apache2
@@ -241,7 +240,7 @@ if [[ $ftpd = 'vsftp' ]]; then
 	else log "vsftpd config already edited, skipping"
 	fi
 
-	echo -n "Force SSL? [y/n]: "
+	echo -en "\n Force SSL? [y/n]: "
 	if yes; then  # allow toggling of forcing ssl
 		sed -i 's:force_local_logins_ssl.*:force_local_logins_ssl=YES:' /etc/vsftpd.conf
 		sed -i 's:force_local_data_ssl.*:force_local_data_ssl=YES:'     /etc/vsftpd.conf
@@ -250,7 +249,7 @@ if [[ $ftpd = 'vsftp' ]]; then
 		sed -i 's:force_local_data_ssl.*:force_local_data_ssl=NO:'      /etc/vsftpd.conf
 	fi
 
-	echo -n "Allow FXP? [y/n]: "
+	echo -en "\n Allow FXP? [y/n]: "
 	if yes; then  # enable pasv_promiscuous
 		sed -i 's:[#]*pasv_enable.*:pasv_enable=YES:'           /etc/vsftpd.conf
 		sed -i 's:[#]*pasv_promiscuous.*:pasv_promiscuous=YES:' /etc/vsftpd.conf
@@ -294,7 +293,7 @@ EOF
 	sed -i 's:IdentLookups .*:IdentLookups off:'   /etc/proftpd/proftpd.conf
 	sed -i 's:ServerIdent .*:ServerIdent on "FTP Server ready.":' /etc/proftpd/proftpd.conf
 
-	echo -n "Force SSL? [y/n]: "
+	echo -en "\n Force SSL? [y/n]: "
 	if yes; then  # allow toggling of forcing ssl
 		 sed -i 's:TLSRequired .*:TLSRequired on:'  /etc/proftpd/proftpd.conf
 	else sed -i 's:TLSRequired .*:TLSRequired off:' /etc/proftpd/proftpd.conf
@@ -317,7 +316,7 @@ elif [[ $ftpd = 'pureftp' ]]; then
 	fi
 	[[ -f /etc/default/pure-ftpd-common ]] && sed -i 's:STANDALONE_OR_INETD=.*:STANDALONE_OR_INETD=standalone:' /etc/default/pure-ftpd-common
 
-	echo -n "Force SSL? [y/n]: "
+	echo -en "\n Force SSL? [y/n]: "
 	if ! yes; then  # allow toggling of forcing ssl
 		 echo 1 > /etc/pure-ftpd/conf/TLS  # Allow TLS+FTP
 	else echo 2 > /etc/pure-ftpd/conf/TLS  # Force TLS
