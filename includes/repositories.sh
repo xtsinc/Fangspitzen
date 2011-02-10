@@ -46,9 +46,10 @@ elif [[ "$DISTRO" = @(Debian|*Mint) ]]; then
 	log "Repositories ADD | Success"
 
 elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
-	archrepo_test=$(cat $REPO_PATH | grep '\[archlinuxfr\]')
-	[[ ! $archrepo_test ]] &&
-		echo -e '[archlinuxfr]\nServer = http://repo.archlinux.fr/$arch' >> $REPO_PATH
+	if [[ ! $(grep '\[archlinuxfr\]' $REPO_PATH) ]]  # Check if this has already been done
+		then echo -e '[archlinuxfr]\nServer = http://repo.archlinux.fr/$arch' >> $REPO_PATH
+		else log "Repository 'archlinuxfr' Already Present, skipping"
+	fi
 	log "Repositories ADD | Success"
 
 elif [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]; then

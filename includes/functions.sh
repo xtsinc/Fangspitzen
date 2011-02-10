@@ -275,7 +275,7 @@ runchecks() {
 		[[ "$PWD" != "$BASE"     ]] && error "Does not match $BASE "   # Check if the user declared BASE correctly in the config
 	else error "config.ini not found!"  # Cant continue without a config so produce an error and exit
 	fi
-	echo -n ">>> Checking Requires..."
+	echo -en "${rst}>>> Checking Requires..."
 		[[ "$BASH_VERSION" = 4* ]] ||  # Check for bash verion 4+
 			error "Please install package: bash, version 4.0 or higher. (Current: $(bash --version | head -n1 | cut -c 1-23))"
 		[[ -x /usr/bin/lsb_release ]] ||  # Check if lsb-release is installed
@@ -371,6 +371,9 @@ CORES=$(grep -c ^processor /proc/cpuinfo)
 SSLCERT=/usr/share/ssl-cert/ssleay.cnf
 MKSSLCERT_RUN=1
 iFACE=eth0
+
+##[ Default Webserver Settings
+##+ can be changed in packages()setvars ]##
 WEBUSER='www-data'
 WEBGROUP='www-data'
 WEB=/var/www

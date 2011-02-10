@@ -160,8 +160,7 @@ if [[ $fail2ban = 'y' ]]; then
 	[[ $DISTRO = @(ARCH|[Aa]rch)* ]] && echo "/etc/rc.d/fail2ban start" >> /etc/rc.local
 
 	f2b_jail=/etc/fail2ban/jail.conf
-	cat $f2b_jail | grep '# added by autoscript' >/dev/null
-	if [[ $? != 0 ]]; then  # Check if this has already been added or not
+	if [[ ! $(grep '# added by autoscript' $f2b_jail) ]]; then  # Check if this has already been done
 		sed -i 's:bantime .*:bantime = 86400:' $f2b_jail  # 24 hours
 		sed -i '/[ssh]/,/port	= ssh/ s:enabled .*:enabled = true:' $f2b_jail
 		if [[ $ftp = 'vsftp' ]]; then

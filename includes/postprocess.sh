@@ -3,7 +3,7 @@ echo -e "\n*******************************"
 echo -e   "******${bldred} POST PROCESSiNG ${rst}********"
 echo -e   "*******************************\n"
 
-if [[ -f /etc/ssh/sshd_config ]]; then
+if [[ -f /etc/ssh/sshd_config && ! $(grep '#added by autoscript' /etc/ssh/sshd_config) ]]; then  # Check if this has already been done
 	sed -i 's:[#]*Protocol .*:Protocol 2:'                       /etc/ssh/sshd_config
 	sed -i 's:[#]*IgnoreRhosts no:IgnoreRhosts yes:'             /etc/ssh/sshd_config
 	sed -i 's:[#]*PermitRootLogin yes:PermitRootLogin no:'       /etc/ssh/sshd_config
@@ -12,6 +12,7 @@ if [[ -f /etc/ssh/sshd_config ]]; then
 	sed -i 's:[#]*ServerKeyBits .*:ServerKeyBits 1024:'          /etc/ssh/sshd_config
 	sed -i 's:[#]*AllowTcpForwarding yes:AllowTcpForwarding no:' /etc/ssh/sshd_config
 	sed -i 's:[#]*X11Forwarding yes:X11Forwarding no:'           /etc/ssh/sshd_config
+	echo "#added by autoscript"                               >> /etc/ssh/sshd_config
 	if [[ -d /etc/rc.d/ ]]
 		then /etc/rc.d/sshd restart
 		elif [[ -f /etc/init.d/ssh ]]
@@ -93,10 +94,9 @@ if [[ "$torrent" = 'rtorrent' ]]; then
 		chmod -R 755 ${HOME}/.dtach
 		chown -R "$USER" ${HOME}/.dtach
 		sudo -u "$USER" dtach -n /home/${USER}/.dtach/rtorrent rtorrent
-		
 		if is_running "$USER" "rtorrent"
-  			then echo "rTorrent has been started with dtach in ~/.dtach/rtorrent"
-  			else echo "rtorrent FAILED to start!"
+			then echo -e "${bldgrn}[SUCCESS]${txtgrn} rTorrent started! ${bldgrn}Resume:${txtgrn} dtach -a ~/.dtach/rtorrent  ${bldgrn}Detach:${txtgrn} Ctrl-\\${rst}"
+			else echo -e "${bldred}[FAILURE]${txtred} rtorrent FAILED to start!${rst}"
 		fi
 	fi
 fi
