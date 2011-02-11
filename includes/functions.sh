@@ -288,9 +288,8 @@ runchecks() {
 		echo -e ">>> Debug Mode .........[${bldylw} ON ${rst}]" ||
 		echo -e ">>> Debug Mode .........[${bldylw} OFF ${rst}]"
 	echo -ne ">>> Internet Access ..."
-	[[ $(ping -c 2 $(ip r | grep default | cut -d ' ' -f 3)) ]] &&  # Ping our local gateway
-		[[ $(ping -c 1 74.125.226.116) ]] && [[ $(ping -c 1 208.67.222.222) ]] &&  # Ping google and opendns
-			echo -e ".[${bldylw} OK ${rst}]" || error "Unable to ping outside world..."
+	[[ $(ping -c 1 74.125.226.116) ]] && [[ $(ping -c 1 208.67.222.222) ]] &&  # Ping google and opendns
+		echo -e ".[${bldylw} OK ${rst}]" || error "Unable to ping outside world..."
 
 	LOG=$BASE/logs/installer.log
 	mkdir --parents logs/ ; touch $LOG
