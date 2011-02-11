@@ -120,7 +120,7 @@ extract() {  # find type of compression and extract accordingly
 
 if_error() {  # call this to catch a bad return code and log the error
 	if [[ "$E_" != 0 && "$E_" != 100 ]]; then
-		echo -e " Error:${bldred} $1 ${rst} ($E_)"
+		echo -e " Error:${bldred} $1 ${rst}($E_)"
 		log "Error: $1 ($E_)"
 		cleanup ; exit 1
 	fi
@@ -287,6 +287,10 @@ runchecks() {
 	[[ "$DEBUG" = 1 ]] &&  # Check if debug is on/off
 		echo -e ">>> Debug Mode .........[${bldylw} ON ${rst}]" ||
 		echo -e ">>> Debug Mode .........[${bldylw} OFF ${rst}]"
+	echo -ne ">>> Internet Access ..."
+	[[ $(ping -c 2 $(ip r | grep default | cut -d ' ' -f 3)) ]] &&  # Ping our local gateway
+		[[ $(ping -c 1 74.125.226.116) ]] && [[ $(ping -c 1 208.67.222.222) ]] &&  # Ping google and opendns
+			echo -e ".[${bldylw} OK ${rst}]" || error "Unable to ping outside world..."
 
 	LOG=$BASE/logs/installer.log
 	mkdir --parents logs/ ; touch $LOG
@@ -355,7 +359,6 @@ if [[ "$OS" = "Linux" ]] ; then
 	mkdir --parents tmp/
 
 	iP=$(wget --quiet --timeout=30 www.whatismyip.com/automation/n09230945.asp -O - 2)
-	[[ "$iP" != *.*.* ]] && error "Unable to find ip from outside"
 
 	packages setvars
 	readonly iP USER CORES BASE WEB HOME=/home/$USER LOG  # make sure these variables aren't overwritten
