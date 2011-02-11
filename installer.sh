@@ -114,10 +114,10 @@ if [[ $http = 'apache' ]]; then
 		packages install apache2 apache2-mpm-prefork libapache2-mod-python apachetop &&
 		packages install $PHP_DEBIAN php5 libapache2-mod-php5 libapache2-mod-suphp suphp-common
 	elif [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]; then
-		packages install apache2 apache2-mod_scgi apache2-prefork &&
+		packages install apache2 apache2-prefork &&
 		packages install $PHP_SUSE php5 suphp apache2-mod_php5
 	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
-		packages install apache php-apache
+		packages install apache php-apache &&
 		packages install $PHP_ARCHLINUX
 		echo "/etc/rc.d/httpd start" >> /etc/rc.local
 	fi
@@ -175,7 +175,7 @@ elif [[ $http = 'lighttp' ]]; then
 	elif [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]; then
 		packages install $PHP_SUSE lighttpd
 	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
-		packages install $PHP_ARCHLINUX lighttpd fcgi
+		packages install $PHP_ARCHLINUX lighttpd fcgi php-cgi
 		echo "/etc/rc.d/lighttpd start" >> /etc/rc.local
 	fi
 	if_error "Lighttpd failed to install"  # I wonder when the fam and gamin api will be compatible (this generates an error coce 100 so we are forced to ignore it)
@@ -204,11 +204,11 @@ elif [[ $http = 'cherokee' ]]; then
 		packages install cherokee libcherokee-mod-libssl libcherokee-mod-rrd libcherokee-mod-admin spawn-fcgi &&
 		packages install $PHP_DEBIAN
 	elif [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]; then
-		packages install cherokee
+		packages install cherokee &&
 		packages install $PHP_SUSE
 	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
-		packages install cherokee
-		packages install $PHP_ARCHLINUX
+		packages install cherokee &&
+		packages install $PHP_ARCHLINUX php-cgi
 		echo "/etc/rc.d/cherokee start" >> /etc/rc.local
 	fi
 	if_error "Cherokee failed to install"
