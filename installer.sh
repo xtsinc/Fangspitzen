@@ -242,7 +242,7 @@ if [[ $ftpd = 'vsftp' ]]; then
 	sed -i 's:#nopriv_user.*:nopriv_user=ftp:'                   /etc/vsftpd.conf
 	sed -i 's:#chroot_local_user.*:chroot_local_user=YES:'       /etc/vsftpd.conf
 	
-	if [[ -f /etc/ssl/private/vsftpd.pem ]]; then
+	if [[ ! -f /etc/ssl/private/vsftpd.pem ]]; then
 		mksslcert "/etc/ssl/private/vsftpd.pem"
 		if [[ ! $(grep 'rsa_cert_file' /etc/vsftpd.conf) ]]
 			then echo "rsa_cert_file=/etc/ssl/private/vsftpd.pem"                   >> /etc/vsftpd.conf
