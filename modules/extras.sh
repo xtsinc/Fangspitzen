@@ -51,9 +51,7 @@ if [[ $sql = 'mysql' ]]; then
 		sed -i "s:;extension=mysqli.so:extension=mysqli.so:" $PHPini
 	fi
 	if_error "MySQL failed to install"
-
 	sed -ie 's:query_cache_limit .*:query_cache_limit = 2M\nquery_cache_type = 1:' /etc/mysql/my.cnf
-
 	log "MySQL Installation | Completed" ; debug_wait "mysql.installed"
 
 ##[ SQLiTE ]##
@@ -197,13 +195,6 @@ maxretry = 5
 EOF
 		fi
 		echo "# added by autoscript" >> $f2b_jail
-
-		echo -n "Restarting fail2ban..."
-		killall -q -15 fail2ban-server ; sleep 2
-		if [[ -e /var/run/fail2ban/fail2ban.sock ]]; then
-			rm /var/run/fail2ban/fail2ban.sock
-			/etc/init.d/fail2ban start
-		fi ; echo " done"
 	fi  # end `if $?`
 	log "Fail2ban Installation | Completed" ; debug_wait "fail2ban.installed"
 fi
@@ -308,7 +299,6 @@ if [[ $vnstat = 'y' ]]; then
 		vnstat -u -i $iFACE
 		vnstatd -d
 	fi
-
 	debug_wait "vnstat-web.installed"
 fi
 
@@ -428,23 +418,3 @@ if [[ $phpvirtualbox = 'y' ]]; then  # TODO
 	#fi
 fi
 fi  # end `if $virtualbox`
-		
-		
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	

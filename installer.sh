@@ -271,9 +271,6 @@ if [[ $ftpd = 'vsftp' ]]; then
 		sed -i 's:[#]*pasv_enable.*:pasv_enable=YES:'           /etc/vsftpd.conf
 		sed -i 's:[#]*pasv_promiscuous.*:pasv_promiscuous=YES:' /etc/vsftpd.conf
 	fi
-	[[ -d /etc/rc.d/ ]] &&
-		/etc/rc.d/vsftpd restart ||
-		/etc/init.d/vsftpd restart
 	log "vsFTP Installation | Completed" ; debug_wait "vsftpd.installed"
 
 ##[ proFTP ]##
@@ -316,9 +313,6 @@ EOF
 		then sed -i 's:TLSRequired .*:TLSRequired on:'  /etc/proftpd/proftpd.conf
 		else sed -i 's:TLSRequired .*:TLSRequired off:' /etc/proftpd/proftpd.conf
 	fi
-	[[ -d /etc/rc.d/ ]] &&
-		/etc/rc.d/proftpd restart ||
-		/etc/init.d/proftpd restart
 	log "ProFTP Installation | Completed" ; debug_wait "proftpd.installed"
 
 ##[ pureFTP ]##
@@ -340,10 +334,6 @@ elif [[ $ftpd = 'pureftp' ]]; then
 		then echo 2 > /etc/pure-ftpd/conf/TLS  # Force TLS
 		else echo 1 > /etc/pure-ftpd/conf/TLS  # Allow TLS+FTP
 	fi
-	[[ -d /etc/rc.d/ ]] &&
-		/etc/rc.d/pure-ftpd restart ||
-		/etc/init.d/pure-ftpd restart
-
 	log "PureFTP Installation | Completed" ; debug_wait "pureftp.installed"
 fi
 

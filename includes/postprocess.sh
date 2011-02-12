@@ -13,11 +13,11 @@ if [[ -f /etc/ssh/sshd_config && ! $(grep '#added by autoscript' /etc/ssh/sshd_c
 	sed -i 's:[#]*AllowTcpForwarding yes:AllowTcpForwarding no:' /etc/ssh/sshd_config
 	sed -i 's:[#]*X11Forwarding yes:X11Forwarding no:'           /etc/ssh/sshd_config
 	echo "#added by autoscript"                               >> /etc/ssh/sshd_config
-	if [[ -d /etc/rc.d/ ]]
+	if [[ -d /etc/rc.d/ ]]  # restart ssh daemon
 		then /etc/rc.d/sshd restart
-		elif [[ -f /etc/init.d/ssh ]]
-			then /etc/init.d/ssh restart
-			else /etc/init.d/sshd restart
+	elif [[ -f /etc/init.d/ssh ]]
+		then /etc/init.d/ssh restart
+		else /etc/init.d/sshd restart
 	fi
 fi
 
@@ -40,31 +40,50 @@ if [[ ! $(grep '# added by autoscript' /etc/sysctl.conf) ]]; then  # Check if th
 	echo 'net.ipv4.tcp_timestamps=1'               >> /etc/sysctl.conf  # Enable timestamps
 	echo 'net.ipv4.tcp_sack=1'                     >> /etc/sysctl.conf  # Enable select acknowledgments
 	echo 'net.core.netdev_max_backlog=5000'        >> /etc/sysctl.conf  # Maximum number of packets, queued on INPUT
-	sysctl -p
+	sysctl -p  # Put changes into effect
 fi
 
-if [[ "$http" = 'apache'   ]]; then
-	[[ -d /etc/rc.d/ ]] && /etc/rc.d/httpd restart ||
-		/etc/init.d/apache2 restart
-elif [[ "$http" = 'lighttp'  ]]; then
-	[[ -d /etc/rc.d/ ]] && /etc/rc.d/lighttpd restart ||
-		/etc/init.d/lighttpd restart
+if [[ "$http" = 'apache' ]]; then  # Restart webserver
+	[[ -d /etc/rc.d/ ]] &&
+		/etc/rc.d/httpd restart || /etc/init.d/apache2 restart
+elif [[ "$http" = 'lighttp' ]]; then
+	[[ -d /etc/rc.d/ ]] &&
+		/etc/rc.d/lighttpd restart || /etc/init.d/lighttpd restart
 elif [[ "$http" = 'cherokee' ]]; then
 	notice "Run  sudo cherokee-admin -b  to configure Cherokee."
 fi
 
-if [[ "$sql" = 'mysql' ]]; then
+if [[ $ftpd = 'vsftp' ]]; then  # Restart ftpserver
 	[[ -d /etc/rc.d/ ]] &&
-		/etc/rc.d/mysqld restart ||
-		/etc/init.d/mysql restart
+		/etc/rc.d/vsftpd restart || /etc/init.d/vsftpd restart
+elif [[ $ftpd = 'proftp' ]]; then
+	[[ -d /etc/rc.d/ ]] &&
+		/etc/rc.d/proftpd restart || /etc/init.d/proftpd restart
+elif [[ $ftpd = 'pureftp' ]]; then
+	[[ -d /etc/rc.d/ ]] &&
+		/etc/rc.d/pure-ftpd restart || /etc/init.d/pure-ftpd restart
+fi
+
+if [[ "$sql" = 'mysql' ]]; then  # Restart sqlserver
+	[[ -d /etc/rc.d/ ]] &&
+		/etc/rc.d/mysqld restart || /etc/init.d/mysql restart
 elif [[ "$sql" = 'postgre' ]]; then post_ver=8.4  # This needs to change per version
 	[[ "$NAME" = 'lenny' ]] && post_ver=8.3
 	[[ "$DISTRO" = @(ARCH|[Aa]rch)* ]] && post_ver=9.0
 	post_conf=/etc/postgresql/${post_ver}/main/postgresql.conf
 	sed -i "s:#autovacuum .*:autovacuum = on:"     $post_conf
 	sed -i "s:#track_counts .*:track_counts = on:" $post_conf
-	[[ -d /etc/rc.d/ ]] && /etc/rc.d/postgresql restart ||
-		/etc/init.d/postgresql-${post_ver} restart
+	[[ -d /etc/rc.d/ ]]
+		&& /etc/rc.d/postgresql restart || /etc/init.d/postgresql-${post_ver} restart
+fi
+
+if [[ $fail2ban = 'y' ]]; then
+		echo -n "Restarting fail2ban..."
+		killall -q -15 fail2ban-server ; sleep 2
+		if [[ -e /var/run/fail2ban/fail2ban.sock ]]; then
+			rm /var/run/fail2ban/fail2ban.sock
+			/etc/init.d/fail2ban start
+		fi ; echo " done"
 fi
 
 #[ Add Some Useful Command Alias' ]#
@@ -82,7 +101,7 @@ if [[ -f $HOME/.bashrc && ! $(grep '# added by autoscript' $HOME/.bashrc) ]]; th
 	fi
 fi
 
-if [[ "$torrent" = 'rtorrent' ]]; then
+if [[ "$torrent" = 'rtorrent' ]]; then  # Start rtorrent
 	echo ; read -p "Start rtorrent now? [y/n]: " start_rt
 	if [[ "$start_rt" = 'y' ]]; then
 		mkdir -p ${HOME}/.dtach ; rm -f ${HOME}/.dtach/rtorrent
