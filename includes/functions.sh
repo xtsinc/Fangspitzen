@@ -62,7 +62,6 @@ checkout() {  # increase verbosity
 cleanup() {  # remove tmp folder and restore permissions
 	cd "$BASE" && rm --recursive --force tmp
 	chown -R "$USER:$USER" "$BASE"
-	log "Removed tmp/ folder"
 }
 
 clear_logfile() {  # clear the logfile
@@ -121,8 +120,8 @@ extract() {  # find type of compression and extract accordingly
 if_error() {  # call this to catch a bad return code and log the error
 	if [[ "$E_" != 0 && "$E_" != 100 ]]; then
 		echo -e " Error:${bldred} $1 ${rst}($E_)"
-		log "Error: $1 (ERR $E_)"
-		cleanup ; exit 1
+		log "Error: $1 (ERR $E_)\n<--------------------------------->\n"
+		cleanup ; exit $E_
 	fi
 }
 
@@ -197,7 +196,8 @@ packages() {  # use appropriate package manager depending on distro
 	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
 		case "$1" in
 			clean  ) powerpill --sync --clean -c --noconfirm ; echo
-					 pacman-optimize >/dev/null                                      ;;
+					 if [[ ! $(grep '*** SCRiPT COMPLETED' $LOG) ]]; then
+					 	pacman-optimize >/dev/null ;fi                               ;;
 			install) shift; powerpill --sync --noconfirm --needed $@ 2>> $LOG ;E_=$? ;;
 			remove ) shift; powerpill --remove $@ 2>> $LOG; E_=$?                    ;;
 			update ) pacman --sync --refresh 2>> $LOG                                ;;
@@ -300,7 +300,7 @@ runchecks() {
 
 	LOG=$BASE/logs/installer.log
 	mkdir --parents logs/ ; touch $LOG
-	log "runchecks() completed" ; sleep 1
+	sleep 1
 }
 
 spanner() {
@@ -371,7 +371,6 @@ if [[ "$OS" = "Linux" ]] ; then
 	else error "Unsupported OS"
 fi
 	echo -e "[${bldylw} done ${rst}]"
-	log "init() completed"
 	sleep 1
 }
 
