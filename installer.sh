@@ -216,6 +216,7 @@ elif [[ $http = 'cherokee' ]]; then
 	PHPini=/etc/php5/cgi/php.ini
 	log "Cherokee Installation | Completed" ; debug_wait "cherokee.installed"
 
+##[ PHP ]##
 elif [[ $http != @(none|no|[Nn]) ]]; then  # Edit php config
 	sed -i 's:memory_limit .*:memory_limit = 128M:'                                    $PHPini
 	sed -i 's:error_reporting .*:error_reporting = E_ALL & ~E_DEPRECATED & ~E_NOTICE:' $PHPini
@@ -223,8 +224,8 @@ elif [[ $http != @(none|no|[Nn]) ]]; then  # Edit php config
 	sed -i 's:display_errors = On:display_errors = Off:'                               $PHPini
 	sed -i 's:log_errors = Off:log_errors = On:'                                       $PHPini
 	sed -i 's:;error_log .*:error_log = /var/log/php-error.log:'                       $PHPini
-	[[ $infophp = 'y' ]] &&
-		echo "<?php phpinfo(); ?>" > $WEB/info.php  # Create phpinfo file
+	touch $WEB/favicon.ico
+	[[ $create_phpinfo = 'y' ]] && echo "<?php phpinfo(); ?>" > $WEB/info.php  # Create phpinfo file
 fi
 
 ##[ vsFTP ]##
