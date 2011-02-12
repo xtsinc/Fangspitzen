@@ -61,7 +61,8 @@ checkout() {  # increase verbosity
 
 cleanup() {  # remove tmp folder and restore permissions
 	cd "$BASE" && rm --recursive --force tmp
-	chown -R "$USER:$USER" "$BASE"
+	GROUP=$(grep "$(id -g "$USER")" /etc/group | cut -d: -f1)
+	chown -R "$USER:$GROUP" "$BASE"
 }
 
 clear_logfile() {  # clear the logfile
