@@ -1,19 +1,4 @@
 ##!=======================>> FUNCTiONS <<=======================!##
-base_configure() {  # do this before base_install()
-ARCHLINUX_PRE="perl-crypt-ssleay powerpill yaourt"
-
-	case "$DISTRO" in
-		# [uU]buntu|[Dd]ebian|*Mint) ;;
-		# SUSE*|[Ss]use* ) ;;
-		ARCH*|[Aa]rch* ) echo -en "${bldred} CONFiGURiNG PACKAGE MANAGER...${rst}"
-						 pacman --sync --noconfirm $ARCHLINUX_PRE --needed 2>> $LOG ; E_=$?
-						 sed -i "s:#USECOLOR=.*:USERCOLOR=1:"                       /etc/yaourtrc        # use color
-						 sed -i "s:[#]*PACMAN=.*:PACMAN=powerpill:"                 /etc/yaourtrc        # tell yaourt to use powerpill
-						 echo -e "${bldylw} done${rst}\n" ;;
-	esac
-	log "Base Configuration | Completed"
-}
-
 base_install() {  # install dependencies
 COMMON="apache2-utils autoconf automake binutils bzip2 ca-certificates cpp curl file gamin gcc git-core gzip htop iptables libexpat1 libtool libxml2 m4 make openssl patch perl pkg-config python python-gamin python-openssl python-setuptools rsync screen subversion sudo unrar unzip zip"
 DYNAMIC="libcurl3 libcurl3-gnutls libcurl4-openssl-dev libncurses5 libncurses5-dev libsigc++-2.0-dev"
@@ -43,6 +28,22 @@ PHP_ARCHLINUX="php php-curl"
 	if_error "Required system packages failed to install"
 	log "Base Installation | Completed"
 	echo -e "${bldylw} done${rst}"
+}
+
+base_configure() {  # do this before base_install ^
+ARCHLINUX_PRE="perl-crypt-ssleay powerpill yaourt"
+
+	case "$DISTRO" in
+		# [uU]buntu|[Dd]ebian|*Mint) ;;
+		# SUSE*|[Ss]use* ) ;;
+		ARCH*|[Aa]rch* ) echo -en "${bldred} CONFiGURiNG PACKAGE MANAGER...${rst}"
+						 [[ "$DEBUG" = 0 ]] && quiet=">/dev/null" || quiet=
+						 pacman --sync --noconfirm $ARCHLINUX_PRE --needed 2>> $LOG $quiet ;E_=$?
+						 sed -i "s:#USECOLOR=.*:USERCOLOR=1:"                       /etc/yaourtrc        # use color
+						 sed -i "s:[#]*PACMAN=.*:PACMAN=powerpill:"                 /etc/yaourtrc        # tell yaourt to use powerpill
+						 echo -e "${bldylw} done${rst}\n" ;;
+	esac
+	log "Base Configuration | Completed"
 }
 
 archlinux_add_module() {
@@ -121,7 +122,7 @@ extract() {  # find type of compression and extract accordingly
 if_error() {  # call this to catch a bad return code and log the error
 	if [[ "$E_" != 0 && "$E_" != 100 ]]; then
 		echo -e " Error:${bldred} $1 ${rst}($E_)"
-		log "Error: $1 ($E_)"
+		log "Error: $1 (ERR $E_)"
 		cleanup ; exit 1
 	fi
 }
@@ -195,14 +196,14 @@ packages() {  # use appropriate package manager depending on distro
 				alias_upgrade="sudo apt-get upgrade" ;;
 		esac
 	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
-		[[ "$DEBUG" = 0 ]] && quiet=">/dev/null" || quiet=
+		[[ "$DEBUG" = 0 ]] && quiet="/dev/null" || quiet=
 		case "$1" in
-			clean  ) powerpill --sync --clean -c --noconfirm $quiet; pacman-optimize $quiet ;;
-			install) shift; powerpill --sync --noconfirm --needed $@ 2>> $LOG $quiet; E_=$? ;;
-			remove ) shift; powerpill --remove $@ 2>> $LOG; E_=$?                           ;;
-			update ) pacman --sync --refresh 2>> $LOG $quiet                                ;;
-			upgrade) powerpill --sync --refresh --sysupgrade --noconfirm 2>> $LOG $quiet    ;;
-			version) powerpill -Si $2 | grep Version                                        ;;
+			clean  ) powerpill --sync --clean -c --noconfirm >$quiet; pacman-optimize >$quiet ;;
+			install) shift; powerpill --sync --noconfirm --needed $@ 2>> $LOG >$quiet; E_=$?  ;;
+			remove ) shift; powerpill --remove $@ 2>> $LOG; E_=$?                             ;;
+			update ) pacman --sync --refresh 2>> $LOG >$quiet                                 ;;
+			upgrade) powerpill --sync --refresh --sysupgrade --noconfirm 2>> $LOG >$quiet     ;;
+			version) powerpill -Si $2 | grep Version                                          ;;
 			setvars)
 				REPO_PATH=/etc/pacman.conf
 				WEB=/srv/http
