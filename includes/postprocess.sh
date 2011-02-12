@@ -73,8 +73,8 @@ elif [[ "$sql" = 'postgre' ]]; then post_ver=8.4  # This needs to change per ver
 	post_conf=/etc/postgresql/${post_ver}/main/postgresql.conf
 	sed -i "s:#autovacuum .*:autovacuum = on:"     $post_conf
 	sed -i "s:#track_counts .*:track_counts = on:" $post_conf
-	[[ -d /etc/rc.d/ ]]
-		&& /etc/rc.d/postgresql restart || /etc/init.d/postgresql-${post_ver} restart
+	[[ -d /etc/rc.d/ ]] &&
+		/etc/rc.d/postgresql restart || /etc/init.d/postgresql-${post_ver} restart
 fi
 
 if [[ $fail2ban = 'y' ]]; then
