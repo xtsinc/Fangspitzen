@@ -126,12 +126,19 @@ if_error() {  # call this to catch a bad return code and log the error
 	fi
 }
 
-is_running() {  # check if a program is running or not
-	# $1 = the user
-	# $2 = the program
-	if [[ ! -z $(pgrep -u $1 $2) ]]
-		then return 0 # is NOT running
-		else return 1 # IS running
+is_installed() {  # check if a program is installed
+	# $1 = program
+	# 0 = IS running  1 = is NOT running
+	[[ $(type -P "$1") ]] && return 0 || return 1
+}
+
+is_running() {  # check if a program is running
+	# $1 = program  $2 = user (optional)
+	# 0 = IS running  1 = is NOT running
+	if [[ "$#" = 1 ]]; then
+		[[ ! -z $(pgrep "$1") ]] && return 0 ||  return 1
+	elif [[ "$#" = 2 ]]; then
+		[[ ! -z $(pgrep -u "$2" "$1") ]] && return 0 || return 1
 	fi
 }
 
