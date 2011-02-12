@@ -37,8 +37,7 @@ ARCHLINUX_PRE="perl-crypt-ssleay powerpill yaourt"
 		# [uU]buntu|[Dd]ebian|*Mint) ;;
 		# SUSE*|[Ss]use* ) ;;
 		ARCH*|[Aa]rch* ) echo -en "${bldred} CONFiGURiNG PACKAGE MANAGER...${rst}"
-						 [[ "$DEBUG" = 0 ]] && quiet="/dev/null" || quiet=
-						 pacman --sync --noconfirm $ARCHLINUX_PRE --needed 2>> $LOG >$quiet ; E_=$?
+						 pacman --sync --noconfirm $ARCHLINUX_PRE --needed 2>> $LOG >/dev/null ;E_=$?
 						 sed -i "s:#USECOLOR=.*:USERCOLOR=1:"                       /etc/yaourtrc        # use color
 						 sed -i "s:[#]*PACMAN=.*:PACMAN=powerpill:"                 /etc/yaourtrc        # tell yaourt to use powerpill
 						 echo -e "${bldylw} done${rst}\n" ;;
@@ -196,15 +195,14 @@ packages() {  # use appropriate package manager depending on distro
 				alias_upgrade="sudo apt-get upgrade" ;;
 		esac
 	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
-		[[ "$DEBUG" = 0 ]] && quiet="/dev/null" || quiet=
 		case "$1" in
-			clean  ) powerpill --sync --clean -c --noconfirm >$quiet ; echo
-					 pacman-optimize >/dev/null                                              ;;
-			install) shift; powerpill --sync --noconfirm --needed $@ 2>> $LOG >$quiet; E_=$? ;;
-			remove ) shift; powerpill --remove $@ 2>> $LOG; E_=$?                            ;;
-			update ) pacman --sync --refresh 2>> $LOG >$quiet                                ;;
-			upgrade) powerpill --sync --refresh --sysupgrade --noconfirm 2>> $LOG >$quiet    ;;
-			version) powerpill -Si $2 | grep Version                                         ;;
+			clean  ) powerpill --sync --clean -c --noconfirm ; echo
+					 pacman-optimize >/dev/null                                      ;;
+			install) shift; powerpill --sync --noconfirm --needed $@ 2>> $LOG ;E_=$? ;;
+			remove ) shift; powerpill --remove $@ 2>> $LOG; E_=$?                    ;;
+			update ) pacman --sync --refresh 2>> $LOG                                ;;
+			upgrade) powerpill --sync --refresh --sysupgrade --noconfirm 2>> $LOG    ;;
+			version) powerpill -Si $2 | grep Version                                 ;;
 			setvars)
 				REPO_PATH=/etc/pacman.conf
 				WEB=/srv/http
