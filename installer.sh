@@ -241,15 +241,19 @@ if [[ $ftpd = 'vsftp' ]]; then
 	sed -i 's:#idle_session_timeout.*:idle_session_timeout=600:' /etc/vsftpd.conf
 	sed -i 's:#nopriv_user.*:nopriv_user=ftp:'                   /etc/vsftpd.conf
 	sed -i 's:#chroot_local_user.*:chroot_local_user=YES:'       /etc/vsftpd.conf
+	
+	if [[ -f /etc/ssl/private/vsftpd.pem ]]; then
+		mksslcert "/etc/ssl/private/vsftpd.pem"
+		if [[ ! $(grep 'rsa_cert_file' /etc/vsftpd.conf) ]]
+			then echo "rsa_cert_file=/etc/ssl/private/vsftpd.pem"                   >> /etc/vsftpd.conf
+			else sed -i ":rsa_cert_file=.*:rsa_cert_file=/etc/ssl/private/vsftpd.pem:" /etc/vsftpd.conf
+		fi
+	fi
 
 	if [[ ! $(grep '# added by autoscript' /etc/vsftpd.conf) ]]; then  # Check if this has already been done
-		if [[ -f /etc/ssl/private/vsftpd.pem ]]; then
-			mksslcert "/etc/ssl/private/vsftpd.pem"
-		fi
 		echo "# added by autoscript"     >> /etc/vsftpd.conf
 		echo "force_local_logins_ssl=NO" >> /etc/vsftpd.conf
 		echo "force_local_data_ssl=NO"   >> /etc/vsftpd.conf
-		sed -i ":rsa_cert_file=.*:rsa_cert_file=/etc/ssl/private/vsftpd.pem:" /etc/vsftpd.conf
 		echo "ssl_enable=YES" >> /etc/vsftpd.conf
 		echo "ssl_tlsv1=YES"  >> /etc/vsftpd.conf
 		echo "ssl_sslv2=NO"   >> /etc/vsftpd.conf

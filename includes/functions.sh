@@ -127,7 +127,7 @@ if_error() {  # call this to catch a bad return code and log the error
 
 is_installed() {  # check if a program is installed
 	# $1 = program
-	# 0 = IS running  1 = is NOT running
+	# 0 = IS installed  1 = is NOT installed
 	[[ $(type -P "$1") ]] && return 0 || return 1
 }
 
