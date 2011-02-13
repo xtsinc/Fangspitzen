@@ -376,7 +376,10 @@ fi
 }
 
 ##[ VARiABLE iNiT ]##
-CORES=$(grep -c ^processor /proc/cpuinfo)
+if [[ $OVERWRITE_THREAD_COUNT ]]
+	then CORES="$OVERWRITE_THREAD_COUNT"
+	else CORES=$(grep -c ^processor /proc/cpuinfo)
+fi
 SSLCERT=/usr/share/ssl-cert/ssleay.cnf
 MKSSLCERT_RUN=1
 iFACE=eth0
