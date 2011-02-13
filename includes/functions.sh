@@ -331,8 +331,9 @@ spinner() {
 usage() {  # help screen
 	echo -e "\n${bldpur} Usage:${bldred} "$0" ${bldpur}[${bldred}option${bldpur}]"
 	echo -e " Options:"
-	echo -e " ${bldred}  -p,  --pass ${bldpur}[${bldred}length${bldpur}] ${bldylw}   Generate a strong password"
-	echo -e " ${bldred}  -v,  --version ${bldylw}         Show version number\n ${rst}"
+	echo -e " ${bldred}  -p,  --pass    ${bldpur}(length) ${bldylw} Generate a strong password of 'x' length"
+	echo -e " ${bldred}  -t,  --threads ${bldpur}(num) ${bldylw}    Number of threads to create when using 'make'"
+	echo -e " ${bldred}  -v,  --version ${bldylw}          Show date and version number \n ${rst}"
 	exit 1
 }
 

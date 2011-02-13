@@ -24,11 +24,12 @@ source includes/functions.sh || error "while loading functions.sh"  # Source in 
 ##[ Check command line switches ]##
 while [ "$#" -gt 0 ]; do
   	case "$1" in
-		-p|--pass)  # Generate strong random 'user defined length' passwords
-			if [[ "$2" ]]
-				then passwdlength="$2" && mkpass; shift
-				else error "Specify Length --pass x "; fi ;;
-		-t|--threads) declare -i OVERWRITE_THREAD_COUNT="$2"; shift ;;
+		-p|--pass) if [[ "$2" ]]
+			then passwdlength="$2" && mkpass; shift
+			else error "Specify Length --pass x "; fi ;;
+		-t|--threads) if [[ "$2" ]]
+			then declare -i OVERWRITE_THREAD_COUNT="$2"; shift 
+			else error "Specify num of threads --threads x "; fi ;;
 		-v|--version) echo -e "\n v$VERSION  $DATE \n"; exit ;;
 		-h|--help) usage ;;
 	esac
