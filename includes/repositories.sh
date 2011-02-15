@@ -66,7 +66,7 @@ elif [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]; then
 else
 	error "Failed to add repositories to unknown distro... exiting (${DISTRO})"
 fi
-echo $(date) > $BASE/logs/repos.installed
+echo $(date) > $BASE/.repos.installed
 
 ##!=====================>> PUBLiC KEYS <<========================!##
 if [[ "$DISTRO" = @([uU]buntu|[dD]ebian|*Mint) ]]; then  # Add signing keys

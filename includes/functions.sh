@@ -84,7 +84,7 @@ ctrl_c() {  # interrupt trap
 }
 
 debug_wait() {  # prints a message and wait for user before continuing
-	if [[ "$DEBUG" = '1' ]]; then
+	if [[ "$DEBUG" = '1' || "$2" = 'force' ]]; then
 		echo -e "${bldpur} DEBUG: $1"
 		echo -en "${bldpur} Press Enter...${rst}"
 		read ENTER
@@ -121,7 +121,7 @@ extract() {  # find type of compression and extract accordingly
 if_error() {  # call this to catch a bad return code and log the error
 	if [[ "$E_" != 0 && "$E_" != 100 ]]; then
 		echo -e " Error:${bldred} $1 ${rst}($E_)"
-		log "Error: $1 (ERR $E_)\n<--------------------------------->\n"
+		log "Error: $1 (Error $E_)\n<--------------------------------->\n"
 		cleanup ; exit $E_
 	fi
 }

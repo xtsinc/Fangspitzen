@@ -62,19 +62,14 @@ ${bldylw}       (@${bldgrn}           '--------'
   not likely. If you do run into problems, please let us know so we can
   fix it.
 
-  You can update your system along with installing those \"must have\"
-  programs by simply running this script with the --dry option (beta).
+      Supported:                InProgress:
+        Ubuntu                    OpenSUSE
+        Debian                    ArchLinux
 
-    Supported:                InProgress:
-      Ubuntu 9.04 -> 10.10      OpenSUSE 11.3
-      Debian 5.0  ->  6.0       ArchLinux
-
-  If your OS is not listed, this script will most likey explode.
-${rst}"
-
-echo -e " ${undred}_______________________${rst}"
-echo -e " Distro:${bldylw} $DISTRO $RELEASE ${rst}"
-echo -e " Kernel:${bldylw} $KERNEL${rst}-${bldylw}$ARCH ${rst}"
+  If your OS is not listed, this script will most likey explode.${rst}"
+echo -e " ${undred}___________________________________________${rst}"
+echo -e "  Distro:${bldylw} $DISTRO $RELEASE ${rst}"
+echo -e "  Kernel:${bldylw} $KERNEL${rst}-${bldylw}$ARCH ${rst}"
 
 echo -en "\n Continue? [y/n]: "
 	if ! yes ;then
@@ -84,7 +79,7 @@ echo -en "\n Continue? [y/n]: "
 fi  # end `if ! $LOG`
 log "\n*** SCRiPT STARTiNG | $(date) ***"
 
-if [[ ! -f $BASE/logs/repos.installed ]]; then  # Add repositories if not already present
+if [[ ! -f $BASE/.repos.installed ]]; then  # Add repositories if not already present
 	source $BASE/includes/repositories.sh || error "while loading repositories.sh"
 else log "Repositories Already Present, skipping"
 fi
@@ -335,9 +330,9 @@ elif [[ $ftpd = 'pureftp' ]]; then
 	log "PureFTP Installation | Completed" ; debug_wait "pureftp.installed"
 fi
 
+cd ${BASE}/tmp
 if [[ $buildtorrent = 'b' ]]; then
 #-->##[ BuildTorrent ]##
-cd ${BASE}/tmp
 	notice "iNSTALLiNG BuildTorrent"
 	if [[ ! -d buildtorrent ]]; then  # Checkout latest BuildTorrent source
 		git clone -q git://gitorious.org/buildtorrent/buildtorrent.git ; E_=$?
