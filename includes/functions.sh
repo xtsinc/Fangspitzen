@@ -1,12 +1,12 @@
 ##!=======================>> FUNCTiONS <<=======================!##
 base_install() {  # install dependencies
-COMMON="apache2-utils autoconf automake axel binutils bzip2 ca-certificates cpp curl file gamin gcc git-core gzip htop iptables libexpat1 libtool libxml2 m4 make openssl patch perl pkg-config python python-gamin python-openssl python-setuptools rsync screen subversion sudo unrar unzip zip"
+COMMON="apache2-utils autoconf automake axel binutils bzip2 ca-certificates cpp curl file gamin gcc git-core gzip htop iptables libexpat1 libtool libxml2 m4 make openssl patch perl pkg-config python python-gamin python-openssl python-setuptools rsync screen subversion sudo unrar unzip"
 DYNAMIC="libcurl3 libcurl3-gnutls libcurl4-openssl-dev libncurses5 libncurses5-dev libsigc++-2.0-dev"
 
 DEBIAN="$COMMON $DYNAMIC aptitude autotools-dev build-essential cfv comerr-dev dtach g++ libcppunit-dev libperl-dev libssl-dev libterm-readline-gnu-perl libtorrent-rasterbar-dev ncurses-base ncurses-bin ncurses-term perl-modules ssl-cert"
 SUSE="$COMMON libcppunit-devel libcurl-devel libopenssl-devel libtorrent-rasterbar-devel gcc-c++ ncurses-devel libncurses6 libsigc++2-devel"
 
-ARCHLINUX="axel base-devel binutils cppunit curl dtach freetype2 geoip libsigc++ libmcrypt libxslt ncurses openssl perl perl-digest-sha1 perl-json perl-json-xs perl-xml-libxslt perl-net-ssleay pcre popt rsync subversion sudo t1lib unrar unzip"
+ARCHLINUX="axel base-devel binutils cppunit curl dtach freetype2 geoip libsigc++ libmcrypt libxslt ncurses openssl perl perl-digest-sha1 perl-json perl-json-xs perl-xml-libxslt perl-net-ssleay pcre popt rar-beta rsync subversion sudo t1lib unzip"
 
 PHP_COMMON="php5-curl php5-gd php5-mcrypt php5-mysql php5-suhosin php5-xmlrpc"
 
@@ -31,16 +31,17 @@ PHP_ARCHLINUX="php php-curl"
 }
 
 base_configure() {  # do this before base_install ^
-ARCHLINUX_PRE="perl-crypt-ssleay powerpill yaourt"
-
 	case "$DISTRO" in
 		# [uU]buntu|[Dd]ebian|*Mint) ;;
 		# SUSE*|[Ss]use* ) ;;
-		ARCH*|[Aa]rch* ) echo -en "${bldred} CONFiGURiNG PACKAGE MANAGER...${rst}"
-						 pacman --sync --noconfirm $ARCHLINUX_PRE --needed 2>> $LOG >/dev/null ;E_=$?
-						 sed -i "s:#USECOLOR=.*:USERCOLOR=1:"                       /etc/yaourtrc        # use color
-						 sed -i "s:[#]*PACMAN=.*:PACMAN=powerpill:"                 /etc/yaourtrc        # tell yaourt to use powerpill
-						 echo -e "${bldylw} done${rst}\n" ;;
+		ARCH*|[Aa]rch* ) echo -en "${bldred} iNSTALLiNG CLYDE...${rst}"
+						 cd $BASE/tmp
+						 download http://aur.archlinux.org/packages/clyde-git/clyde-git.tar.gz
+						 extract clyde-git.tar.gz && cd clyde-git
+						 makepkg -si --noconfirm && cd $BASE
+						 cp modules/archlinux/clyde.conf /etc/clyde.conf
+						 sed -i "s;BuildUser .*;BuildUser = $USER;" /etc/clyde.conf
+						 echo -e "${bldylw} DONE${rst}\n" ;;
 	esac
 	log "Base Configuration | Completed"
 }
@@ -196,24 +197,24 @@ packages() {  # use appropriate package manager depending on distro
 		esac
 	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
 		case "$1" in
-			clean  ) powerpill --sync --clean -c --noconfirm ; echo
+			clean  ) clyde --sync --clean --noconfirm ; echo
 					 if [[ ! $(grep '*** SCRiPT COMPLETED' $LOG) ]]; then
-					 	pacman-optimize >/dev/null ;fi                               ;;
-			install) shift; powerpill --sync --noconfirm --needed $@ 2>> $LOG ;E_=$? ;;
-			remove ) shift; powerpill --remove $@ 2>> $LOG; E_=$?                    ;;
-			update ) pacman --sync --refresh 2>> $LOG                                ;;
-			upgrade) powerpill --sync --refresh --sysupgrade --noconfirm 2>> $LOG    ;;
-			version) powerpill -Si $2 | grep Version                                 ;;
+					 	pacman-optimize >/dev/null ;fi                           ;;
+			install) shift; clyde --sync --noconfirm --needed $@ 2>> $LOG ;E_=$? ;;
+			remove ) shift; clyde --remove --unneeded $@ 2>> $LOG; E_=$?         ;;
+			update ) clyde --sync --refresh 2>> $LOG                             ;;
+			upgrade) clyde --sync --refresh --sysupgrade --noconfirm 2>> $LOG    ;;
+			version) clyde --sync --info $2 | grep Version                       ;;
 			setvars)
-				REPO_PATH=/etc/pacman.conf
+				REPO_PATH=/etc/clyde.conf
 				WEB=/srv/http
 				WEBUSER='http'
 				WEBGROUP='http'
-				alias_autoclean="sudo powerpill -Scc"
-				alias_install="sudo powerpill -S"
-				alias_remove="sudo powerpill -R"
-				alias_update="sudo powerpill -Sy"
-				alias_upgrade="sudo powerpill -Syu" ;;
+				alias_autoclean="sudo clyde -Sc"
+				alias_install="sudo clyde -S --needed"
+				alias_remove="sudo clyde -R"
+				alias_update="sudo clyde -Sy"
+				alias_upgrade="sudo clyde -Syu" ;;
 		esac
 	elif [[ $DISTRO = @(SUSE|[Ss]use)* ]]; then
 		[[ "$DEBUG" = 0 ]] && quiet="--quiet" || quiet=

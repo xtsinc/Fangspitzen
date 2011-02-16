@@ -358,7 +358,7 @@ if [[ $ipblock = 'y' ]]; then
 	elif [[ $DISTRO = @(SUSE|[Ss]use)* ]]; then
 		packages install iplist libpcre0 libnfnetlink0 libnetfilter-queue1
 	elif [[ $DISTRO = @(ARCH|[Aa]rch)* ]]; then
-		yaourt -S --noconfirm iplist libnetfilter_queue libnfnetlink
+		packages install iplist libnetfilter_queue libnfnetlink
 		echo "/etc/rc.d/iplist start" >> /etc/rc.local
 	fi
 	if_error "iPBLOCK failed to install"
@@ -389,7 +389,7 @@ if [[ $virtualbox = 'y' ]]; then  # TODO
 	elif [[ $DISTRO = @(SUSE|[Ss]use)* ]]; then
 		packages install  # TODO
 	elif [[ $DISTRO = @(ARCH|[Aa]rch)* ]]; then
-		yaourt -S --noconfirm kernel26-headers virtualbox virtualbox-ext-oracle
+		packages install kernel26-headers virtualbox virtualbox-ext-oracle
 		gpasswd -a $USER vboxusers
 		/etc/rc.d/vboxdrv setup  # Build kernel modules
 		modprobe vboxdrv && archlinux_add_module "vboxdrv"
@@ -412,7 +412,7 @@ if [[ $phpvirtualbox = 'y' ]]; then  # TODO
 	#elif [[ $DISTRO = @(SUSE|[Ss]use)* ]]; then
 	#	packages install
 	#elif [[ $DISTRO = @(ARCH|[Aa]rch)* ]]; then
-	#	yaourt -S --noconfirm phpvirtualbox
+	#	packages install phpvirtualbox
 	#	sed -i "s:;extension=json.so:extension=json.so:" /etc/php/php.ini
 	#	sed -i "s:;extension=soap.so:extension=soap.so:" /etc/php/php.ini
 	#fi
