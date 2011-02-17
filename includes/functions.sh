@@ -36,9 +36,9 @@ base_configure() {  # do this before base_install ^
 		# SUSE*|[Ss]use* ) ;;
 		ARCH*|[Aa]rch* ) echo -en "${bldred} iNSTALLiNG CLYDE...${rst}"
 						 cd $BASE/tmp
-						 download http://aur.archlinux.org/packages/clyde-git/clyde-git.tar.gz
+						 wget -q http://aur.archlinux.org/packages/clyde-git/clyde-git.tar.gz
 						 extract clyde-git.tar.gz && cd clyde-git
-						 makepkg -si --noconfirm && cd $BASE
+						 makepkg -si --asroot --noconfirm && cd $BASE
 						 cp modules/archlinux/clyde.conf /etc/clyde.conf
 						 sed -i "s;BuildUser .*;BuildUser = $USER;" /etc/clyde.conf
 						 echo -e "${bldylw} DONE${rst}\n" ;;
