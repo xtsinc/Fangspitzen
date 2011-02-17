@@ -19,8 +19,8 @@ PHP_ARCHLINUX="php php-curl"
 		[uU]buntu|[Dd]ebian|*Mint) packages install $DEBIAN ;;
 		ARCH*|[Aa]rch* ) packages install $ARCHLINUX        ;;
 		SUSE*|[Ss]use* ) packages install $SUSE
-						 if [[ ! -f /usr/bin/dtach ]]; then
-							cd ${BASE}/tmp
+						 if ! is_installed "dtach"
+							then cd ${BASE}/tmp
 							download http://sourceforge.net/projects/dtach/files/dtach/0.8/dtach-0.8.tar.gz && extract dtach-0.8.tar.gz
 							cd dtach-0.8 && sh configure && make && cp dtach /usr/bin
 						 fi ;;
@@ -34,7 +34,8 @@ base_configure() {  # do this before base_install ^
 	case "$DISTRO" in
 		# [uU]buntu|[Dd]ebian|*Mint) ;;
 		# SUSE*|[Ss]use* ) ;;
-		ARCH*|[Aa]rch* ) if ! is_installed "clyde"
+		ARCH*|[Aa]rch* ) sed -i "s;#MAKEFLAGS=.*;MAKEFLAGS=\"-j$(($(grep -c ^processor /proc/cpuinfo) + 1))\";" /etc/makepkg.conf
+						 if ! is_installed "clyde"
 						 then echo -en "${bldred} iNSTALLiNG CLYDE...${rst}"
 						 	cd $BASE/tmp
 						 	wget -q http://aur.archlinux.org/packages/clyde-git/clyde-git.tar.gz
