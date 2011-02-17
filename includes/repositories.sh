@@ -45,12 +45,12 @@ elif [[ "$DISTRO" = @(Debian|*Mint) ]]; then
 	echo "deb http://download.webmin.com/download/repository sarge contrib"       >> $REPO_PATH/autoinstaller.list  # Webmin
 	log "Repositories ADD | Success"
 
-elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
-	if [[ ! $(grep '\[archlinuxfr\]' $REPO_PATH) ]]  # Check if this has already been done
-		then echo -e '[archlinuxfr]\nServer = http://repo.archlinux.fr/$arch' >> $REPO_PATH
-		else log "Repository 'archlinuxfr' Already Present, skipping"
-	fi
-	log "Repositories ADD | Success"
+#elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
+#	if [[ ! $(grep '\[archlinuxfr\]' $REPO_PATH) ]]  # Check if this has already been done
+#		then echo -e '[archlinuxfr]\nServer = http://repo.archlinux.fr/$arch' >> $REPO_PATH
+#		else log "Repository 'archlinuxfr' Already Present, skipping"
+#	fi
+#	log "Repositories ADD | Success"
 
 elif [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]; then
 	packages addrepo http://download.opensuse.org/repositories/openSUSE:/11.3:/Contrib/standard/      "Contrib"
