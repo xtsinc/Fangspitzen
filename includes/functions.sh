@@ -34,14 +34,16 @@ base_configure() {  # do this before base_install ^
 	case "$DISTRO" in
 		# [uU]buntu|[Dd]ebian|*Mint) ;;
 		# SUSE*|[Ss]use* ) ;;
-		ARCH*|[Aa]rch* ) echo -en "${bldred} iNSTALLiNG CLYDE...${rst}"
-						 cd $BASE/tmp
-						 wget -q http://aur.archlinux.org/packages/clyde-git/clyde-git.tar.gz
-						 extract clyde-git.tar.gz && cd clyde-git
-						 makepkg -si --asroot --noconfirm && cd $BASE
-						 cp modules/archlinux/clyde.conf /etc/clyde.conf
-						 sed -i "s;BuildUser .*;BuildUser = $USER;" /etc/clyde.conf
-						 echo -e "${bldylw} DONE${rst}\n" ;;
+		ARCH*|[Aa]rch* ) if ! is_installed "clyde"
+						 then echo -en "${bldred} iNSTALLiNG CLYDE...${rst}"
+						 	cd $BASE/tmp
+						 	wget -q http://aur.archlinux.org/packages/clyde-git/clyde-git.tar.gz
+						 	extract clyde-git.tar.gz && cd clyde-git
+						 	makepkg -si --asroot --noconfirm && cd $BASE
+						 	cp modules/archlinux/clyde.conf /etc/clyde.conf
+						 	sed -i "s;BuildUser .*;BuildUser = $USER;" /etc/clyde.conf
+						 echo -e "${bldylw} DONE${rst}\n"
+						 fi ;;
 	esac
 	log "Base Configuration | Completed"
 }
