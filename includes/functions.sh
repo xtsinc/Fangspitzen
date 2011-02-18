@@ -64,7 +64,7 @@ checkout() {  # increase verbosity
 }
 
 cleanup() {  # remove tmp folder and restore permissions
-	cd "$BASE" && rm --recursive --force tmp
+	[[ $DONT_RM_TMP = 1 ]] && cd "$BASE" && rm --recursive --force tmp
 	GROUP=$(grep "$(id -g "$USER")" /etc/group | cut -d: -f1)
 	chown -R "$USER:$GROUP" "$BASE"
 }

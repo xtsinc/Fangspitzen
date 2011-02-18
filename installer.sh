@@ -27,6 +27,7 @@ while [ "$#" -gt 0 ]; do
 		-p|--pass) if [[ "$2" ]]
 			then passwdlength="$2" && mkpass; shift
 			else error "Specify Length --pass x "; fi ;;
+		--save-tmp) DONT_RM_TMP=1; shift ;; 
 		-t|--threads) if [[ "$2" ]]
 			then declare -i OVERWRITE_THREAD_COUNT="$2"; shift 
 			else error "Specify num of threads --threads x "; fi ;;
