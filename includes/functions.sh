@@ -22,7 +22,8 @@ PHP_ARCHLINUX="php php-curl"
 						 if ! is_installed "dtach"
 							then cd ${BASE}/tmp
 							download http://sourceforge.net/projects/dtach/files/dtach/0.8/dtach-0.8.tar.gz && extract dtach-0.8.tar.gz
-							cd dtach-0.8 && sh configure && make && cp dtach /usr/bin
+							cd dtach-0.8
+							sh configure && make && install -m 755 dtach /usr/bin
 						 fi ;;
 	esac
 	if_error "Required system packages failed to install"
@@ -41,7 +42,7 @@ base_configure() {  # do this before base_install ^
 						 	wget -q http://aur.archlinux.org/packages/clyde-git/clyde-git.tar.gz
 						 	extract clyde-git.tar.gz && cd clyde-git
 						 	makepkg -si --asroot --noconfirm && cd $BASE
-						 	cp modules/archlinux/clyde.conf /etc/clyde.conf
+						 	install -m 644 modules/archlinux/clyde.conf /etc
 						 	sed -i "s;BuildUser .*;BuildUser = $USER;" /etc/clyde.conf
 						 echo -e "${bldylw} DONE${rst}\n"
 						 fi ;;

@@ -268,12 +268,12 @@ if [[ $vnstat = 'y' ]]; then
 	cd ..
 		log "VnStat Installation | Completed"
 	if [[ $DISTRO = @(ARCH|[Aa]rch)* && ! -f /etc/rc.d/vnstat ]]; then
-		cp vnstat-1.10/examples/init.d/arch/vnstat /etc/rc.d/                         # Copy init script if one doesnt exist
-		chmod a+x /etc/rc.d/vnstat && echo "/etc/rc.d/vnstat start" >> /etc/rc.local  # Start at boot
+		install -m 755 vnstat-1.10/examples/init.d/arch/vnstat /etc/rc.d/  # Copy init script if one doesnt exist
+		echo "/etc/rc.d/vnstat start" >> /etc/rc.local                     # Start at boot
 		log "VnStat | Created RC Script"
 	elif [[ ! -f /etc/init.d/vnstat ]]; then
-		cp vnstat-1.10/examples/init.d/debian/vnstat /etc/init.d/    # Copy init script if one doesnt exist
-		chmod a+x /etc/init.d/vnstat && update-rc.d vnstat defaults  # Start at boot
+		install -m 755 vnstat-1.10/examples/init.d/debian/vnstat /etc/init.d/  # Copy init script if one doesnt exist
+		update-rc.d vnstat defaults                                            # Start at boot
 		log "VnStat | Created Init Script"
 	else log "VnStat | Previous Init Script Found, skipping..."
 	fi
