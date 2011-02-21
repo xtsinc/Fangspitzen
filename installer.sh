@@ -16,7 +16,7 @@
 
 ##################################################################
 VERSION='1.0.0~git'                                              #
-DATE='Feb 05 2011'                                               #
+DATE='Feb 21 2011'                                               #
 ##################################################################
 trap ctrl_c SIGINT
 source includes/functions.sh || error "while loading functions.sh"  # Source in our functions
