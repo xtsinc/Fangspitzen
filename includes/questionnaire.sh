@@ -15,7 +15,7 @@ read -p "[ compile with pre allocation? ]             [y|n]: " alloc ;fi
 
 read -p "[ ruTorrent WebUi ]                          [y|n]: " webui
 
-if [[ ! -f /usr/local/bin/mktorrent && ! -f /usr/local/bin/buildtorrent ]]; then
+if ! is_installed "mktorrent" && ! is_installed "buildtorrent" ;then
 read -p "[ MkTorrent or BuildTorrent ]                [m|b]: " buildtorrent
 else buildtorrent='n' ;fi
 
