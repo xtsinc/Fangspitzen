@@ -103,13 +103,16 @@ if [[ $http = 'apache' ]]; then
 	if [[ "$DISTRO" = @([Uu]buntu|[dD]ebian|*Mint) ]]; then
 		packages install apache2 apache2-mpm-prefork libapache2-mod-python apachetop &&
 		packages install $PHP_DEBIAN php5 libapache2-mod-php5 libapache2-mod-suphp suphp-common
+		PHPini=/etc/php5/apache/php.ini
 	elif [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]; then
 		packages install apache2 apache2-prefork &&
 		packages install $PHP_SUSE php5 suphp apache2-mod_php5
+		PHPini=/etc/php5/apache/php.ini
 	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
 		packages install apache php-apache &&
 		packages install $PHP_ARCHLINUX
 		echo "/etc/rc.d/httpd start" >> /etc/rc.local
+		PHPini=/etc/php/php.ini
 	fi
 	if_error "Apache2 failed to install"
 
@@ -123,7 +126,6 @@ if [[ $http = 'apache' ]]; then
 		sed -i "s:KeepAliveTimeout 15:KeepAliveTimeout 5:" /etc/apache2/apache2.conf
 		sed -i "s:ServerTokens Full:ServerTokens Prod:"    /etc/apache2/apache2.conf
 		echo   "ServerName $HOSTNAME" >>                   /etc/apache2/apache2.conf
-		PHPini=/etc/php5/apache/php.ini
 	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
 		#echo "SCGIMount /rutorrent/master 127.0.0.1:5000" >> /etc/httpd/conf/httpd.conf  # Add mountpoint
 		echo "LoadModule php5_module modules/libphp5.so"  >> /etc/httpd/conf/httpd.conf
@@ -134,13 +136,6 @@ if [[ $http = 'apache' ]]; then
 		sed -i "s:ServerTokens .*:ServerTokens Prod:"      /etc/httpd/conf/extra/httpd-default.conf
 		sed -i "s:ServerSignature On:ServerSignature Off:" /etc/httpd/conf/extra/httpd-default.conf
 		touch $WEB/index.html
-		PHPini=/etc/php/php.ini
-		sed -i "s:;extension=curl.so:extension=curl.so:"                $PHPini
-		sed -i "s:;extension=json.so:extension=json.so:"                $PHPini
-		sed -i "s:;extension=sockets.so:extension=sockets.so:"          $PHPini
-		sed -i "s:;extension=xmlrpc.so:extension=xmlrpc.so:"            $PHPini
-		sed -i "s:;date.timezone .*:date.timezone = Europe/Luxembourg:" $PHPini
-		sed -i "s|[;]*open_basedir = .*|open_basedir = /srv/http/:/home/:/tmp/:/usr/share/pear/:/usr/bin/:/usr/local/bin/|" $PHPini
 		if [[ ! -f /etc/httpd/conf/server.key ]]; then
 			mksslcert "/etc/httpd/conf/server.crt" "/etc/httpd/conf/server.key"
 			log "Lighttpd SSL Key created"
@@ -152,7 +147,6 @@ if [[ $http = 'apache' ]]; then
 		sed -i "s:APACHE_SERVERSIGNATURE=\"on\":APACHE_SERVERSIGNATURE=\"off\":" /etc/sysconfig/apache2
 		sed -i "s:APACHE_SERVERTOKENS=.*:APACHE_SERVERTOKENS=\"ProductOnly\":"   /etc/sysconfig/apache2
 		sed -i "s:KeepAliveTimeout 15:KeepAliveTimeout 5:"                       /etc/apache2/server-tuning.conf
-		PHPini=/etc/php5/apache/php.ini
 	fi
 	log "Apache Installation | Completed" ; debug_wait "apache.installed"
 
@@ -162,29 +156,24 @@ elif [[ $http = 'lighttp' ]]; then
 	if [[ "$DISTRO" = @([Uu]buntu|[dD]ebian|*Mint) ]]; then
 		packages install lighttpd php5-cgi &&
 		packages install $PHP_DEBIAN
+		cat < modules/lighttp/auth.conf >> /etc/lighttpd/conf-available/05-auth.conf  # Apend contents of our auth.conf into lighttp's auth.conf
+		sed -i "s:url.access-deny .*:url.access-deny = (\"~\", \".inc\", \".htaccess\") :" /etc/lighttpd/lighttpd.conf  # Deny listing of .htaccess files
+		lighty-enable-mod fastcgi fastcgi-php auth access accesslog compress ssl      # Enable modules
+		PHPini=/etc/php5/cgi/php.ini
 	elif [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]; then
 		packages install $PHP_SUSE lighttpd
+		PHPini=/etc/php5/fastcgi/php.ini
 	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
 		packages install $PHP_ARCHLINUX lighttpd fcgi php-cgi apache-tools
+		cp modules/archlinux/lighttpd.conf /etc/lighttpd/lighttpd.conf
 		echo "/etc/rc.d/lighttpd start" >> /etc/rc.local
+		PHPini=/etc/php/php.ini
 	fi
 	if_error "Lighttpd failed to install"  # I wonder when the fam and gamin api will be compatible (this generates an error coce 100 so we are forced to ignore it)
 
 	if [[ ! -f /etc/lighttpd/server.pem ]]; then  # Create an SSL cert if one isnt found
 		mksslcert "/etc/lighttpd/server.pem"
 		log "Lighttpd SSL Key created"
-	fi
-
-	if [[ "$DISTRO" = @([Uu]buntu|[dD]ebian|*Mint) ]]; then
-		PHPini=/etc/php5/cgi/php.ini
-		cat < modules/lighttp/auth.conf >> /etc/lighttpd/conf-available/05-auth.conf  # Apend contents of our auth.conf into lighttp's auth.conf
-		sed -i "s:url.access-deny .*:url.access-deny = (\"~\", \".inc\", \".htaccess\") :" /etc/lighttpd/lighttpd.conf  # Deny listing of .htaccess files
-		lighty-enable-mod fastcgi fastcgi-php auth access accesslog compress ssl      # Enable modules	
-	elif [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]; then
-		PHPini=/etc/php5/fastcgi/php.ini
-	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
-		PHPini=/etc/php/php.ini
-		cp modules/archlinux/lighttpd.conf /etc/lighttpd/lighttpd.conf
 	fi
 	log "Lighttp Installation | Completed" ; debug_wait "lighttpd.installed"
 
@@ -219,6 +208,11 @@ if [[ $http != @(none|no|[Nn]) ]]; then  # Edit php config
 	sed -i 's:display_errors = On:display_errors = Off:'                               $PHPini
 	sed -i 's:log_errors = Off:log_errors = On:'                                       $PHPini
 	sed -i 's:;error_log .*:error_log = /var/log/php-error.log:'                       $PHPini
+	sed -i "s:;extension=curl.so:extension=curl.so:"                                   $PHPini
+	sed -i "s:;extension=json.so:extension=json.so:"                                   $PHPini
+	sed -i "s:;extension=xmlrpc.so:extension=xmlrpc.so:"                               $PHPini
+	sed -i "s:;date.timezone .*:date.timezone = Europe/Luxembourg:"                    $PHPini
+	sed -i "s|[;]*open_basedir = /srv.*|open_basedir = /srv/http/:/home/:/tmp/:/usr/share/pear/:/usr/bin/:/usr/local/bin/|" $PHPini
 	touch $WEB/favicon.ico
 	[[ $create_phpinfo = 'y' ]] && echo "<?php phpinfo(); ?>" > $WEB/info.php  # Create phpinfo file
 fi
