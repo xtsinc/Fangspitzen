@@ -36,7 +36,8 @@ cd $BASE/tmp
 	compile
 		if_error "XMLRPC Build Failed"
 		log "XMLRPC Compile | Completed in $compile_time seconds"
-	make install
+	make install ; cd ..
+	rm -r xmlrpc
 		log "XMLRPC Installation | Completed" ; debug_wait "xmlrpc.installed"
 fi
 
@@ -70,19 +71,21 @@ cd $BASE/tmp
 	compile
 		if_error "LibTorrent Build Failed"
 		log "LibTorrent Compile | Completed in $compile_time seconds"
-	make install
+	make install ; cd ..
+	rm -r libtorrent
 		log "LibTorrent Installation | Completed" ; debug_wait "libtorrent.installed"
 
 	notice "COMPiLiNG... rTORRENT"
 #-->[ Compile rtorrent ]
-	cd ../rtorrent
+	cd rtorrent
 	[[ $NAME = 'lenny' ]] && rm -f scripts/{libtool,lt*}.m4
 	sh autogen.sh
 	sh configure --prefix=/usr --with-xmlrpc-c
 	compile
 		if_error "rTorrent Build Failed"
 		log "rTorrent Compile | Completed in $compile_time seconds"
-	make install
+	make install ; cd ..
+	rm -r rtorrent
 		log "rTorrent Installation | Completed"
 fi
 
