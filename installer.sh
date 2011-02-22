@@ -334,7 +334,7 @@ fi
 cd ${BASE}/tmp
 if [[ $buildtorrent = 'b' ]]; then
 #-->##[ BuildTorrent ]##
-if [[ ! -f /usr/local/bin/buildtorrent ]]; then
+if [[ ! is_installed "buildtorrent" ]]; then
 	notice "iNSTALLiNG BuildTorrent"
 	if [[ ! -d buildtorrent ]]; then  # Checkout latest BuildTorrent source
 		git clone -q git://gitorious.org/buildtorrent/buildtorrent.git ; E_=$?
@@ -355,7 +355,7 @@ if [[ ! -f /usr/local/bin/buildtorrent ]]; then
 fi
 elif [[ $buildtorrent != 'n' ]]; then
 #-->##[ mkTorrent ]##
-if [[ ! -f /usr/local/bin/mktorrent || $buildtorrent = 'm' ]]; then
+if [[ ! is_installed "mktorrent" || $buildtorrent = 'm' ]]; then
 	notice "iNSTALLiNG MkTorrent"
 	if [[ ! -d mktorrent ]]; then  # Checkout latest mktorrent source
 		git clone -q git://github.com/esmil/mktorrent.git

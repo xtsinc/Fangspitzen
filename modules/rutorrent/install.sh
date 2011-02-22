@@ -41,8 +41,10 @@ cd $BASE/tmp
 	sed -i "s:\$defaultTheme .*:\$defaultTheme = \"Oblivion\";:"                  rutorrent/plugins/theme/conf.php
 
 	echo
-	if [[ $(pgrep apache2) || $http = 'apache' ]]; then  # Apache
-		htdigest -c /etc/apache2/.htpasswd "ruTorrent" $USER  # Create user authentication
+	if [[ $(pgrep apache2) || $(pgrep httpd) || $http = 'apache' ]]; then  # Apache
+		[[ "$DISTRO" = @(ARCH|[Aa]rch)* ]] &&
+			htdigest -c /etc/httpd/.htpasswd "ruTorrent" $USER ||  # Create user authentication
+			htdigest -c /etc/apache2/.htpasswd "ruTorrent" $USER
 		cp ../modules/apache/htaccess rutorrent/.htaccess
 	elif [[ $(pgrep lighttpd) || $http = 'lighttp' ]]; then  # Lighttp
 		htdigest -c /etc/lighttpd/.htpasswd "ruTorrent" $USER  # Create user authentication
