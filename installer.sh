@@ -175,13 +175,17 @@ elif [[ $http = 'lighttp' ]]; then
 		log "Lighttpd SSL Key created"
 	fi
 
-	#cp modules/lighttp/scgi.conf /etc/lighttpd/conf-available/20-scgi.conf       # Add mountpoint and secure it with auth (disabled in favor of rpc plugin)
-	cat < modules/lighttp/auth.conf >> /etc/lighttpd/conf-available/05-auth.conf  # Apend contents of our auth.conf into lighttp's auth.conf
-	sed -i "s:url.access-deny .*:url.access-deny = (\"~\", \".inc\", \".htaccess\") :" /etc/lighttpd/lighttpd.conf  # Deny listing of .htaccess files
-	lighty-enable-mod fastcgi fastcgi-php auth access accesslog compress ssl      # Enable modules	
-
-	PHPini=/etc/php5/cgi/php.ini
-	#PHPini=/etc/php5/fastcgi/php.ini  # opensuse
+	if [[ "$DISTRO" = @([Uu]buntu|[dD]ebian|*Mint) ]]; then
+		PHPini=/etc/php5/cgi/php.ini
+		cat < modules/lighttp/auth.conf >> /etc/lighttpd/conf-available/05-auth.conf  # Apend contents of our auth.conf into lighttp's auth.conf
+		sed -i "s:url.access-deny .*:url.access-deny = (\"~\", \".inc\", \".htaccess\") :" /etc/lighttpd/lighttpd.conf  # Deny listing of .htaccess files
+		lighty-enable-mod fastcgi fastcgi-php auth access accesslog compress ssl      # Enable modules	
+	elif [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]; then
+		PHPini=/etc/php5/fastcgi/php.ini
+	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
+		PHPini=/etc/php/php.ini
+		cp modules/archlinux/lighttpd.conf /etc/lighttpd/lighttpd.conf
+	fi
 	log "Lighttp Installation | Completed" ; debug_wait "lighttpd.installed"
 
 ##[ Cherokee ]##
@@ -205,9 +209,10 @@ elif [[ $http = 'cherokee' ]]; then
 
 	PHPini=/etc/php5/cgi/php.ini
 	log "Cherokee Installation | Completed" ; debug_wait "cherokee.installed"
+fi
 
 ##[ PHP ]##
-elif [[ $http != @(none|no|[Nn]) ]]; then  # Edit php config
+if [[ $http != @(none|no|[Nn]) ]]; then  # Edit php config
 	sed -i 's:memory_limit .*:memory_limit = 128M:'                                    $PHPini
 	sed -i 's:error_reporting .*:error_reporting = E_ALL & ~E_DEPRECATED & ~E_NOTICE:' $PHPini
 	sed -i 's:expose_php = On:expose_php = Off:'                                       $PHPini
