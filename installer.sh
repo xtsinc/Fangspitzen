@@ -165,7 +165,7 @@ elif [[ $http = 'lighttp' ]]; then
 	elif [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]; then
 		packages install $PHP_SUSE lighttpd
 	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
-		packages install $PHP_ARCHLINUX lighttpd fcgi php-cgi
+		packages install $PHP_ARCHLINUX lighttpd fcgi php-cgi apache-tools
 		echo "/etc/rc.d/lighttpd start" >> /etc/rc.local
 	fi
 	if_error "Lighttpd failed to install"  # I wonder when the fam and gamin api will be compatible (this generates an error coce 100 so we are forced to ignore it)
@@ -201,7 +201,7 @@ elif [[ $http = 'cherokee' ]]; then
 		packages install cherokee &&
 		packages install $PHP_SUSE
 	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
-		packages install cherokee &&
+		packages install cherokee apache-tools &&
 		packages install $PHP_ARCHLINUX php-cgi
 		echo "/etc/rc.d/cherokee start" >> /etc/rc.local
 	fi
