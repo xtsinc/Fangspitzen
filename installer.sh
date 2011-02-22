@@ -164,7 +164,8 @@ elif [[ $http = 'lighttp' ]]; then
 		packages install $PHP_SUSE lighttpd
 		PHPini=/etc/php5/fastcgi/php.ini
 	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
-		packages install $PHP_ARCHLINUX lighttpd fcgi php-cgi apache-tools
+		packages install apache-tools lighttpd &&
+		packages install $PHP_ARCHLINUX fcgi php-cgi 
 		cp modules/archlinux/lighttpd.conf /etc/lighttpd/lighttpd.conf
 		echo "/etc/rc.d/lighttpd start" >> /etc/rc.local
 		PHPini=/etc/php/php.ini
@@ -202,16 +203,16 @@ fi
 
 ##[ PHP ]##
 if [[ $http != @(none|no|[Nn]) ]]; then  # Edit php config
-	sed -i 's:memory_limit .*:memory_limit = 128M:'                                    $PHPini
-	sed -i 's:error_reporting .*:error_reporting = E_ALL & ~E_DEPRECATED & ~E_NOTICE:' $PHPini
-	sed -i 's:expose_php = On:expose_php = Off:'                                       $PHPini
-	sed -i 's:display_errors = On:display_errors = Off:'                               $PHPini
-	sed -i 's:log_errors = Off:log_errors = On:'                                       $PHPini
-	sed -i 's:;error_log .*:error_log = /var/log/php-error.log:'                       $PHPini
-	sed -i "s:;extension=curl.so:extension=curl.so:"                                   $PHPini
-	sed -i "s:;extension=json.so:extension=json.so:"                                   $PHPini
-	sed -i "s:;extension=xmlrpc.so:extension=xmlrpc.so:"                               $PHPini
-	sed -i "s:;date.timezone .*:date.timezone = Europe/Luxembourg:"                    $PHPini
+	sed -i 's:memory_limit .*:memory_limit = 128M:'                                        $PHPini
+	sed -i 's:error_reporting = .*:error_reporting = E_ALL \& ~E_DEPRECATED \& ~E_NOTICE:' $PHPini
+	sed -i 's:expose_php = On:expose_php = Off:'                                           $PHPini
+	sed -i 's:display_errors = On:display_errors = Off:'                                   $PHPini
+	sed -i 's:log_errors = Off:log_errors = On:'                                           $PHPini
+	sed -i 's:;error_log .*:error_log = /var/log/php-error.log:'                           $PHPini
+	sed -i "s:;extension=curl.so:extension=curl.so:"                                       $PHPini
+	sed -i "s:;extension=json.so:extension=json.so:"                                       $PHPini
+	sed -i "s:;extension=xmlrpc.so:extension=xmlrpc.so:"                                   $PHPini
+	sed -i "s:;date.timezone .*:date.timezone = Europe/Luxembourg:"                        $PHPini
 	sed -i "s|[;]*open_basedir = /srv.*|open_basedir = /srv/http/:/home/:/tmp/:/usr/share/pear/:/usr/bin/:/usr/local/bin/|" $PHPini
 	touch $WEB/favicon.ico
 	[[ $create_phpinfo = 'y' ]] && echo "<?php phpinfo(); ?>" > $WEB/info.php  # Create phpinfo file
