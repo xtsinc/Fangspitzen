@@ -119,7 +119,6 @@ if [[ $http = 'apache' ]]; then
 	if [[ "$DISTRO" = @([Uu]buntu|[dD]ebian|*Mint) ]]; then
 		a2enmod auth_digest ssl php5 expires deflate mem_cache  # Enable modules
 		a2ensite default-ssl
-		#cp modules/apache/scgi.conf /etc/apache2/mods-available/scgi.conf  # Add mountpoint (disabled in favor of rpc plugin)
 		sed -i "/<Directory \/var\/www\/>/,/<\/Directory>/ s:AllowOverride .*:AllowOverride All:" /etc/apache2/sites-available/default*
 		sed -i "s:ServerSignature On:ServerSignature Off:" /etc/apache2/apache2.conf
 		sed -i "s:Timeout 300:Timeout 30:"                 /etc/apache2/apache2.conf
@@ -127,7 +126,6 @@ if [[ $http = 'apache' ]]; then
 		sed -i "s:ServerTokens Full:ServerTokens Prod:"    /etc/apache2/apache2.conf
 		echo   "ServerName $HOSTNAME" >>                   /etc/apache2/apache2.conf
 	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
-		#echo "SCGIMount /rutorrent/master 127.0.0.1:5000" >> /etc/httpd/conf/httpd.conf  # Add mountpoint
 		echo "LoadModule php5_module modules/libphp5.so"  >> /etc/httpd/conf/httpd.conf
 		echo "Include conf/extra/php5_module.conf"        >> /etc/httpd/conf/httpd.conf
 		sed -i "s:Include conf/extra/httpd-userdir.conf:#Include conf/extra/httpd-userdir.conf:" /etc/httpd/conf/httpd.conf  # Disable User-Dir

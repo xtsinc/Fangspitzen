@@ -35,21 +35,33 @@ base_configure() {  # do this before base_install ^
 	case "$DISTRO" in
 		# [uU]buntu|[Dd]ebian|*Mint) ;;
 		# SUSE*|[Ss]use* ) ;;
-		ARCH*|[Aa]rch* ) sed -i "s;#MAKEFLAGS=.*;MAKEFLAGS=\"-j$(($(grep -c ^processor /proc/cpuinfo) + 1))\";" /etc/makepkg.conf
-						 if ! is_installed "clyde"
-						 then echo -en "${bldred} iNSTALLiNG CLYDE...${rst}"
-						 	cd $BASE/tmp
-						 	wget -q http://aur.archlinux.org/packages/clyde-git/clyde-git.tar.gz
-						 	extract clyde-git.tar.gz && cd clyde-git
-						 	makepkg -si --asroot --noconfirm && cd $BASE
-						 	install -m 644 modules/archlinux/clyde.conf /etc
-						 	sed -i "s;BuildUser .*;BuildUser = $USER;" /etc/clyde.conf
+		ARCH*|[Aa]rch* ) if ! is_installed "clyde" ;then
+						 echo -en "${bldred} iNSTALLiNG CLYDE...${rst}"
+							build_pgk "clyde-git" "http://aur.archlinux.org/packages/clyde-git/clyde-git.tar.gz"
+							install -m 644 modules/archlinux/clyde.conf /etc
+							sed -i "s;BuildUser .*;BuildUser = $USER;" /etc/clyde.conf
 						 echo -e "${bldylw} DONE${rst}\n"
 						 fi ;;
 	esac
 	log "Base Configuration | Completed"
 }
 
+build_pgk() {  # compile and install PKBUILDs
+	PKG_NAME="$1" PKG_URL="$2"
+	is_version "gcc" "11-13" ">" "4.1" && 
+		if [[ $(grep "mtune=generic" test.conf) ]]; then
+			sed -i "s;[#]*CFLAGS=.*;CFLAGS=\"-march=native\";" /etc/makepkg.conf  # implies -mtune=native
+			sed -i "s;[#]*CXXFLAGS=.*;CXXFLAGS=\"${CFLAGS}\";" /etc/makepkg.conf
+		fi
+	sed -i "s;[#]*MAKEFLAGS=.*;MAKEFLAGS=\"-j$(($(grep -c ^processor /proc/cpuinfo) + 1))\";" /etc/makepkg.conf
+
+	cd $BASE/tmp
+	download $PKG_URL
+	extract "${PKG_NAME}.tar.gz" && cd "$PKG_NAME"
+	makepkg -si --asroot --noconfirm
+	cd ..
+}
+			
 archlinux_add_module() {
 	cp /etc/rc.conf /etc/rc.conf.bak
 	source /etc/rc.conf
@@ -96,11 +108,11 @@ debug_wait() {  # prints a message and wait for user before continuing
 	fi
 }
 
-download() {  # show progress bars if debug is on
-	if [[ "$DEBUG" = 1 ]]
-		then axel -n 6 --alternate $1 ; E_=$?
-		else axel -n 6 --quiet $1     ; E_=$?
-	fi
+download() {  # prefer axel fallback to wget with quiet on if DEBUG is off
+	is_installed "axel" && DL_APP="axel -n 6 --alternate" || DL_APP="wget --timeout=15"
+	[[ "$DEBUG" = 1 ]] && DL_APP="$DL --quiet"
+	$DL_APP $1  # GET URL
+	E_=$?       # Check if it downloaded correctly
 }
 
 error() {  # call this when you know there will be an error
@@ -145,6 +157,19 @@ is_running() {  # check if a program is running
 	elif [[ "$#" = 2 ]]; then
 		[[ ! -z $(pgrep -u "$2" "$1") ]] && return 0 || return 1
 	fi
+}
+
+is_version() {
+	APP="$1" CHAR="$2" TYPE="$3" VER="$4"
+	[[ $TYPE = ">" ]] &&
+		if [[ $($APP --version | head -n1 | cut -c $CHAR) > $VER ]]
+			then return 0
+			else return 1
+		fi || [[ $TYPE = "=" ]] &&
+			if [[ $($APP --version | head -n1 | cut -c $CHAR) = $VER ]]
+				then return 0
+				else return 1
+			fi || return 1
 }
 
 log() {  # send to the logfile

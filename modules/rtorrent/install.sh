@@ -1,29 +1,29 @@
 echo
-compile_xmlrpc=n
-while [[ $compile_xmlrpc = n ]]; do
+compile_xmlrpc='no'
+while [[ $compile_xmlrpc = 'no' ]]; do
 	if is_installed "xmlrpc-c-config"  # Ask to re-compile xmlrpc if already installed
 		then echo -en "XMLRPC-C is already installed.... overwrite? [y/n]: "
 		if yes
-			then compile_xmlrpc=y  # yes, reinstall
-			else compile_xmlrpc=s  # no, skip this 
+			then compile_xmlrpc='yes'  # yes, reinstall
+			else compile_xmlrpc='skip'  # no, skip this 
 		fi
-	else compile_xmlrpc=y  # yes, install because its not installed
+	else compile_xmlrpc='yes'  # yes, install because its not installed
 	fi
 
-compile_rtorrent=n
-while [[ $compile_rtorrent = n ]]; do 
+compile_rtorrent='no'
+while [[ $compile_rtorrent = 'no' ]]; do 
 	if is_installed "rtorrent"
 		then echo -en "rTorrent is already installed.... overwrite? [y/n]: "
 		if yes
-			then compile_rtorrent=y
-			else compile_rtorrent=s
+			then compile_rtorrent='yes'
+			else compile_rtorrent='skip'
 		fi
 		break
-	else compile_rtorrent=y
+	else compile_rtorrent='yes'
 	fi
 done ; done
 	
-if [[ $compile_xmlrpc = y ]]; then
+if [[ $compile_xmlrpc = 'yes' ]]; then
 cd $BASE/tmp
 	notice "DOWNLOADiNG... XMLRPC"
 	checkout http://xmlrpc-c.svn.sourceforge.net/svnroot/xmlrpc-c/advanced xmlrpc  # Checkout xmlrpc ~advanced
@@ -42,7 +42,7 @@ cd $BASE/tmp
 		log "XMLRPC Installation | Completed" ; debug_wait "xmlrpc.installed"
 fi
 
-if [[ $compile_rtorrent = y ]]; then
+if [[ $compile_rtorrent = 'yes' ]]; then
 cd $BASE/tmp
 	notice "DOWNLOADiNG... rTORRENT"
 	if [[ $rtorrent_svn = 'y' ]]; then

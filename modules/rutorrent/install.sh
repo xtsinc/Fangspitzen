@@ -1,15 +1,15 @@
-install_rutorrent=false
-while [[ $install_rutorrent = false ]]; do
+install_rutorrent='no'
+while [[ $install_rutorrent = 'no' ]]; do
 	if [[ ! -d $WEB/rutorrent ]]; then
-		install_rutorrent='true'
+		install_rutorrent='yes'
 	else  # Ask to update rutorrent if exists
-		echo -en "ruTorrent Found => Updating...  " ; sleep 1
+		notice "ruTorrent Found => Updating...  " ; sleep 1
 		cd $WEB/rutorrent && svn up
 		break
 	fi
 done
 
-if [[ $install_rutorrent = 'true' ]]; then
+if [[ $install_rutorrent = 'yes' ]]; then
 cd $BASE/tmp
 	notice "iNSTALLiNG ruTorrent"
 	checkout http://rutorrent.googlecode.com/svn/trunk/rutorrent  # Checkout ruTorrent
