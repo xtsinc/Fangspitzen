@@ -38,7 +38,7 @@ base_configure() {  # do this before base_install ^
 		ARCH*|[Aa]rch* ) if ! is_installed "clyde" ;then
 						 echo -en "${bldred} iNSTALLiNG CLYDE...${rst}"
 							build_pgk "clyde-git" "http://aur.archlinux.org/packages/clyde-git/clyde-git.tar.gz"
-							install -m 644 modules/archlinux/clyde.conf /etc
+							install -m 644 $BASE/modules/archlinux/clyde.conf /etc
 							sed -i "s;BuildUser .*;BuildUser = $USER;" /etc/clyde.conf
 						 echo -e "${bldylw} DONE${rst}\n"
 						 fi ;;
@@ -49,7 +49,7 @@ base_configure() {  # do this before base_install ^
 build_pgk() {  # compile and install PKBUILDs
 	PKG_NAME="$1" PKG_URL="$2"
 	is_version "gcc" "11-13" ">" "4.1" && 
-		if [[ $(grep "mtune=generic" test.conf) ]]; then
+		if [[ $(grep "mtune=generic" /etc/makepkg.conf) ]]; then
 			sed -i "s;[#]*CFLAGS=.*;CFLAGS=\"-march=native\";" /etc/makepkg.conf  # implies -mtune=native
 			sed -i "s;[#]*CXXFLAGS=.*;CXXFLAGS=\"${CFLAGS}\";" /etc/makepkg.conf
 		fi
@@ -109,10 +109,10 @@ debug_wait() {  # prints a message and wait for user before continuing
 }
 
 download() {  # prefer axel fallback to wget with quiet on if DEBUG is off
-	is_installed "axel" && DL_APP="axel -n 6 --alternate" || DL_APP="wget --timeout=15"
-	[[ "$DEBUG" = 1 ]] && DL_APP="$DL --quiet"
-	$DL_APP $1  # GET URL
-	E_=$?       # Check if it downloaded correctly
+	is_installed "axel" && DL="axel -n 6 --alternate" || DL="wget --timeout=15"
+	[[ "$DEBUG" = 1 ]] && DL="$DL --quiet"
+	$DL $1  # GET URL
+	E_=$?   # Check if it downloaded correctly
 }
 
 error() {  # call this when you know there will be an error
