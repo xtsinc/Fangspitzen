@@ -37,8 +37,8 @@ base_configure() {  # do this before base_install ^
 		# SUSE*|[Ss]use* ) ;;
 		ARCH*|[Aa]rch* ) if ! is_installed "clyde" ;then
 						 echo -en "${bldred} iNSTALLiNG CLYDE...${rst}"
-							build_pgk "clyde-git" "http://aur.archlinux.org/packages/clyde-git/clyde-git.tar.gz"
-							install -m 644 $BASE/modules/archlinux/clyde.conf /etc
+							build_from_aur "clyde-git" "clyde-git.tar.gz"
+							install -m 644 $BASE/includes/archlinux/clyde.conf /etc
 							sed -i "s;BuildUser .*;BuildUser = $USER;" /etc/clyde.conf
 						 echo -e "${bldylw} DONE${rst}\n"
 						 fi ;;
@@ -46,8 +46,10 @@ base_configure() {  # do this before base_install ^
 	log "Base Configuration | Completed"
 }
 
-build_pgk() {  # compile and install PKBUILDs
-	PKG_NAME="$1" PKG_URL="$2"
+build_from_aur() {  # compile and install PKBUILDs
+	PKG_NAME="$1"
+	PKG_URL="http://aur.archlinux.org/packages/$PKG_NAME/$2"
+	[[ $3 = 'ignore-deps' ]] && PKG_OPTS="-di" || PKG_OPTS="-si"
 	is_version "gcc" "11-13" ">" "4.1" && 
 		if [[ $(grep "mtune=generic" /etc/makepkg.conf) ]]; then
 			sed -i "s;[#]*CFLAGS=.*;CFLAGS=\"-march=native\";" /etc/makepkg.conf  # implies -mtune=native
@@ -58,7 +60,8 @@ build_pgk() {  # compile and install PKBUILDs
 	cd $BASE/tmp
 	download $PKG_URL
 	extract "${PKG_NAME}.tar.gz" && cd "$PKG_NAME"
-	makepkg -si --asroot --noconfirm
+	makepkg "$PKG_OPTS" --asroot --noconfirm
+		if_error "$PKG_NAME Failed to install"
 	cd ..
 }
 			
@@ -227,8 +230,7 @@ packages() {  # use appropriate package manager depending on distro
 	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
 		case "$1" in
 			clean  ) clyde --sync --clean --noconfirm ; echo
-					 if [[ ! $(grep '*** SCRiPT COMPLETED' $LOG) ]]; then
-					 	pacman-optimize >/dev/null ;fi                           ;;
+					 pacman-optimize >/dev/null                                  ;;
 			install) shift; clyde --sync --noconfirm --needed $@ 2>> $LOG ;E_=$? ;;
 			remove ) shift; clyde --remove --unneeded $@ 2>> $LOG; E_=$?         ;;
 			update ) clyde --sync --refresh 2>> $LOG                             ;;

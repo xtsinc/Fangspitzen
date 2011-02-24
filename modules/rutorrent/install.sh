@@ -3,7 +3,7 @@ while [[ $install_rutorrent = 'no' ]]; do
 	if [[ ! -d $WEB/rutorrent ]]; then
 		install_rutorrent='yes'
 	else  # Ask to update rutorrent if exists
-		notice "ruTorrent Found => Updating...  " ; sleep 1
+		notice "ruTorrent Found => Updating" ; sleep 1
 		cd $WEB/rutorrent && svn up
 		break
 	fi

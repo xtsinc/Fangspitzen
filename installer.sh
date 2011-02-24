@@ -27,6 +27,7 @@ while [ "$#" -gt 0 ]; do
 		-p|--pass) if [[ "$2" ]]
 			then passwdlength="$2" && mkpass; shift
 			else error "Specify Length --pass x "; fi ;;
+		--rtorrent-prealloc) alloc='y'; shift ;;
 		--save-tmp) DONT_RM_TMP=1; shift ;; 
 		-t|--threads) if [[ "$2" ]]
 			then declare -i OVERWRITE_THREAD_COUNT="$2"; shift 
@@ -164,7 +165,7 @@ elif [[ $http = 'lighttp' ]]; then
 	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
 		packages install apache-tools lighttpd &&
 		packages install $PHP_ARCHLINUX fcgi php-cgi 
-		cp modules/archlinux/lighttpd.conf /etc/lighttpd/lighttpd.conf
+		cp includes/archlinux/lighttpd.conf /etc/lighttpd/lighttpd.conf
 		echo "/etc/rc.d/lighttpd start" >> /etc/rc.local
 		PHPini=/etc/php/php.ini
 	fi
@@ -310,8 +311,11 @@ EOF
 ##[ pureFTP ]##
 elif [[ $ftpd = 'pureftp' ]]; then
 	notice "iNSTALLiNG Pure-FTPd"
-	packages install pure-ftpd
-	[[ $DISTRO = @(ARCH|[Aa]rch)* ]] && echo "/etc/rc.d/pure-ftpd start" >> /etc/rc.local
+	if [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
+		build_from_aur "pure-ftpd" "pure-ftpd-1.0.29.tar.bz2"
+		echo "/etc/rc.d/pure-ftpd start" >> /etc/rc.local
+	else packages install pure-ftpd
+	fi
 	if_error "PureFTP failed to install"
 	
 	if [[ ! -f /etc/ssl/private/pure-ftpd.pem ]]; then  # Create SSL Certificate

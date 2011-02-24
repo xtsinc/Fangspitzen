@@ -10,8 +10,7 @@ read -p "[ FTP SERVER  ]        [vsftp|proftp|pureftp|none]: " ftpd
 read -p "[ Torrent App ]      [rtorrent|tranny|deluge|none]: " torrent
 
 if [[ "$torrent" = 'rtorrent' ]]; then
-read -p "[ compile from svn? ]                        [y|n]: " rtorrent_svn
-read -p "[ compile with pre allocation? ]             [y|n]: " alloc ;fi
+read -p "[ compile from svn? ]                        [y|n]: " rtorrent_svn ;fi
 
 read -p "[ ruTorrent WebUi ]                          [y|n]: " webui
 

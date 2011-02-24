@@ -51,10 +51,15 @@ cd $BASE/tmp
 		mv trunk/libtorrent libtorrent && mv trunk/rtorrent rtorrent && rm -r trunk
 		log "Lib|rTorrent | Downloaded" >> $LOG
 	else
-		download http://libtorrent.rakshasa.no/downloads/libtorrent-0.12.6.tar.gz  # Grab libtorrent
+		if [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
+			build_from_aur "libtorrent-extended" "libtorrent-0.12.6.tar.gz"
+			build_from_aur "rtorrent-extended" "rtorrent-0.8.6.tar.gz" "ignore-deps"
+		else
+			download http://libtorrent.rakshasa.no/downloads/libtorrent-0.12.6.tar.gz  # Grab libtorrent
 			if_error "LibTorrent Download Failed"
-		download http://libtorrent.rakshasa.no/downloads/rtorrent-0.8.6.tar.gz     # Grab rtorrent
+			download http://libtorrent.rakshasa.no/downloads/rtorrent-0.8.6.tar.gz     # Grab rtorrent
 			if_error "rTorrent Download Failed"
+		fi
 		log "Lib|rTorrent | Downloaded" >> $LOG
 		extract libtorrent-0.12.6.tar.gz && extract rtorrent-0.8.6.tar.gz          # Unpack
 		mv libtorrent-0.12.6 libtorrent && mv rtorrent-0.8.6 rtorrent

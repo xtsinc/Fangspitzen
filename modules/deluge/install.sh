@@ -1,7 +1,11 @@
 cd $BASE/tmp
 	notice "iNSTALLiNG DELUGE"
-	packages install deluge-common deluge-console deluge-web deluged
-	if_error "Deluge failed to install"
+	if [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
+		build_from_aur "deluge-git" "deluge-git.tar.gz"
+	else
+		packages install deluge-common deluge-console deluge-web deluged
+			if_error "Deluge failed to install"
+	fi
 
 	sudo -u $USER deluged && sleep 1
 	sudo -u $USER killall deluged
