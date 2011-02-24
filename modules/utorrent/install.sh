@@ -1,5 +1,5 @@
 if [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
-	build_from_aur "utorrent-server" "utorrent-server.tar.gz"  # TODO depends on multilib repo is x64
+	build_from_aur "utorrent-server"  # TODO depends on multilib repo is x64
 else
 	cd $HOME
 	download http://download.utorrent.com/linux/utorrent-server-3.0-24118.tar.gz

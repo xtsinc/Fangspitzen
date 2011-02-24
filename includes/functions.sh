@@ -37,7 +37,7 @@ base_configure() {  # do this before base_install ^
 		# SUSE*|[Ss]use* ) ;;
 		ARCH*|[Aa]rch* ) if ! is_installed "clyde" ;then
 						 echo -en "${bldred} iNSTALLiNG CLYDE...${rst}"
-							build_from_aur "clyde-git" "clyde-git.tar.gz"
+							build_from_aur "clyde-git"
 							install -m 644 $BASE/includes/archlinux/clyde.conf /etc
 							sed -i "s;BuildUser .*;BuildUser = $USER;" /etc/clyde.conf
 						 echo -e "${bldylw} DONE${rst}\n"
@@ -45,11 +45,19 @@ base_configure() {  # do this before base_install ^
 	esac
 	log "Base Configuration | Completed"
 }
+			
+archlinux_add_module() {
+	cp /etc/rc.conf /etc/rc.conf.bak
+	source /etc/rc.conf
+	MODULES+=($@)
+	NEWMODULES="MODULES=(${MODULES[@]})"
+	sed -i "s:MODULES=.*:$NEWMODULES:" /etc/rc.conf
+}
 
 build_from_aur() {  # compile and install PKBUILDs
 	PKG_NAME="$1"
-	PKG_URL="http://aur.archlinux.org/packages/$PKG_NAME/$2"
-	[[ $3 = 'ignore-deps' ]] && PKG_OPTS="-di" || PKG_OPTS="-si"
+	PKG_URL="https://aur.archlinux.org/packages/$PKG_NAME/${PKG_NAME}.tar.gz"
+	[[ $2 = 'ignore-deps' ]] && PKG_OPTS="-di" || PKG_OPTS="-si"
 	is_version "gcc" "11-13" ">" "4.1" && 
 		if [[ $(grep "mtune=generic" /etc/makepkg.conf) ]]; then
 			sed -i "s;[#]*CFLAGS=.*;CFLAGS=\"-march=native\";" /etc/makepkg.conf  # implies -mtune=native
@@ -63,14 +71,6 @@ build_from_aur() {  # compile and install PKBUILDs
 	makepkg "$PKG_OPTS" --asroot --noconfirm
 		if_error "$PKG_NAME Failed to install"
 	cd ..
-}
-			
-archlinux_add_module() {
-	cp /etc/rc.conf /etc/rc.conf.bak
-	source /etc/rc.conf
-	MODULES+=($@)
-	NEWMODULES="MODULES=(${MODULES[@]})"
-	sed -i "s:MODULES=.*:$NEWMODULES:" /etc/rc.conf
 }
 
 checkout() {  # increase verbosity

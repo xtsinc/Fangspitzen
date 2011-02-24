@@ -312,7 +312,7 @@ EOF
 elif [[ $ftpd = 'pureftp' ]]; then
 	notice "iNSTALLiNG Pure-FTPd"
 	if [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
-		build_from_aur "pure-ftpd" "pure-ftpd-1.0.29.tar.bz2"
+		build_from_aur "pure-ftpd"
 		echo "/etc/rc.d/pure-ftpd start" >> /etc/rc.local
 	else packages install pure-ftpd
 	fi

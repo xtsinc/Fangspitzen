@@ -52,8 +52,8 @@ cd $BASE/tmp
 		log "Lib|rTorrent | Downloaded" >> $LOG
 	else
 		if [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
-			build_from_aur "libtorrent-extended" "libtorrent-0.12.6.tar.gz"
-			build_from_aur "rtorrent-extended" "rtorrent-0.8.6.tar.gz" "ignore-deps"
+			build_from_aur "libtorrent-extended"
+			build_from_aur "rtorrent-extended" "ignore-deps"
 		else
 			download http://libtorrent.rakshasa.no/downloads/libtorrent-0.12.6.tar.gz  # Grab libtorrent
 			if_error "LibTorrent Download Failed"
