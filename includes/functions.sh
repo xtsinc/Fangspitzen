@@ -289,24 +289,6 @@ packages() {  # use appropriate package manager depending on distro
 				alias_update="sudo yum check-update"
 				alias_upgrade="sudo yum upgrade" ;;
 		esac
-
-	elif [[ "$DISTRO" = "Gentoo" ]]; then
-		[[ "$DEBUG" = 0 ]] && quiet="--quiet" || quiet=
-		case "$1" in
-			clean  ) emerge --clean                                        ;;
-			install) shift; emerge $quiet --jobs=$CORES $@ 2>> $LOG; E_=$? ;;
-			remove ) shift; emerge --unmerge $quiet $@ 2>> $LOG; E=$?      ;;
-			update ) emerge --sync                                         ;;
-			upgrade) emerge --update world $quiet                          ;;
-			version) emerge -S or emerge -pv                               ;;
-			setvars)
-				REPO_PATH=/etc/portage/repos.conf  # TODO
-				alias_autoclean="sudo emerge --clean"
-				alias_install="sudo emerge"
-				alias_remove="sudo emerge -C"
-				alias_update="sudo emerge --sync"
-				alias_upgrade="sudo emerge -u world" ;;
-		esac
 	fi
 }
 
@@ -388,7 +370,6 @@ init() {
 	##[ Determine OS ]##
 if [[ "$OS" = "Linux" ]] ; then
 	[[ -f /etc/fedora-release ]] && error "TODO - Fedora"
-	[[ -f /etc/gentoo-release ]] && error "TODO - Gentoo"
 
 	# Distributor -i > Ubuntu  > Debian  > Debian   > LinuxMint     > Arch  > SUSE LINUX  (DISTRO)
 	# Release     -r > 10.04   > 5.0.6   > testing  > 1|10          > n/a   > 11.3        (RELASE)

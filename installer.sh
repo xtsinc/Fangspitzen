@@ -66,7 +66,8 @@ ${bldylw}       (@${bldgrn}           '--------'
 
       Supported:                InProgress:
         Ubuntu                    OpenSUSE
-        Debian                    ArchLinux
+        Debian                    
+        ArchLinux
 
   If your OS is not listed, this script will most likey explode.${rst}"
 echo -e " ${undred}___________________________________________${rst}"
@@ -271,6 +272,7 @@ if [[ $ftpd = 'vsftp' ]]; then
 ##[ proFTP ]##
 elif [[ $ftpd = 'proftp' ]]; then
 	notice "iNSTALLiNG proFTPd"
+	proftpd_conf=/etc/proftpd/proftpd.conf
 	if [[ "$DISTRO" = @([Uu]buntu|[dD]ebian|*Mint) ]]; then
 		packages install proftpd-basic
 	elif [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]; then
@@ -278,35 +280,36 @@ elif [[ $ftpd = 'proftp' ]]; then
 	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
 		packages install proftpd
 		echo "/etc/rc.d/proftpd start" >> /etc/rc.local
+		proftpd_conf=/etc/proftpd.conf
 	fi
 	if_error "ProFTPd failed to install"
 
-	if [[ ! -f /etc/proftpd/ssl/proftpd.cert.pem ]]; then  # Create SSL cert and conf
+	if [[ ! -f /etc/ssl/private/proftpd.cert || ! -f /etc/ssl/private/proftpd.key ]]; then  # Create SSL cert and conf
 		mkdir -p /etc/proftpd/ssl
 		mksslcert "/etc/proftpd/ssl/proftpd.cert" "/etc/proftpd/ssl/proftpd.key" &&
 		log "PureFTP SSL Key created"
-		cat >> /etc/proftpd/proftpd.conf << "EOF"
+		cat >> $proftpd_conf << "EOF"
 <IfModule mod_tls.c>
 TLSEngine                  on
 TLSLog                     /var/log/proftpd/tls.log
 TLSProtocol                SSLv23
 TLSOptions                 NoCertRequest
-TLSRSACertificateFile      /etc/proftpd/ssl/proftpd.cert
-TLSRSACertificateKeyFile   /etc/proftpd/ssl/proftpd.key
+TLSRSACertificateFile      /etc/ssl/private/proftpd.cert
+TLSRSACertificateKeyFile   /etc/ssl/private/proftpd.key
 TLSVerifyClient            off
 TLSRequired                off
 </IfModule>
 EOF
 	fi
-	sed -i 's:#DefaultRoot .*:DefaultRoot ~:'      /etc/proftpd/proftpd.conf
-	sed -i 's:UseIPv6 .*:UseIPv6 off:'             /etc/proftpd/proftpd.conf
-	sed -i 's:IdentLookups .*:IdentLookups off:'   /etc/proftpd/proftpd.conf
-	sed -i 's:ServerIdent .*:ServerIdent on "FTP Server ready.":' /etc/proftpd/proftpd.conf
+	sed -i 's:#DefaultRoot .*:DefaultRoot ~:'                     $proftpd_conf
+	sed -i 's:UseIPv6 .*:UseIPv6 off:'                            $proftpd_conf
+	sed -i 's:IdentLookups .*:IdentLookups off:'                  $proftpd_conf
+	sed -i 's:ServerIdent .*:ServerIdent on "FTP Server ready.":' $proftpd_conf
 
 	echo -en "\n Force SSL? [y/n]: "
 	if yes  # allow toggling of forcing ssl
-		then sed -i 's:TLSRequired .*:TLSRequired on:'  /etc/proftpd/proftpd.conf
-		else sed -i 's:TLSRequired .*:TLSRequired off:' /etc/proftpd/proftpd.conf
+		then sed -i 's:TLSRequired .*:TLSRequired on:'  $proftpd_conf
+		else sed -i 's:TLSRequired .*:TLSRequired off:' $proftpd_conf
 	fi
 	log "ProFTP Installation | Completed" ; debug_wait "proftpd.installed"
 
