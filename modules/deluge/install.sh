@@ -1,7 +1,7 @@
 cd $BASE/tmp
 	notice "iNSTALLiNG DELUGE"
 	if [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
-		build_from_aur "deluge-git"
+		build_from_aur "deluge" "deluge-git"
 	else
 		packages install deluge-common deluge-console deluge-web deluged
 			if_error "Deluge failed to install"

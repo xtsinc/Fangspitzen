@@ -46,6 +46,10 @@ elif [[ "$DISTRO" = @(Debian|*Mint) ]]; then
 	log "Repositories ADD | Success"
 
 elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
+	if [[ ! $(grep '[multilib]' /etc/pacman.conf) ]]; then
+		echo "[multilib]" >> /etc/pacman.conf
+		echo "Include = /etc/pacman.d/mirrorlist" >> /etc/pacman.conf
+	fi
 	log "Repositories ADD | Success"
 
 elif [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]; then

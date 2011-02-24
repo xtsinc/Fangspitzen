@@ -1,5 +1,6 @@
 if [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
-	build_from_aur "utorrent-server"  # TODO depends on multilib repo is x64
+	pacman -Syy  # Make sure the multilib repo is sync'd with pacman
+	build_from_aur "utserver" "utorrent-server"  # TODO depends on multilib repo is x64
 else
 	cd $HOME
 	download http://download.utorrent.com/linux/utorrent-server-3.0-24118.tar.gz

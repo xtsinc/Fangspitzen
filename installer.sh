@@ -314,7 +314,7 @@ EOF
 elif [[ $ftpd = 'pureftp' ]]; then
 	notice "iNSTALLiNG Pure-FTPd"
 	if [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
-		build_from_aur "pure-ftpd"
+		build_from_aur "pure-ftpd" "pure-ftpd"
 		echo "/etc/rc.d/pure-ftpd start" >> /etc/rc.local
 		sed -i 's:NoAnonymous.*:NoAnonymous yes:' /etc/pure-ftpd.conf
 		sed -i 's:# UnixAuthentication.*:UnixAuthentication yes:' /etc/pure-ftpd.conf
@@ -345,12 +345,12 @@ elif [[ $ftpd = 'pureftp' ]]; then
 	echo -en "\n Allow FXP? [y/n]: "
 	if yes ;then  # Allow FXP
 		if [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]
-			then sed -i 's:AllowUserFXP.*:AllowUserFXP yes:' $PURE_FTPD_CONF
+			then sed -i 's:AllowUserFXP.*:AllowUserFXP yes:' /etc/pure-ftpd.conf
 			#else TODO
 		fi
 	else  # Forbid FXP
 		if [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]
-			then sed -i 's:AllowUserFXP .* yes:AllowUserFXP no:' $PURE_FTPD_CONF
+			then sed -i 's:AllowUserFXP .* yes:AllowUserFXP no:' /etc/pure-ftpd.conf
 			#else TODO
 		fi
 	fi

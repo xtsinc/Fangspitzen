@@ -37,7 +37,7 @@ base_configure() {  # do this before base_install ^
 		# SUSE*|[Ss]use* ) ;;
 		ARCH*|[Aa]rch* ) if ! is_installed "clyde" ;then
 						 echo -en "${bldred} iNSTALLiNG CLYDE...${rst}"
-							build_from_aur "clyde-git"
+							build_from_aur "clyde" "clyde-git"
 							install -m 644 $BASE/includes/archlinux/clyde.conf /etc
 							sed -i "s;BuildUser .*;BuildUser = $USER;" /etc/clyde.conf
 						 echo -e "${bldylw} DONE${rst}\n"
@@ -55,22 +55,25 @@ archlinux_add_module() {
 }
 
 build_from_aur() {  # compile and install PKBUILDs
-	PKG_NAME="$1"
+	PKG_NAME="$2"
 	PKG_URL="https://aur.archlinux.org/packages/$PKG_NAME/${PKG_NAME}.tar.gz"
-	[[ $2 = 'ignore-deps' ]] && PKG_OPTS="-di" || PKG_OPTS="-si"
 	is_version "gcc" "11-13" ">" "4.1" && 
 		if [[ $(grep "mtune=generic" /etc/makepkg.conf) ]]; then
 			sed -i "s;[#]*CFLAGS=.*;CFLAGS=\"-march=native\";" /etc/makepkg.conf  # implies -mtune=native
 			sed -i "s;[#]*CXXFLAGS=.*;CXXFLAGS=\"${CFLAGS}\";" /etc/makepkg.conf
 		fi
-	sed -i "s;[#]*MAKEFLAGS=.*;MAKEFLAGS=\"-j$(($(grep -c ^processor /proc/cpuinfo) + 1))\";" /etc/makepkg.conf
+		sed -i "s;[#]*MAKEFLAGS=.*;MAKEFLAGS=\"-j$(($(grep -c ^processor /proc/cpuinfo) + 1))\";" /etc/makepkg.conf
 
-	cd $BASE/tmp
-	download $PKG_URL
-	extract "${PKG_NAME}.tar.gz" && cd "$PKG_NAME"
-	makepkg "$PKG_OPTS" --asroot --noconfirm
-		if_error "$PKG_NAME Failed to install"
-	cd ..
+	if ! is_installed "$1" ;then
+		[[ $3 = 'ignore-deps' ]] && PKG_OPTS="-di" || PKG_OPTS="-si"
+		cd $BASE/tmp
+		download $PKG_URL
+		extract "${PKG_NAME}.tar.gz" && cd "$PKG_NAME"
+		makepkg "$PKG_OPTS" --asroot --noconfirm
+			if_error "$PKG_NAME Failed to install"
+		cd ..
+	else notice "$PKG_NAME is already installed. Skipping"
+	fi
 }
 
 checkout() {  # increase verbosity
@@ -233,7 +236,7 @@ packages() {  # use appropriate package manager depending on distro
 					 pacman-optimize >/dev/null                                  ;;
 			install) shift; clyde --sync --noconfirm --needed $@ 2>> $LOG ;E_=$? ;;
 			remove ) shift; clyde --remove --unneeded $@ 2>> $LOG; E_=$?         ;;
-			update ) clyde --sync --refresh 2>> $LOG                             ;;
+			update ) clyde --sync --refresh --refresh 2>> $LOG                   ;;
 			upgrade) clyde --sync --refresh --sysupgrade --noconfirm 2>> $LOG    ;;
 			version) clyde --sync --info $2 | grep Version                       ;;
 			setvars)
