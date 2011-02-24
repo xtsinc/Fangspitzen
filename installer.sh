@@ -285,8 +285,7 @@ elif [[ $ftpd = 'proftp' ]]; then
 	if_error "ProFTPd failed to install"
 
 	if [[ ! -f /etc/ssl/private/proftpd.cert || ! -f /etc/ssl/private/proftpd.key ]]; then  # Create SSL cert and conf
-		mkdir -p /etc/proftpd/ssl
-		mksslcert "/etc/proftpd/ssl/proftpd.cert" "/etc/proftpd/ssl/proftpd.key" &&
+		mksslcert "/etc/ssl/private/proftpd.cert" "/etc/ssl/private/proftpd.key" &&
 		log "PureFTP SSL Key created"
 		cat >> $proftpd_conf << "EOF"
 <IfModule mod_tls.c>
