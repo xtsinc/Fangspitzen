@@ -127,8 +127,10 @@ if [[ $http = 'apache' ]]; then
 		sed -i "s:ServerTokens Full:ServerTokens Prod:"    /etc/apache2/apache2.conf
 		echo   "ServerName $HOSTNAME" >>                   /etc/apache2/apache2.conf
 	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
-		echo "LoadModule php5_module modules/libphp5.so"  >> /etc/httpd/conf/httpd.conf
-		echo "Include conf/extra/php5_module.conf"        >> /etc/httpd/conf/httpd.conf
+		if [[ ! $(grep 'LoadModule php5_module' /etc/httpd/conf/httpd.conf) ]]; then
+			echo "LoadModule php5_module modules/libphp5.so"  >> /etc/httpd/conf/httpd.conf
+			echo "Include conf/extra/php5_module.conf"        >> /etc/httpd/conf/httpd.conf
+		fi
 		sed -i "s:Include conf/extra/httpd-userdir.conf:#Include conf/extra/httpd-userdir.conf:" /etc/httpd/conf/httpd.conf  # Disable User-Dir
 		sed -i "s:#Include conf/extra/httpd-ssl.conf:Include conf/extra/httpd-ssl.conf:"         /etc/httpd/conf/httpd.conf  # Enable SSL
 		sed -i "s:Timeout 300:Timeout 30:"                 /etc/httpd/conf/extra/httpd-default.conf
@@ -314,7 +316,11 @@ elif [[ $ftpd = 'pureftp' ]]; then
 	if [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
 		build_from_aur "pure-ftpd"
 		echo "/etc/rc.d/pure-ftpd start" >> /etc/rc.local
-	else packages install pure-ftpd
+		sed -i 's:NoAnonymous.*:NoAnonymous yes:' /etc/pure-ftpd.conf
+		sed -i 's:# UnixAuthentication.*:UnixAuthentication yes:' /etc/pure-ftpd.conf
+	else
+		packages install pure-ftpd
+		[[ -f /etc/default/pure-ftpd-common ]] && sed -i 's:STANDALONE_OR_INETD=.*:STANDALONE_OR_INETD=standalone:' /etc/default/pure-ftpd-common
 	fi
 	if_error "PureFTP failed to install"
 	
@@ -323,12 +329,30 @@ elif [[ $ftpd = 'pureftp' ]]; then
 		mksslcert "/etc/ssl/private/pure-ftpd.pem" &&
 		log "PureFTP SSL Key created"
 	fi
-	[[ -f /etc/default/pure-ftpd-common ]] && sed -i 's:STANDALONE_OR_INETD=.*:STANDALONE_OR_INETD=standalone:' /etc/default/pure-ftpd-common
 
 	echo -en "\n Force SSL? [y/n]: "
-	if yes  # allow toggling of forcing ssl
-		then echo 2 > /etc/pure-ftpd/conf/TLS  # Force TLS
-		else echo 1 > /etc/pure-ftpd/conf/TLS  # Allow TLS+FTP
+	if yes ;then  # Force TLS
+		if [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]
+			then sed -i 's:# TLS.*:TLS 2:' /etc/pure-ftpd.conf
+			else echo 2 > /etc/pure-ftpd/conf/TLS
+		fi
+	else  # Allow TLS+FTP
+		if [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]
+			then sed -i 's:# TLS.*:TLS 1' /etc/pure-ftpd.conf
+			else echo 1 > /etc/pure-ftpd/conf/TLS
+		fi
+	fi
+	echo -en "\n Allow FXP? [y/n]: "
+	if yes ;then  # Allow FXP
+		if [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]
+			then sed -i 's:AllowUserFXP.*:AllowUserFXP yes:' $PURE_FTPD_CONF
+			#else TODO
+		fi
+	else  # Forbid FXP
+		if [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]
+			then sed -i 's:AllowUserFXP .* yes:AllowUserFXP no:' $PURE_FTPD_CONF
+			#else TODO
+		fi
 	fi
 	log "PureFTP Installation | Completed" ; debug_wait "pureftp.installed"
 fi
