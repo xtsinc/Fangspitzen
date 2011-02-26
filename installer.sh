@@ -19,7 +19,11 @@ VERSION='1.0.0~git'                                              #
 DATE='Feb 21 2011'                                               #
 ##################################################################
 trap ctrl_c SIGINT
-source includes/functions.sh || error "while loading functions.sh"  # Source in our functions
+if [ "$BASH_VERSION" = 4* ]  # Check for bash verion 4+
+	then echo "Please install package: bash, version 4.0 or higher. (Current: $(bash --version | head -n1 | cut -c 1-23))"
+		 exit
+	else source includes/functions.sh || error "while loading functions.sh"  # Source in our functions
+fi
 
 ##[ Check command line switches ]##
 while [ "$#" -gt 0 ]; do

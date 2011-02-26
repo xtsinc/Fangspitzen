@@ -301,8 +301,6 @@ runchecks() {
 	else error "config.ini not found!"  # Cant continue without a config so produce an error and exit
 	fi
 	echo -en "${rst}>>> Checking Requires..."
-		[[ "$BASH_VERSION" = 4* ]] ||  # Check for bash verion 4+
-			error "Please install package: bash, version 4.0 or higher. (Current: $(bash --version | head -n1 | cut -c 1-23))"
 		[[ -x /usr/bin/lsb_release ]] ||  # Check if lsb-release is installed
 			error "Please install package: lsb-release"
 	echo -e "[${bldylw} OK ${rst}]"
