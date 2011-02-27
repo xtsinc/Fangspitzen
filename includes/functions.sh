@@ -66,7 +66,7 @@ build_from_aur() {  # compile and install PKBUILDs
 
 	if ! is_installed "$1" ;then
 		[[ $3 = 'ignore-deps' ]] && PKG_OPTS="-di" || PKG_OPTS="-si"
-		cd $BASE/tmp
+		cd $SOURCE_DIR
 		download $PKG_URL
 		extract "${PKG_NAME}.tar.gz" && cd "$PKG_NAME"
 		makepkg "$PKG_OPTS" --asroot --noconfirm
@@ -83,7 +83,7 @@ checkout() {  # increase verbosity
 }
 
 cleanup() {  # remove tmp folder and restore permissions
-	[[ $DONT_RM_TMP = 1 ]] || rm --recursive --force $BASE/tmp
+	[[ "$RM_TMP" = 'y' ]] && rm --recursive --force $SOURCE_DIR
 	GROUP=$(grep "$(id -g "$USER")" /etc/group | cut -d: -f1)
 	chown -R "$USER:$GROUP" "$BASE"
 }
@@ -310,6 +310,10 @@ runchecks() {
 	[[ "$DEBUG" = 1 ]] &&  # Check if debug is on/off
 		echo -e ">>> Debug Mode .........[${bldylw} ON ${rst}]" ||
 		echo -e ">>> Debug Mode .........[${bldylw} OFF ${rst}]"
+	[[ $(grep /tmp /etc/mtab | grep noexec) != "" ]] &&  # Check whether /tmp is mounted 'noexec'
+			SOURCE_DIR=$BASE/tmp || SOURCE_DIR=/tmp/.fangspitzen
+	[[ "$DEBUG" = 1 ]] &&
+		echo -e ">>> SOURCE_DIR .........[${bldylw} $SOURCE_DIR ${rst}]"
 	echo -ne ">>> Internet Access ..."
 	[[ $(ping -c 1 74.125.226.116) ]] && [[ $(ping -c 1 208.67.222.222) ]] &&  # Ping google and opendns
 		echo -e ".[${bldylw} OK ${rst}]" || error "Unable to ping outside world..."
@@ -349,6 +353,8 @@ usage() {  # help screen
 	echo -e " ${bldred}  -p,  --pass    ${bldpur}(length) ${bldylw} Generate a strong password of 'x' length"
 	echo -e " ${bldred}  -t,  --threads ${bldpur}(num) ${bldylw}    Number of threads to create when using 'make'"
 	echo -e " ${bldred}  -v,  --version ${bldylw}          Show date and version number \n ${rst}"
+	echo -e " ${bldred}       --save-tmp ${bldylw}          Dont remove script src directory ${rst}"
+	echo -e " ${bldred}       --rtorrent-prealloc ${bldylw} Build rtorrent with file preallocation \n ${rst}"
 	exit 1
 }
 
@@ -378,7 +384,7 @@ if [[ "$OS" = "Linux" ]] ; then
 	readonly NAME
 
 	##[ Create folders if not already created ]##
-	mkdir --parents tmp/
+	mkdir --parents $SOURCE_DIR
 
 	iP=$(wget --quiet --timeout=30 www.whatismyip.com/automation/n09230945.asp -O - 2)
 
@@ -398,6 +404,7 @@ fi
 SSLCERT=/usr/share/ssl-cert/ssleay.cnf
 MKSSLCERT_RUN=1
 iFACE=eth0
+RM_TMP='y'
 
 ##[ Default Webserver Settings
 ##+ can be changed in packages()setvars ]##

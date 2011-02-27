@@ -1,4 +1,4 @@
-cd $BASE/tmp
+cd $SOURCE_DIR
 	notice "iNSTALLiNG DELUGE"
 	if [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
 		build_from_aur "deluge" "deluge-git"

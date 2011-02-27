@@ -1,4 +1,4 @@
-cd ${BASE}/tmp
+cd $SOURCE_DIR
 	notice "iNSTALLiNG TRANSMiSSiON"
 	packages install transmission-daemon transmission-common transmission-cli
 	if_error "Transmission failed to install"

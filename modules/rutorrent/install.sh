@@ -10,7 +10,7 @@ while [[ $install_rutorrent = 'no' ]]; do
 done
 
 if [[ $install_rutorrent = 'yes' ]]; then
-cd $BASE/tmp
+cd $SOURCE_DIR
 	notice "iNSTALLiNG ruTorrent"
 	checkout http://rutorrent.googlecode.com/svn/trunk/rutorrent  # Checkout ruTorrent
 	if_error "ruTorrent Download Failed"
@@ -18,8 +18,8 @@ cd $BASE/tmp
 
 cd rutorrent
 	rm -R plugins conf/plugins.ini favicon.ico
-	cp "$BASE"/modules/rutorrent/plugins.ini conf/plugins.ini
-	cp "$BASE"/modules/rutorrent/favicon.ico favicon.ico
+	cp $BASE/modules/rutorrent/plugins.ini conf/plugins.ini
+	cp $BASE/modules/rutorrent/favicon.ico favicon.ico
 
 	notice "iNSTALLiNG Plugins"
 	checkout http://rutorrent.googlecode.com/svn/trunk/plugins  # Checkout plugins-svn
@@ -31,10 +31,9 @@ cd plugins
 	checkout http://rutorrent-logoff.googlecode.com/svn/trunk/ logoff
 	checkout http://rutorrent-instantsearch.googlecode.com/svn/trunk instantsearch
 	#checkout http://rutorrent-chat.googlecode.com/svn/trunk chat
-	extract $BASE/modules/rutorrent/plugin-nfo.tar.gz
+	extract $BASE/modules/rutorrent/plugin-nfo.tar.gz && cd ../..
 	log "ruTorrent plugins | Downloaded"
 
-cd $BASE/tmp
 	sed -i "s:\$saveUploadedTorrents .*:\$saveUploadedTorrents = false;:"         rutorrent/conf/config.php
 	sed -i "s:\$topDirectory .*:\$topDirectory = '/home';:"                       rutorrent/conf/config.php
 	sed -i "s:\$XMLRPCMountPoint .*:\$XMLRPCMountPoint = \"/rutorrent/master\";:" rutorrent/conf/config.php
@@ -45,7 +44,7 @@ cd $BASE/tmp
 		[[ "$DISTRO" = @(ARCH|[Aa]rch)* ]] &&
 			htdigest -c /etc/httpd/.htpasswd "ruTorrent" $USER ||  # Create user authentication
 			htdigest -c /etc/apache2/.htpasswd "ruTorrent" $USER
-		cp ../modules/apache/htaccess rutorrent/.htaccess
+		cp $BASE/modules/apache/htaccess rutorrent/.htaccess
 	elif [[ $(pgrep lighttpd) || $http = 'lighttp' ]]; then  # Lighttp
 		htdigest -c /etc/lighttpd/.htpasswd "ruTorrent" $USER  # Create user authentication
 	fi

@@ -32,7 +32,7 @@ while [ "$#" -gt 0 ]; do
 			then passwdlength="$2" && mkpass; shift
 			else error "Specify Length --pass x "; fi ;;
 		--rtorrent-prealloc) alloc='y'; shift ;;
-		--save-tmp) DONT_RM_TMP=1; shift ;; 
+		--save-tmp) RM_TMP='n'; shift ;; 
 		-t|--threads) if [[ "$2" ]]
 			then declare -i OVERWRITE_THREAD_COUNT="$2"; shift 
 			else error "Specify num of threads --threads x "; fi ;;
@@ -363,7 +363,7 @@ elif [[ $ftpd = 'pureftp' ]]; then
 	log "PureFTP Installation | Completed" ; debug_wait "pureftp.installed"
 fi
 
-cd ${BASE}/tmp
+cd $SOURCE_DIR
 if [[ $buildtorrent = 'b' ]]; then
 #-->##[ BuildTorrent ]##
 if ! is_installed "buildtorrent" ;then
@@ -403,7 +403,7 @@ if ! is_installed "mktorrent" || [[ $buildtorrent = 'm' ]]; then
 fi
 fi  # end `if $buildtorrent`
 
-cd "$BASE"
+cd $BASE
 ##[ Torrent Clients ]##
 if   [[ $torrent = 'rtorrent' ]]; then source modules/rtorrent/install.sh
 elif [[ $torrent = 'tranny'   ]]; then source modules/transmission/install.sh

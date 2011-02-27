@@ -77,7 +77,6 @@ elif [[ $sql = 'postgre' ]]; then
 fi
 
 ##[ Bouncers ]##
-cd $BASE
 if [[ $bnc != @(none|no|[Nn]) ]]; then
 	if [[ $DISTRO = @(Ubuntu|[dD]ebian|*Mint) ]]; then
 		packages install libc-ares-dev tcl tcl-dev
@@ -91,28 +90,26 @@ fi
 
 ##[ ZNC ]##
 if [[ $bnc = 'znc' ]]; then
+cd $BASE
 	notice "iNSTALLiNG ZNC"
-	cd tmp/
 	download http://downloads.sourceforge.net/project/znc/znc/0.094/znc-0.094.tar.gz
 		if_error "ZNC Download Failed"
 	extract znc-0.094.tar.gz && cd znc-0.094  # Unpack
 		log "ZNC | Downloaded + Unpacked"
 	notice "Be aware that compiling znc is a cpu intensive task and may take up to 10 min to complete"
 	sleep 3
-	sh configure --enable-extra
+	sh configure --enable-extra --enable-run-from-source
 	compile
 		if_error "ZNC Build Failed"
 		log "ZNC Compile | Completed in $compile_time seconds"
 		debug_wait "znc.compiled"
-	make install
 		log "ZNC Installation | Completed"
 	notice "Starting znc for first time ${rst}"
-	cd $HOME
-	sudo -u $USER znc --makeconf	
+	sudo -u $USER ./znc --makeconf	
 
 ##[ sBNC ]##
 elif [[ $bnc = 'sbnc' ]]; then
-	cd tmp
+cd $SOURCE_DIR
 	notice "iNSTALLiNG ShroudBNC"
 	packages install swig
 	git clone -q http://github.com/gunnarbeutner/shroudbnc.git
@@ -200,8 +197,8 @@ EOF
 fi
 
 ##[ phpSysInfo ]##
-cd $BASE/tmp
 if [[ $phpsysinfo = 'y' ]]; then
+cd $SOURCE_DIR
 	notice "iNSTALLiNG phpSysInfo"
 	#checkout https://phpsysinfo.svn.sourceforge.net/svnroot/phpsysinfo/trunk phpsysinfo
 	download http://downloads.sourceforge.net/project/phpsysinfo/phpsysinfo/3.0.7/phpsysinfo-3.0.7.tar.gz
@@ -236,8 +233,8 @@ if [[ $webmin = 'y' ]]; then
 fi
 
 ##[ vnStat ]##
-cd $BASE/tmp
 if [[ $vnstat = 'y' ]]; then
+cd $SOURCE_DIR
 	notice "iNSTALLiNG VNSTAT"
 	if [[ $DISTRO = @(Ubuntu|[dD]ebian|*Mint) ]]; then
 		packages install libgd2-xpm libgd2-xpm-dev
@@ -288,7 +285,7 @@ if [[ $vnstat = 'y' ]]; then
 	rm -rf vnstat-web/themes/espresso vnstat-web/themes/light vnstat-web/themes/red                # Remove extra themes
 	rm -rf vnstat-web/COPYING vnstat-web/vera_copyright.txt vnstat-web/config.php vnstat-web/.git  # Remove extra files
 
-	cp ../modules/vnstat/config.php vnstat-web
+	cp $BASE/modules/vnstat/config.php vnstat-web
 	sed -i "s|\$iface_list = .*|\$iface_list = array('$iFACE');|" vnstat-web/config.php  # Edit web config
 
 
@@ -303,8 +300,8 @@ if [[ $vnstat = 'y' ]]; then
 fi
 
 ##[ SABnzbd ]##
-cd $BASE/tmp
 if [[ $sabnzbd = 'y' ]]; then
+cd $SOURCE_DIR
 	notice "iNSTALLiNG SABnzbd"
 	if [[ $DISTRO = @(Ubuntu|[dD]ebian|*Mint) ]]; then
 			packages install par2 python-cheetah python-dbus python-feedparser python-memcache python-utidylib python-yenc sabnzbdplus sabnzbdplus-theme-classic sabnzbdplus-theme-plush sabnzbdplus-theme-smpl
@@ -347,7 +344,6 @@ if [[ $sabnzbd = 'y' ]]; then
 fi
 
 ##[ iPLiST ]##
-cd $BASE/tmp
 if [[ $ipblock = 'y' ]]; then
 	notice "iNSTALLiNG iPBLOCK"
 	if [[ $DISTRO = @(Ubuntu|[dD]ebian|*Mint) ]]; then
@@ -376,7 +372,6 @@ if [[ $ipblock = 'y' ]]; then
 fi
 
 ##[ ViRTUALBOX ]##
-cd $BASE/tmp
 if [[ $virtualbox = 'y' ]]; then  # TODO
 	notice "iNSTALLiNG ViRTUALBOX"
 	if [[ "$DISTRO" = @([uU]buntu|[dD]ebian|*Mint) ]]; then

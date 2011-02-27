@@ -24,7 +24,7 @@ while [[ $compile_rtorrent = 'no' ]]; do
 done ; done
 	
 if [[ $compile_xmlrpc = 'yes' ]]; then
-cd $BASE/tmp
+cd $SOURCE_DIR
 	notice "DOWNLOADiNG... XMLRPC"
 	checkout http://xmlrpc-c.svn.sourceforge.net/svnroot/xmlrpc-c/advanced xmlrpc  # Checkout xmlrpc ~advanced
 	if_error "XMLRPC Download Failed"
@@ -43,7 +43,7 @@ cd $BASE/tmp
 fi
 
 if [[ $compile_rtorrent = 'yes' ]]; then
-cd $BASE/tmp
+cd $SOURCE_DIR
 	notice "DOWNLOADiNG... rTORRENT"
 	if [[ $rtorrent_svn = 'y' ]]; then
 		checkout -r 1180 svn://rakshasa.no/libtorrent/trunk
@@ -107,8 +107,8 @@ sudo -u $USER mkdir -p .session
 sudo -u $USER mkdir -p downloads
 #sudo -u $USER mkdir -p watch
 
-cd $BASE
 PATH_rt=$HOME/.rtorrent.rc
+cd $BASE
 cp modules/rtorrent/rtorrent.rc "$PATH_rt"
 
 NUMBER=$[($RANDOM % 65534) + 20000]  # Generate a random number from 20000-65534
