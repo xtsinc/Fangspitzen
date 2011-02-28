@@ -2,15 +2,16 @@ cd $SOURCE_DIR
 	notice "iNSTALLiNG TRANSMiSSiON"
 	if [[ "$DISTRO" = @([Uu]buntu|[dD]ebian|*Mint) ]]; then
 		packages install transmission-daemon transmission-common transmission-cli
-		/etc/init.d/transmission-daemon stop
-		sudo -u $USER transmission-daemon && sleep 2  # Create our users config
-		kill -15 $(pgrep transmission-daemon) && sleep 2
+		sed -i "s:USER=.*:USER=$USER:" /etc/init.d/transmission-daemon
+		/etc/init.d/transmission-daemon restart && /etc/init.d/transmission-daemon stop
 	elif [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]; then
-		packages install transmission-daemon transmission-common transmission-cli
-		/etc/init.d/transmission-daemon stop
+		packages install transmission transmission-common
+		sudo -u $USER transmission-daemon && sleep 2
+		kill -u $USER $(pgrep transmission) && sleep 1
 	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
 		packages install transmission-cli
 		echo "TRANS_USER=\"$USER\"" >> /etc/conf.d/transmissiond
+		/etc/rc.d/transmissiond start && /etc/rc.d/transmissiond stop
 		echo "/etc/rc.d/transmissiond start" >> /etc/rc.local
 	fi
 	if_error "Transmission failed to install"
@@ -28,8 +29,9 @@ cd $SOURCE_DIR
 	sed -i "s|\"rpc-password.*|\"rpc-password\": \"$tPass\",|"                         $PATH_tr
 	sed -i "s|\"rpc-username.*|\"rpc-username\": \"$tUser\",|"                         $PATH_tr
 	sed -i "s|\"rpc-whitelist.*|\"rpc-whitelist\": \"*.*.*.*\",|"                      $PATH_tr
+	
+	[[ -d /etc/rc.d/ ]] && /etc/rc.d/transmissiond start || /etc/init.d/transmission-daemon start
 
-	#sudo -u $USER transmission-daemon  # Start transmission
 	log "Transmission Installation | Completed"
 	log "WebUI is active on http://$IP:9091"
 	debug_wait "transmission.installed"
