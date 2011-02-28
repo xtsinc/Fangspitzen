@@ -72,6 +72,8 @@ elif [[ $torrent = 'tranny' ]]; then
 	if [[ $NAME = 'lenny' ]]; then
 		echo -e "${bldred} TODO! ${rst}"
 		torrent='none'
+	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
+		v1=$(packages version transmission-cli)
 	else
 		v1=$(packages version transmission-daemon)
 		echo -e "${bldblu} Transmission: $v1 ${rst}"

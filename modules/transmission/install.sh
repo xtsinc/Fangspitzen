@@ -1,12 +1,20 @@
 cd $SOURCE_DIR
 	notice "iNSTALLiNG TRANSMiSSiON"
-	packages install transmission-daemon transmission-common transmission-cli
+	if [[ "$DISTRO" = @([Uu]buntu|[dD]ebian|*Mint) ]]; then
+		packages install transmission-daemon transmission-common transmission-cli
+		/etc/init.d/transmission-daemon stop
+		sudo -u $USER transmission-daemon && sleep 2  # Create our users config
+		kill -15 $(pgrep transmission-daemon) && sleep 2
+	elif [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]; then
+		packages install transmission-daemon transmission-common transmission-cli
+		/etc/init.d/transmission-daemon stop
+	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
+		packages install transmission-cli
+		echo "TRANS_USER=\"$USER\"" >> /etc/conf.d/transmissiond
+		echo "/etc/rc.d/transmissiond start" >> /etc/rc.local
+	fi
 	if_error "Transmission failed to install"
 
-	/etc/init.d/transmission-daemon stop
-
-	sudo -u $USER transmission-daemon && sleep 2  # Create our users config folder below
-	kill -15 $(pgrep transmission-daemon) && sleep 2
 	echo
 	read -p " WEBUi User Name: " tUser
 	read -p " WEBUi Password : " tPass
@@ -21,7 +29,7 @@ cd $SOURCE_DIR
 	sed -i "s|\"rpc-username.*|\"rpc-username\": \"$tUser\",|"                         $PATH_tr
 	sed -i "s|\"rpc-whitelist.*|\"rpc-whitelist\": \"*.*.*.*\",|"                      $PATH_tr
 
-	sudo -u $USER transmission-daemon  # Start transmission
+	#sudo -u $USER transmission-daemon  # Start transmission
 	log "Transmission Installation | Completed"
 	log "WebUI is active on http://$IP:9091"
 	debug_wait "transmission.installed"
