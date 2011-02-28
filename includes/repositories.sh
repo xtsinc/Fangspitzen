@@ -79,7 +79,5 @@ if [[ "$DISTRO" = @([uU]buntu|[dD]ebian|*Mint) ]]; then  # Add signing keys
 	wget -q http://download.virtualbox.org/virtualbox/debian/oracle_vbox.asc -O- | apt-key add -
 	wget -q http://www.webmin.com/jcameron-key.asc -O- | apt-key add -
 fi
-	packages update	&& # refresh our package list
-	log "Repositories Refresh | Success"
-	debug_wait "repos.added"
+debug_wait "repos.added"
 clear

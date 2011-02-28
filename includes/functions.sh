@@ -14,6 +14,8 @@ PHP_DEBIAN="$PHP_COMMON php5-cgi php5-cli php5-common php5-dev php5-mhash"  # ph
 PHP_SUSE="$PHP_COMMON php5-devel php5-json"
 PHP_ARCHLINUX="php php-curl"
 
+	echo -en "${bldred} REFRESHiNG REPOSiTORiES...${rst}"
+	packages update
 	echo -en "${bldred} iNSTALLiNG BASE PACKAGES, this may take a while...${rst}"
 	case "$DISTRO" in
 		[uU]buntu|[Dd]ebian|*Mint) packages install $DEBIAN ;;
