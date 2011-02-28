@@ -32,6 +32,7 @@ cd $SOURCE_DIR
 	
 	[[ -d /etc/rc.d/ ]] && /etc/rc.d/transmissiond start || /etc/init.d/transmission-daemon start
 
+	notice "http://code.google.com/p/transmisson-remote-gui  is recommened to access transmission remotely, instead of its built-in webui."
 	log "Transmission Installation | Completed"
 	log "WebUI is active on http://$IP:9091"
 	debug_wait "transmission.installed"
