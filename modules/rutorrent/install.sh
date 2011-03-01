@@ -39,14 +39,16 @@ cd plugins
 	sed -i "s:\$XMLRPCMountPoint .*:\$XMLRPCMountPoint = \"/rutorrent/master\";:" rutorrent/conf/config.php
 	sed -i "s:\$defaultTheme .*:\$defaultTheme = \"Oblivion\";:"                  rutorrent/plugins/theme/conf.php
 
-	echo
-	if [[ $(pgrep apache2) || $(pgrep httpd) || $http = 'apache' ]]; then  # Apache
-		[[ "$DISTRO" = @(ARCH|[Aa]rch)* ]] &&
-			htdigest -c /etc/httpd/.htpasswd "ruTorrent" $USER ||  # Create user authentication
-			htdigest -c /etc/apache2/.htpasswd "ruTorrent" $USER
+	notice "CONFiGURiNG USER AUTHENTiCATiON"
+	if [[ $(pgrep apache2) || $(pgrep httpd) || $http = 'apache' ]]; then  # Apache - Create user authentication
 		cp $BASE/modules/apache/htaccess rutorrent/.htaccess
-	elif [[ $(pgrep lighttpd) || $http = 'lighttp' ]]; then  # Lighttp
-		htdigest -c /etc/lighttpd/.htpasswd "ruTorrent" $USER  # Create user authentication
+		if [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]
+			then htdigest -c /etc/httpd/.htpasswd "ruTorrent" $USER
+				 sed -i "s:apache2:httpd:" rutorrent/.htaccess
+			else htdigest -c /etc/apache2/.htpasswd "ruTorrent" $USER
+		fi
+	elif [[ $(pgrep lighttpd) || $http = 'lighttp' ]]; then  # Lighttp - Create user authentication
+		htdigest -c /etc/lighttpd/.htpasswd "ruTorrent" $USER
 	fi
 
 	if is_installed "buildtorrent"

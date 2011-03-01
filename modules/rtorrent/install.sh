@@ -101,11 +101,10 @@ if [[ -f .rtorrent.rc ]]; then
 	notice "BACKED UP PREVIOUS rTORRENT.RC"
 fi
 
-notice "CREATiNG .rtorrent.rc CONFiG"
+echo -en "${bldred} CREATiNG .rtorrent.rc CONFiG...${rst}"
 cd $HOME
 sudo -u $USER mkdir -p .session
 sudo -u $USER mkdir -p downloads
-#sudo -u $USER mkdir -p watch
 
 PATH_rt=$HOME/.rtorrent.rc
 cd $BASE
@@ -115,6 +114,7 @@ NUMBER=$[($RANDOM % 65534) + 20000]  # Generate a random number from 20000-65534
 echo "port_range = $NUMBER-$NUMBER"       >> $PATH_rt
 echo "directory = /home/$USER/downloads"  >> $PATH_rt
 echo "session = /home/$USER/.session"     >> $PATH_rt
+echo -e "${bldylw} done${rst}"
 
 if [[ $rtorrent_svn != 'y' ]]; then
 	echo "max_open_files = 256"    >> $PATH_rt
