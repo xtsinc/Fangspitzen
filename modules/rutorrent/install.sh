@@ -46,10 +46,15 @@ cd $SOURCE_DIR
 		if [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]
 			then htdigest -c /etc/httpd/.htpasswd "ruTorrent" $USER
 				 sed -i "s:apache2:httpd:" rutorrent/.htaccess
-			else htdigest -c /etc/apache2/.htpasswd "ruTorrent" $USER
+		elif [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]
+			then htdigest2 -c /etc/apache2/.htpasswd "ruTorrent" $USER
+		else htdigest -c /etc/apache2/.htpasswd "ruTorrent" $USER
 		fi
 	elif [[ $(pgrep lighttpd) || $http = 'lighttp' ]]; then  # Lighttp - Create user authentication
-		htdigest -c /etc/lighttpd/.htpasswd "ruTorrent" $USER
+		if [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]
+			then htdigest2 -c /etc/lighttpd/.htpasswd "ruTorrent" $USER
+			else htdigest -c /etc/lighttpd/.htpasswd "ruTorrent" $USER
+		fi
 	fi
 
 	if is_installed "buildtorrent"

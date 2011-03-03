@@ -136,7 +136,7 @@ fi
 log "rTorrent Config | Created" ; log "rTorrent listening on port: $NUMBER"
 
 
-if [[ $DISTRO != @(ARCH|[Aa]rch)* && ! -f /etc/init.d/rtorrent ]]; then  # Copy init script
+if [[ $DISTRO = @([Uu]buntu|[dD]ebian|*Mint) && ! -f /etc/init.d/rtorrent ]]; then  # Copy init script
 	cp modules/rtorrent/rtorrent-init /etc/init.d/rtorrent
 	cp modules/rtorrent/rtorrent-init-conf "$HOME"/.rtorrent.init.conf
 
