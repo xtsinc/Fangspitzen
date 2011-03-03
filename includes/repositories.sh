@@ -54,6 +54,7 @@ elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
 
 elif [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]; then
 	packages addrepo http://download.opensuse.org/repositories/openSUSE:/11.3:/Contrib/standard/      "Contrib"
+	packages addrepo http://download.opensuse.org/repositories/network:/utilities/openSUSE_11.3/      "Axel"
 	packages addrepo http://ftp.uni-erlangen.de/pub/mirrors/packman/suse/11.3/                        "Packman"
 	packages addrepo http://download.opensuse.org/repositories/Apache/openSUSE_11.3/                  "Apache"
 	packages addrepo http://download.opensuse.org/repositories/Apache:/Modules/Apache_openSUSE_11.3/  "Apache-Modules"
