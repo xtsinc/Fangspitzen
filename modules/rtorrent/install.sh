@@ -101,7 +101,7 @@ if [[ -f .rtorrent.rc ]]; then
 	notice "BACKED UP PREVIOUS rTORRENT.RC"
 fi
 
-echo -en "${bldred} CREATiNG .rtorrent.rc CONFiG...${rst}"
+echo -en "\n${bldred} CREATiNG .rtorrent.rc CONFiG...${rst}"
 cd $HOME
 sudo -u $USER mkdir -p .session
 sudo -u $USER mkdir -p downloads

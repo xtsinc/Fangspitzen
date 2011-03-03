@@ -137,14 +137,14 @@ if [[ $http = 'apache' ]]; then
 		 echo "Include conf/extra/php5_module.conf"                       >> /etc/httpd/conf/httpd.conf
 		 #echo -e "<IfModule mod_geoip.c>\n\tGeoIPEnable On\n</IfModule>" >> /etc/httpd/conf/httpd.conf
 		fi
-		sed -i "s:Include conf/extra/httpd-userdir.conf:#Include conf/extra/httpd-userdir.conf:"     /etc/httpd/conf/httpd.conf  # Disable User-Dir
-		sed -i "s:#Include conf/extra/httpd-ssl.conf:Include conf/extra/httpd-ssl.conf:"             /etc/httpd/conf/httpd.conf  # Enable SSL
-		sed -i "/<Directory \"/srv/http\">/,/<\/Directory>/ s:AllowOverride None:AllowOverride All:" /etc/httpd/conf/httpd.conf  # Allow parsing .htaccess files
+		sed -i "s:Include conf/extra/httpd-userdir.conf:#Include conf/extra/httpd-userdir.conf:"       /etc/httpd/conf/httpd.conf  # Disable User-Dir
+		sed -i "s:#Include conf/extra/httpd-ssl.conf:Include conf/extra/httpd-ssl.conf:"               /etc/httpd/conf/httpd.conf  # Enable SSL
+		sed -i "/<Directory \"\/srv\/http\">/,/<\/Directory>/ s:AllowOverride None:AllowOverride All:" /etc/httpd/conf/httpd.conf  # Allow parsing .htaccess files
 		sed -i "s:Timeout 300:Timeout 30:"                 /etc/httpd/conf/extra/httpd-default.conf
 		sed -i "s:ServerTokens .*:ServerTokens Prod:"      /etc/httpd/conf/extra/httpd-default.conf
 		sed -i "s:ServerSignature On:ServerSignature Off:" /etc/httpd/conf/extra/httpd-default.conf
-		sed -i "s:;extension=.*:extension=suhosin.so"      /etc/php/conf.d/suhosin.ini
-		sed -i "s:;extension=.*:extension=geoip.so"        /etc/php/conf.d/geoip.ini
+		sed -i "s:;extension=.*:extension=suhosin.so:"     /etc/php/conf.d/suhosin.ini
+		sed -i "s:;extension=.*:extension=geoip.so:"       /etc/php/conf.d/geoip.ini
 		touch $WEB/index.html
 		if [[ ! -f /etc/httpd/conf/server.key ]]; then
 			mksslcert "/etc/httpd/conf/server.crt" "/etc/httpd/conf/server.key"

@@ -107,8 +107,8 @@ if [[ "$torrent" = 'rtorrent' ]]; then  # Start rtorrent
 		sudo -u $user_name mkdir -p $HOME/.dtach ; rm -f $HOME/.dtach/rtorrent
 		sudo -u "$USER" dtach -n $HOME/.dtach/rtorrent rtorrent
 		is_running "rtorrent" "$USER" &&
-			then echo -e "${bldgrn}[SUCCESS]${txtgrn}\n ${bldgrn}Resume:${txtgrn} dtach -a ~/.dtach/rtorrent\n ${bldgrn}Detach:${txtgrn} Ctrl-\\ ${rst}" ||
-			else echo -e "${bldred}[FAILURE]${txtred} rtorrent FAILED to start!${rst}"
+			echo -e "${bldgrn}[SUCCESS]${txtgrn}\n ${bldgrn}Resume:${txtgrn} dtach -a ~/.dtach/rtorrent\n ${bldgrn}Detach:${txtgrn} Ctrl-\\ ${rst}" ||
+			echo -e "${bldred}[FAILURE]${txtred} rtorrent FAILED to start!${rst}"
 	fi
 fi
 
