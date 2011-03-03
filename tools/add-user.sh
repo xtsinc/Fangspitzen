@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+[[ $(uname -s) != "Linux" || $UID != 0 ]] && echo "Run with sudo" && exit
 
 # Assumptions:
 #	Apache or Lighttp using mod_auth_digest
@@ -15,18 +16,16 @@
 
 init_variables()
 {
-	if [[ $(uname -s) = "Linux" ]] ; then
-		# Distributor -i > Ubuntu  > Debian  > Debian   > LinuxMint     > Arch  > SUSE LINUX  ($DISTRO)
-		# Release     -r > 10.04   > 5.0.6   > 6.0      > 1|10          > n/a   > 11.3        ($RELASE)
-		# Codename    -c > lucid   > lenny   > squeeze  > debian|julia  > n/a   > n/a         ($NAME)
-		readonly DISTRO=$(lsb_release -is) RELEASE=$(lsb_release -rs) ARCH=$(uname -m) NAME=$(lsb_release -cs)
-		user_name=''
-		shell_reply=''
-		declare -i scgi_port=0
-		bldred='\e[1;31m'  # Red
-		bldpur='\e[1;35m'  # Purple
-		rst='\e[0m'        # Reset
-	else exit ;fi
+	# Distributor -i > Ubuntu  > Debian  > Debian   > LinuxMint     > Arch  > SUSE LINUX  ($DISTRO)
+	# Release     -r > 10.04   > 5.0.6   > 6.0      > 1|10          > n/a   > 11.3        ($RELASE)
+	# Codename    -c > lucid   > lenny   > squeeze  > debian|julia  > n/a   > n/a         ($NAME)
+	readonly DISTRO=$(lsb_release -is) RELEASE=$(lsb_release -rs) ARCH=$(uname -m) NAME=$(lsb_release -cs)
+	user_name=''
+	shell_reply=''
+	declare -i scgi_port=0
+	bldred='\e[1;31m'  # Red
+	bldpur='\e[1;35m'  # Purple
+	rst='\e[0m'        # Reset
 }
 
 assumption_check()
@@ -190,19 +189,13 @@ start_rtorrent()
 	fi
 }
 
-
 ##[ Main ]##
-if [[ ${UID} != 0 ]]; then
-	echo -e "${bldred}Run with sudo ${rst}"
-	exit
-else
-	init_variables
-	assumption_check
-	chown_rutorrent
-	get_username
-	create_user
-	make_rtorrent_rc
-	make_rtorrent_init
-	make_rutorrent_conf
-	start_rtorrent
-fi
+init_variables
+assumption_check
+chown_rutorrent
+get_username
+create_user
+make_rtorrent_rc
+make_rtorrent_init
+make_rutorrent_conf
+start_rtorrent
