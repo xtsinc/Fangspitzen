@@ -109,11 +109,11 @@ if [[ $http = 'apache' ]]; then
 	if [[ "$DISTRO" = @([Uu]buntu|[dD]ebian|*Mint) ]]; then
 		packages install apache2 apache2-mpm-prefork libapache2-mod-python apachetop &&
 		packages install $PHP_DEBIAN php5 libapache2-mod-php5 libapache2-mod-suphp suphp-common
-		PHPini=/etc/php5/apache/php.ini
+		PHPini=/etc/php5/apache2/php.ini
 	elif [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]; then
 		packages install apache2 apache2-prefork &&
 		packages install $PHP_SUSE php5 suphp apache2-mod_php5
-		PHPini=/etc/php5/apache/php.ini
+		PHPini=/etc/php5/apache2/php.ini
 	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
 		packages install apache php-apache &&
 		packages install $PHP_ARCHLINUX
