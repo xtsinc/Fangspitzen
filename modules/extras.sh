@@ -292,10 +292,9 @@ cd $SOURCE_DIR
 	mv vnstat-web $WEB  # Copy VnStat-web to WebRoot
 	log "Frontend Installed | http://$iP/vnstat-web"
 
-	if ! is_running "vnstatd"; then  # Make database and start vnstatd
-		vnstat -u -i $iFACE
-		vnstatd -d
-	fi
+	! is_running "vnstatd" &&  # Make database and start vnstatd
+		vnstat -u -i $iFACE && vnstatd -d
+
 	debug_wait "vnstat-web.installed"
 fi
 

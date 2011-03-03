@@ -7,7 +7,7 @@
 #
 # You can, of course, change it below
 
-	webserver='apache2'                     # apache, lighttpd
+	webserver='apache2'                     # apache, lighttpd  # Arch users enter 'httpd' for apache
 	webuser='www-data'                      # webserver user
 	htpasswd='/etc/apache2/.htpasswd'       # path to .htpasswd
 	htaccess='/var/www/rutorrent/.htaccess' # path to .htaccess
@@ -33,11 +33,14 @@ assumption_check()
 {
 	ERROR=0
 	[[ -f "$htpasswd" ]] &&
-		echo -e "- htpasswd....[${bldpur} OK ${rst}]"   || echo -e "- htpasswd....[${bldred} FAILED ${rst}]" && ERROR=1
+		echo -e "- htpasswd....[${bldpur} OK ${rst}]"   ||
+		echo -e "- htpasswd....[${bldred} FAILED ${rst}]" && ERROR=1
 	[[ -f "$htaccess" ]] &&
-		echo -e "- htaccess....[${bldpur} OK ${rst}]"   || echo -e "- htaccess....[${bldred} FAILED ${rst}]" && ERROR=2
+		echo -e "- htaccess....[${bldpur} OK ${rst}]"   ||
+		echo -e "- htaccess....[${bldred} FAILED ${rst}]" && ERROR=2
 	[[ -d "$rutorrent" ]] &&
-		echo -e "- ruTorrent...[${bldpur} OK ${rst}]\n" || echo -e "- ruTorrent...[${bldred} FAILED ${rst}]" && ERROR=3
+		echo -e "- ruTorrent...[${bldpur} OK ${rst}]\n" ||
+		echo -e "- ruTorrent...[${bldred} FAILED ${rst}]" && ERROR=3
 	[[ $ERROR > 0 ]] && echo "\n ERRORS: $ERROR" && exit
 }
 
@@ -59,12 +62,14 @@ create_user()
 {
 	useradd --create-home --shell "$user_shell" "$user_name"
 	[[ $? = 0 ]] &&
-		echo -e "\n${bldred}-${rst} System User .........[${bldpur} CREATED ${rst}]" || echo -e "\n${bldred}-${rst} System User .........[${bldred} FAILED ${rst}]"
+		echo -e "\n${bldred}-${rst} System User .........[${bldpur} CREATED ${rst}]" ||
+		echo -e "\n${bldred}-${rst} System User .........[${bldred} FAILED ${rst}]"
 	echo
 	passwd $user_name
 
 	[[ $? = 0 ]] &&
-		echo -e "\n${bldred}-${rst} User Password .......[${bldpur} CREATED ${rst}]" || echo -e "\n${bldred}-${rst} User Password .......[${bldred} FAILED ${rst}]"
+		echo -e "\n${bldred}-${rst} User Password .......[${bldpur} CREATED ${rst}]" ||
+		echo -e "\n${bldred}-${rst} User Password .......[${bldred} FAILED ${rst}]"
 }
 
 make_rtorrent_rc()
@@ -167,19 +172,21 @@ httpd_add_scgi()
 		#sudo -u $user_name echo "scgi_port = localhost:$scgi_port" >> .rtorrent.rc
 		#sed -i "s:),:),\n\t\"/rutorrent/$user_name\" =>\n\t( \n\t\t\"127.0.0.1\" =>\n\t\t(\n\t\t\"host\"         => \"127.0.0.1\",\n\t\t\"port\"         => $scgi_port,\n\t\t\"check-local\"  => \"disable\",\n\t\t)\n\t):" /etc/lighttpd/conf-available/20-scgi.conf
 	#fi
-	/etc/init.d/$webserver restart
+	[[ -d /etc/rc.d/ ]] &&
+		/etc/rc.d/$webserver restart || /etc/init.d/$webserver restart
 }
 
 start_rtorrent()
 {
 	echo ; read -p "Start rtorrent for $user_name? [y|n]: " start_rt
 	if [[ $start_rt = 'y' ]]; then
+		echo -en "${bldred}-${rst} rTorrent Starting ...["
 		sudo -u $user_name mkdir -p /home/$user_name/.dtach
 		sudo -u $user_name dtach -n /home/$user_name/.dtach/rtorrent rtorrent
-		
-		echo -en "${bldred}-${rst} rTorrent Starting ...["
+
 		[[ ! -z $(pgrep -u $user_name rtorrent) ]] &&
-			echo -e "${bldpur} SUCCESS ${rst}]" || echo -e "${bldred} FAiLED ${rst}]"
+			echo -e "${bldpur} SUCCESS ${rst}]" ||
+			echo -e "${bldred} FAiLED ${rst}]"
 	fi
 }
 
