@@ -107,16 +107,16 @@ cd "$BASE"
 if [[ $http = 'apache' ]]; then
 	notice "iNSTALLiNG APACHE"
 	if [[ "$DISTRO" = @([Uu]buntu|[dD]ebian|*Mint) ]]; then
-		packages install apache2 apache2-mpm-prefork libapache2-mod-python apachetop &&
-		packages install $PHP_DEBIAN php5 libapache2-mod-php5 libapache2-mod-suphp suphp-common
+		packages install apache2 apache2-mpm-prefork apachetop &&
+		packages install $PHP_DEBIAN php5 libapache2-mod-php5 libapache2-mod-suphp suphp-common # libapache2-mod-geoip
 		PHPini=/etc/php5/apache2/php.ini
 	elif [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]; then
 		packages install apache2 apache2-prefork &&
-		packages install $PHP_SUSE php5 suphp apache2-mod_php5
+		packages install $PHP_SUSE php5 suphp apache2-mod_php5 # apache2-mod_geoip
 		PHPini=/etc/php5/apache2/php.ini
 	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
 		packages install apache php-apache &&
-		packages install $PHP_ARCHLINUX
+		packages install $PHP_ARCHLINUX # apache-mod_geoip2
 		echo "/etc/rc.d/httpd start" >> /etc/rc.local
 		PHPini=/etc/php/php.ini
 	fi
@@ -133,8 +133,9 @@ if [[ $http = 'apache' ]]; then
 		echo   "ServerName $HOSTNAME" >>                   /etc/apache2/apache2.conf
 	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
 		if [[ ! $(grep 'LoadModule php5_module' /etc/httpd/conf/httpd.conf) ]]; then
-			echo "LoadModule php5_module modules/libphp5.so"  >> /etc/httpd/conf/httpd.conf
-			echo "Include conf/extra/php5_module.conf"        >> /etc/httpd/conf/httpd.conf
+		 echo "LoadModule php5_module modules/libphp5.so"                 >> /etc/httpd/conf/httpd.conf
+		 echo "Include conf/extra/php5_module.conf"                       >> /etc/httpd/conf/httpd.conf
+		 #echo -e "<IfModule mod_geoip.c>\n\tGeoIPEnable On\n</IfModule>" >> /etc/httpd/conf/httpd.conf
 		fi
 		sed -i "s:Include conf/extra/httpd-userdir.conf:#Include conf/extra/httpd-userdir.conf:"     /etc/httpd/conf/httpd.conf  # Disable User-Dir
 		sed -i "s:#Include conf/extra/httpd-ssl.conf:Include conf/extra/httpd-ssl.conf:"             /etc/httpd/conf/httpd.conf  # Enable SSL
@@ -143,6 +144,7 @@ if [[ $http = 'apache' ]]; then
 		sed -i "s:ServerTokens .*:ServerTokens Prod:"      /etc/httpd/conf/extra/httpd-default.conf
 		sed -i "s:ServerSignature On:ServerSignature Off:" /etc/httpd/conf/extra/httpd-default.conf
 		sed -i "s:;extension=.*:extension=suhosin.so"      /etc/php/conf.d/suhosin.ini
+		sed -i "s:;extension=.*:extension=geoip.so"        /etc/php/conf.d/geoip.ini
 		touch $WEB/index.html
 		if [[ ! -f /etc/httpd/conf/server.key ]]; then
 			mksslcert "/etc/httpd/conf/server.crt" "/etc/httpd/conf/server.key"
@@ -169,7 +171,7 @@ elif [[ $http = 'lighttp' ]]; then
 		lighty-enable-mod fastcgi fastcgi-php auth access accesslog compress ssl      # Enable modules
 		PHPini=/etc/php5/cgi/php.ini
 	elif [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]; then
-		packages install $PHP_SUSE lighttpd
+		packages install $PHP_SUSE lighttpd # lighttpd-mod_geoip
 		PHPini=/etc/php5/fastcgi/php.ini
 	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
 		packages install apache-tools lighttpd &&
@@ -219,6 +221,7 @@ if [[ $http != @(none|no|[Nn]) ]]; then  # Edit php config
 	sed -i 's:;error_log .*:error_log = /var/log/php-error.log:'                           $PHPini
 	sed -i "s:;extension=curl.so:extension=curl.so:"                                       $PHPini
 	sed -i "s:;extension=json.so:extension=json.so:"                                       $PHPini
+	sed -i "s:;extension=sockets.so:extension=sockets.so:"                                 $PHPini
 	sed -i "s:;extension=xmlrpc.so:extension=xmlrpc.so:"                                   $PHPini
 	sed -i "s:;date.timezone .*:date.timezone = Europe/Luxembourg:"                        $PHPini
 	sed -i "s|[;]*open_basedir = /srv.*|open_basedir = /srv/http/:/home/:/tmp/:/usr/share/pear/:/usr/bin/:/usr/local/bin/|" $PHPini

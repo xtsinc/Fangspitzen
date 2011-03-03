@@ -31,9 +31,10 @@ cd plugins
 	checkout http://rutorrent-logoff.googlecode.com/svn/trunk/ logoff
 	checkout http://rutorrent-instantsearch.googlecode.com/svn/trunk instantsearch
 	#checkout http://rutorrent-chat.googlecode.com/svn/trunk chat
-	extract $BASE/modules/rutorrent/plugin-nfo.tar.gz && cd ../..
+	download http://srious.biz/nfo.tar.gz && extract nfo.tar.gz && rm nfo.tar.gz
 	log "ruTorrent plugins | Downloaded"
 
+cd $SOURCE_DIR
 	sed -i "s:\$saveUploadedTorrents .*:\$saveUploadedTorrents = false;:"         rutorrent/conf/config.php
 	sed -i "s:\$topDirectory .*:\$topDirectory = '/home';:"                       rutorrent/conf/config.php
 	sed -i "s:\$XMLRPCMountPoint .*:\$XMLRPCMountPoint = \"/rutorrent/master\";:" rutorrent/conf/config.php
