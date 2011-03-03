@@ -104,7 +104,7 @@ fi
 if [[ "$torrent" = 'rtorrent' ]]; then  # Start rtorrent
 	echo ; read -p "Start rtorrent now? [y/n]: " start_rt
 	if [[ "$start_rt" = 'y' ]]; then
-		sudo -u $user_name mkdir -p $HOME/.dtach ; rm -f $HOME/.dtach/rtorrent
+		sudo -u "$USER" mkdir -p $HOME/.dtach ; rm -f $HOME/.dtach/rtorrent
 		sudo -u "$USER" dtach -n $HOME/.dtach/rtorrent rtorrent
 		is_running "rtorrent" "$USER" &&
 			echo -e "${bldgrn}[SUCCESS]${txtgrn}\n ${bldgrn}Resume:${txtgrn} dtach -a ~/.dtach/rtorrent\n ${bldgrn}Detach:${txtgrn} Ctrl-\\ ${rst}" ||
