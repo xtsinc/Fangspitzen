@@ -369,17 +369,14 @@ yes() {  # user input for yes or no
 	esac;done
 }
 
-init() {
+init() {  # find distro and architecture
+if [[ $(uname -s) = "Linux" ]] ; then
 	clear ; echo -n ">>> iNiTiALiZiNG......"
-	OS=$(uname -s)
-
-	##[ Determine OS ]##
-if [[ "$OS" = "Linux" ]] ; then
 	[[ -f /etc/fedora-release ]] && error "TODO - Fedora"
 
-	# Distributor -i > Ubuntu  > Debian  > Debian   > LinuxMint     > Arch  > SUSE LINUX  (DISTRO)
-	# Release     -r > 10.04   > 5.0.6   > testing  > 1|10          > n/a   > 11.3        (RELASE)
-	# Codename    -c > lucid   > lenny   > squeeze  > debian|julia  > n/a   > n/a         (NAME)
+	# Distributor -i > Ubuntu  > Debian  > Debian   > LinuxMint     > Arch  > SUSE LINUX  ($DISTRO)
+	# Release     -r > 10.04   > 5.0.6   > 6.0      > 1|10          > n/a   > 11.3        ($RELASE)
+	# Codename    -c > lucid   > lenny   > squeeze  > debian|julia  > n/a   > n/a         ($NAME)
 	readonly DISTRO=$(lsb_release -is) RELEASE=$(lsb_release -rs) ARCH=$(uname -m) KERNEL=$(uname -r)
 	NAME=$(lsb_release -cs)
 	[[ "$NAME" = 'n/a' ]] && NAME=
@@ -392,10 +389,10 @@ if [[ "$OS" = "Linux" ]] ; then
 
 	packages setvars
 	readonly iP USER CORES BASE WEB HOME=/home/$USER LOG  # make sure these variables aren't overwritten
-	else error "Unsupported OS"
-fi
 	echo -e "[${bldylw} done ${rst}]"
 	sleep 1
+else error "Unsupported OS"
+fi
 }
 
 ##[ VARiABLE iNiT ]##

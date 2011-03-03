@@ -2,80 +2,69 @@
 
 # Assumptions:
 #	Apache or Lighttp using mod_auth_digest
-#	/etc/apache2/.htpasswd
-#	/etc/lighttpd/.htpasswd
+#	/etc/apache2/.htpasswd, /etc/lighttpd/.htpasswd
 #	/var/www/rutorrent/.htaccess
 #
 # You can, of course, change it below
 
-##[ TODO ]##  Make useful for lighttpd and cherokee setups
-[[ ! $1 ]] echo "*OLD*FiXME*" ; exit
+	webserver='apache2'                     # apache, lighttpd
+	webuser='www-data'                      # webserver user
+	htpasswd='/etc/apache2/.htpasswd'       # path to .htpasswd
+	htaccess='/var/www/rutorrent/.htaccess' # path to .htaccess
+	rutorrent='/var/www/rutorrent'          # path to rutorrent
 
 init_variables()
 {
-	webserver='apache2'
-	#webserver='lighttpd'
-	htpasswd='/etc/apache2/.htpasswd'
-	#htpasswd='/etc/lighttpd/.htpasswd'
-
-	htaccess='/var/www/rutorrent/.htaccess'
-	rutorrent='/var/www/rutorrent'
-	webuser='www-data'
-	user_name=''
-	shell_reply=''
-	declare -i scgi_port=0
-	bldred='\e[1;31m'  # Red
-	bldpur='\e[1;35m'  # Purple
-	rst='\e[0m'        # Reset
+	if [[ $(uname -s) = "Linux" ]] ; then
+		# Distributor -i > Ubuntu  > Debian  > Debian   > LinuxMint     > Arch  > SUSE LINUX  ($DISTRO)
+		# Release     -r > 10.04   > 5.0.6   > 6.0      > 1|10          > n/a   > 11.3        ($RELASE)
+		# Codename    -c > lucid   > lenny   > squeeze  > debian|julia  > n/a   > n/a         ($NAME)
+		readonly DISTRO=$(lsb_release -is) RELEASE=$(lsb_release -rs) ARCH=$(uname -m) NAME=$(lsb_release -cs)
+		user_name=''
+		shell_reply=''
+		declare -i scgi_port=0
+		bldred='\e[1;31m'  # Red
+		bldpur='\e[1;35m'  # Purple
+		rst='\e[0m'        # Reset
+	else exit ;fi
 }
 
 assumption_check()
 {
 	ERROR=0
-	if [[ ! -f $htpasswd ]]
-		then echo -e "- htpasswd....[${bldred} FAILED ${rst}]" ; ERROR=1
-		else echo -e "- htpasswd....[${bldpur} OK ${rst}]" ;fi
-	if [[ $webserver = 'apache2' ]]; then
-	if [[ ! -f $htaccess ]]
-		then echo -e "- htaccess....[${bldred} FAILED ${rst}]" ; ERROR=1
-		else echo -e "- htaccess....[${bldpur} OK ${rst}]" ;fi
-	if [[ ! -d $rutorrent ]]
-		then echo -e "- ruTorrent...[${bldred} FAILED ${rst}]" ; ERROR=1
-		else echo -e "- ruTorrent...[${bldpur} OK ${rst}]\n" ;fi
-	if [[ $ERROR = 1 ]]; then echo ; exit 0 ;fi
+	[[ -f "$htpasswd" ]] &&
+		echo -e "- htpasswd....[${bldpur} OK ${rst}]"   || echo -e "- htpasswd....[${bldred} FAILED ${rst}]" && ERROR=1
+	[[ -f "$htaccess" ]] &&
+		echo -e "- htaccess....[${bldpur} OK ${rst}]"   || echo -e "- htaccess....[${bldred} FAILED ${rst}]" && ERROR=2
+	[[ -d "$rutorrent" ]] &&
+		echo -e "- ruTorrent...[${bldpur} OK ${rst}]\n" || echo -e "- ruTorrent...[${bldred} FAILED ${rst}]" && ERROR=3
+	[[ $ERROR > 0 ]] && echo "\n ERRORS: $ERROR" && exit
 }
 
 chown_rutorrent()
 {
-	if [[ $(stat $rutorrent -c %U) != $webuser ]]; then
-		chown -R $webuser:$webuser $rutorrent
-	fi
+	[[ $(stat "$rutorrent" -c %U) != "$webuser" ]] &&
+		chown -R "$webuser":"$webuser" "$rutorrent"
 }
 
 get_username()
 {
 	read -p "User Name: " user_name
 	read -p "Give shell access? y|n: " shell_reply
-	if [[ $shell_reply = 'n' ]]
-		then user_shell='/usr/sbin/nologin'
-		else user_shell='/bin/bash'
-	fi
+	[[ "$shell_reply" = 'y' ]] &&
+		user_shell='/bin/bash' || user_shell='/usr/sbin/nologin'
 }
 
 create_user()
 {
-	useradd --create-home --shell $user_shell $user_name
-	if [[ $? = 0 ]]
-		then echo -e "\n${bldred}-${rst} System User .........[${bldpur} CREATED ${rst}]"
-		else echo -e "\n${bldred}-${rst} System User .........[${bldred} FAILED ${rst}]"
-	fi ; echo
-	
+	useradd --create-home --shell "$user_shell" "$user_name"
+	[[ $? = 0 ]] &&
+		echo -e "\n${bldred}-${rst} System User .........[${bldpur} CREATED ${rst}]" || echo -e "\n${bldred}-${rst} System User .........[${bldred} FAILED ${rst}]"
+	echo
 	passwd $user_name
-	
-	if [[ $? = 0 ]]
-		then echo -e "\n${bldred}-${rst} User Password .......[${bldpur} CREATED ${rst}]"
-		else echo -e "\n${bldred}-${rst} User Password .......[${bldred} FAILED ${rst}]"
-	fi
+
+	[[ $? = 0 ]] &&
+		echo -e "\n${bldred}-${rst} User Password .......[${bldpur} CREATED ${rst}]" || echo -e "\n${bldred}-${rst} User Password .......[${bldred} FAILED ${rst}]"
 }
 
 make_rtorrent_rc()
@@ -102,14 +91,13 @@ encryption = allow_incoming,try_outgoing,enable_retry
 #schedule = watch_directory,5,5,load_start=/absolute/path/to/watch/*.torrent
 EOF
 
-
-NUMBER=$[($RANDOM % 65534) + 20000]  # Generate a random number from 20000-65534
-	echo "port_range = $NUMBER-$NUMBER"           >> .rtorrent.rc
+	listen_port=$[($RANDOM % 65534) + 20000]  # Generates a random number from 20000-65534
+	echo "port_range = ${listen_port}-${listen_port}"       >> .rtorrent.rc
 	echo "directory = /home/$user_name/downloads" >> .rtorrent.rc
 	echo "session = /home/$user_name/.session"    >> .rtorrent.rc
 
 	echo -e "${bldred}-${rst} rTorrent Config .....[${bldpur} CREATED ${rst}]"
-	echo -e "${bldred}-${rst} rTorrent Port .......[${bldpur} $NUMBER ${rst}]\n"
+	echo -e "${bldred}-${rst} rTorrent Port .......[${bldpur} $listen_port ${rst}]\n"
 }
 
 make_rtorrent_init()
@@ -127,12 +115,14 @@ make_rtorrent_init()
 make_rutorrent_conf()
 {
 	cd $rutorrent/conf
-	get_scgi_port
 	sudo -u $webuser mkdir users/$user_name
 	sudo -u $webuser cp config.php users/$user_name
-	sudo -u $webuser sed -i "s:\$scgi_port .*:\$scgi_port = $scgi_port;:"                    users/$user_name/config.php
-	sudo -u $webuser sed -i "s:\$XMLRPCMountPoint .*:\$XMLRPCMountPoint = \"$scgi_mount\";:" users/$user_name/config.php
-
+	if [[ ! grep -A 1 "\[rpc\]" $rutorrent/conf/plugins.ini | grep "enabled = yes" || ! grep -A 1 "\[httprpc\]" $rutorrent/conf/plugins.ini | grep "enabled = yes" ]]; then
+		get_scgi_port
+		httpd_add_scgi
+		sudo -u $webuser sed -i "s:\$scgi_port .*:\$scgi_port = $scgi_port;:"                    users/$user_name/config.php
+		sudo -u $webuser sed -i "s:\$XMLRPCMountPoint .*:\$XMLRPCMountPoint = \"$scgi_mount\";:" users/$user_name/config.php
+	fi
 	sudo -u $webuser cat >> users/$user_name/access.ini << "EOF"
 [settings]
 showDownloadsPage = no
@@ -150,10 +140,9 @@ EOF
 	echo -e "${bldred}-${rst} ruTorrent Config ....[${bldpur} CREATED ${rst}]\n"
 
 	htdigest $htpasswd "ruTorrent" $user_name
-	if [[ $? = 0 ]]
-		then echo -e "\n${bldred}-${rst} ruTorrent Password ..[${bldpur} CREATED ${rst}]"
-		else echo -e "\n${bldred}-${rst} ruTorrent Password ..[${bldred} FAILED ${rst}]"
-	fi
+	[[ $? = 0 ]] &&
+		echo -e "\n${bldred}-${rst} ruTorrent Password ..[${bldpur} CREATED ${rst}]" ||
+		echo -e "\n${bldred}-${rst} ruTorrent Password ..[${bldred} FAILED ${rst}]"
 }
 
 get_scgi_port()
@@ -167,12 +156,11 @@ get_scgi_port()
 	done
 }
 
-httpd_scgi()
+httpd_add_scgi()
 {
-	cd /home/$user_name
 	#if [[ $webserver = 'apache2' ]]; then
 		#echo "SCGIMount $scgi_mount 127.0.0.1:$scgi_port" >> /etc/apache2/mods-available/scgi.conf
-		sudo -u $user_name echo "scgi_port = localhost:$scgi_port" >> .rtorrent.rc
+		sudo -u $user_name echo "scgi_port = localhost:$scgi_port" >> /home/$user_name/.rtorrent.rc
 		echo -e "${bldred}-${rst} SCGi Mount ..........[${bldpur} CREATED ${rst}]"
 		echo -e "${bldred}-${rst} SCGi Port ...........[${bldpur} $scgi_port ${rst}]\n"
 	#elif [[ $webserver = 'lighttpd' ]]; then
@@ -190,17 +178,15 @@ start_rtorrent()
 		sudo -u $user_name dtach -n /home/$user_name/.dtach/rtorrent rtorrent
 		
 		echo -en "${bldred}-${rst} rTorrent Starting ...["
-		if [[ ! -z $(pgrep -u $user_name rtorrent) ]]
-			then echo -e "${bldpur} SUCCESS ${rst}]"
-			else echo -e "${bldred} FAiLED ${rst}]"
-		fi
+		[[ ! -z $(pgrep -u $user_name rtorrent) ]] &&
+			echo -e "${bldpur} SUCCESS ${rst}]" || echo -e "${bldred} FAiLED ${rst}]"
 	fi
 }
 
 
 ##[ Main ]##
 if [[ ${UID} != 0 ]]; then
-	echo -e "${bldred}Run as root user ${rst}"
+	echo -e "${bldred}Run with sudo ${rst}"
 	exit
 else
 	init_variables
@@ -211,6 +197,5 @@ else
 	make_rtorrent_rc
 	make_rtorrent_init
 	make_rutorrent_conf
-	httpd_scgi
 	start_rtorrent
 fi
