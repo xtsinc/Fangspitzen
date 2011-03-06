@@ -13,8 +13,8 @@ cd $SOURCE_DIR
 	extract $BASE/modules/rutorrent/rutorrent.tar.bz2
 
 	rm -R rutorrent/conf/plugins.ini rutorrent/favicon.ico
-	cp $BASE/modules/rutorrent/plugins.ini conf/plugins.ini rutorrent/
-	cp $BASE/modules/rutorrent/favicon.ico favicon.ico rutorrent/
+	cp $BASE/modules/rutorrent/plugins.ini rutorrent/conf/plugins.ini 
+	cp $BASE/modules/rutorrent/favicon.ico rutorrent/favicon.ico 
 
 	sed -i "s:\$saveUploadedTorrents .*:\$saveUploadedTorrents = false;:"         rutorrent/conf/config.php
 	sed -i "s:\$topDirectory .*:\$topDirectory = '/home';:"                       rutorrent/conf/config.php
