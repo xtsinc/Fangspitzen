@@ -191,12 +191,12 @@ start_rtorrent()
 }
 
 ##[ Main ]##
-init_variables
-assumption_check
-chown_rutorrent
-get_username
-create_user
-make_rtorrent_rc
-make_rtorrent_init
-make_rutorrent_conf
-start_rtorrent
+init_variables        # create some variables
+assumption_check      # check if our paths are correct 
+chown_rutorrent       # make sure rutorrent is writeable by our webserver
+get_username          # get username and if it can have shell access
+create_user           # do useradd
+make_rtorrent_rc      # create new user's .rtorrent.rc
+make_rtorrent_init    # if using rtorrent init script, add config for this user
+make_rutorrent_conf   # add new user to rutorrent
+start_rtorrent        # start rtorrent under new user
