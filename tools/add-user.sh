@@ -162,15 +162,16 @@ get_scgi_port()
 
 httpd_add_scgi()
 {
-	#if [[ $webserver = 'apache2' ]]; then
-		#echo "SCGIMount $scgi_mount 127.0.0.1:$scgi_port" >> /etc/apache2/mods-available/scgi.conf
-		sudo -u $user_name echo "scgi_port = localhost:$scgi_port" >> /home/$user_name/.rtorrent.rc
-		echo -e "${bldred}-${rst} SCGi Mount ..........[${bldpur} CREATED ${rst}]"
-		echo -e "${bldred}-${rst} SCGi Port ...........[${bldpur} $scgi_port ${rst}]\n"
-	#elif [[ $webserver = 'lighttpd' ]]; then
-		#sudo -u $user_name echo "scgi_port = localhost:$scgi_port" >> .rtorrent.rc
-		#sed -i "s:),:),\n\t\"/rutorrent/$user_name\" =>\n\t( \n\t\t\"127.0.0.1\" =>\n\t\t(\n\t\t\"host\"         => \"127.0.0.1\",\n\t\t\"port\"         => $scgi_port,\n\t\t\"check-local\"  => \"disable\",\n\t\t)\n\t):" /etc/lighttpd/conf-available/20-scgi.conf
-	#fi
+	if [[ $webserver = 'apache2' ]]; then
+		echo "SCGIMount $scgi_mount 127.0.0.1:$scgi_port" >> /etc/apache2/mods-available/scgi.conf
+	elif [[ $webserver = 'httpd' ]]; then
+		echo "SCGIMount $scgi_mount 127.0.0.1:$scgi_port" >> /etc/httpd/conf/httpd.conf
+	elif [[ $webserver = 'lighttpd' ]]; then
+		sed -i "s:),:),\n\t\"/rutorrent/$user_name\" =>\n\t( \n\t\t\"127.0.0.1\" =>\n\t\t(\n\t\t\"host\"         => \"127.0.0.1\",\n\t\t\"port\"         => $scgi_port,\n\t\t\"check-local\"  => \"disable\",\n\t\t)\n\t):" /etc/lighttpd/conf-available/20-scgi.conf
+	fi
+	sudo -u $user_name echo "scgi_port = localhost:$scgi_port" >> /home/$user_name/.rtorrent.rc
+	echo -e "${bldred}-${rst} SCGi Mount ..........[${bldpur} CREATED ${rst}]"
+	echo -e "${bldred}-${rst} SCGi Port ...........[${bldpur} $scgi_port ${rst}]\n"
 	[[ -d /etc/rc.d/ ]] &&
 		/etc/rc.d/$webserver restart || /etc/init.d/$webserver restart
 }
