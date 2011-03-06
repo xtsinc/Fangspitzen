@@ -4,6 +4,7 @@ echo -e   "*****${bldred} ADDiNG REPOSiTORiES  ${rst}*****"
 echo -e   "********************************\n"
 
 if [[ "$DISTRO" = @([uU]buntu) ]]; then
+	! is_installed "gnupg" && packages install gnupg
 	echo "deb http://archive.ubuntu.com/ubuntu/ "$NAME" multiverse"                > $REPO_PATH/multiverse.list  # non-free
 	echo "deb-src http://archive.ubuntu.com/ubuntu/ "$NAME" multiverse"           >> $REPO_PATH/multiverse.list  # non-free
 	echo "deb http://archive.ubuntu.com/ubuntu/ ${NAME}-updates multiverse"       >> $REPO_PATH/multiverse.list  # non-free
@@ -67,7 +68,6 @@ elif [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]; then
 else
 	error "Failed to add repositories to unknown distro... exiting (${DISTRO})"
 fi
-echo $(date) > $BASE/.repos.installed
 
 ##!=====================>> PUBLiC KEYS <<========================!##
 if [[ "$DISTRO" = @([uU]buntu|[dD]ebian|*Mint) ]]; then  # Add signing keys
@@ -81,4 +81,5 @@ if [[ "$DISTRO" = @([uU]buntu|[dD]ebian|*Mint) ]]; then  # Add signing keys
 	wget -q http://www.webmin.com/jcameron-key.asc -O- | apt-key add -
 fi
 debug_wait "repos.added"
+echo $(date) > $BASE/.repos.installed
 clear

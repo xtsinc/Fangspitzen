@@ -225,7 +225,7 @@ packages() {  # use appropriate package manager depending on distro
 			upgrade) apt-get upgrade --yes $quiet                                ;;
 			version) aptitude show $2 | grep Version:                            ;;
 			setvars)
-				REPO_PATH=/etc/apt/sources.list.d 
+				REPO_PATH=/etc/apt/sources.list.d
 				alias_autoclean="sudo apt-get autoremove && sudo apt-get autoclean"
 				alias_install="sudo apt-get install"
 				alias_remove="sudo apt-get autoremove"
