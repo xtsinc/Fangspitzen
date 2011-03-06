@@ -121,7 +121,7 @@ make_rutorrent_conf()
 	cd $rutorrent/conf
 	sudo -u $webuser mkdir users/$user_name
 	sudo -u $webuser cp config.php users/$user_name
-	if [[ ! grep -A 1 "\[rpc\]" $rutorrent/conf/plugins.ini | grep "enabled = yes" || ! grep -A 1 "\[httprpc\]" $rutorrent/conf/plugins.ini | grep "enabled = yes" ]]; then
+	if [[ ! $(grep -A 1 "\[rpc\]" $rutorrent/conf/plugins.ini | grep "enabled = yes") || ! $(grep -A 1 "\[httprpc\]" $rutorrent/conf/plugins.ini | grep "enabled = yes") ]]; then
 		get_scgi_port
 		httpd_add_scgi
 		sudo -u $webuser sed -i "s:\$scgi_port .*:\$scgi_port = $scgi_port;:"                    users/$user_name/config.php
