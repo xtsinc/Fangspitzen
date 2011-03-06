@@ -32,15 +32,15 @@ assumption_check()
 {
 	ERROR=0
 	[[ -f "$htpasswd" ]] &&
-		echo -e "- htpasswd....[${bldpur} OK ${rst}]"   ||
-		echo -e "- htpasswd....[${bldred} FAILED ${rst}]" && ERROR=1
+		echo -e "- htpasswd....[${bldpur} OK ${rst}]"   || {
+		echo -e "- htpasswd....[${bldred} FAILED ${rst}]" && ERROR=1; }
 	[[ -f "$htaccess" ]] &&
-		echo -e "- htaccess....[${bldpur} OK ${rst}]"   ||
-		echo -e "- htaccess....[${bldred} FAILED ${rst}]" && ERROR=2
+		echo -e "- htaccess....[${bldpur} OK ${rst}]"   || {
+		echo -e "- htaccess....[${bldred} FAILED ${rst}]" && ERROR=2; }
 	[[ -d "$rutorrent" ]] &&
-		echo -e "- ruTorrent...[${bldpur} OK ${rst}]\n" ||
-		echo -e "- ruTorrent...[${bldred} FAILED ${rst}]" && ERROR=3
-	[[ $ERROR > 0 ]] && echo "\n ERRORS: $ERROR" && exit
+		echo -e "- ruTorrent...[${bldpur} OK ${rst}]\n" || {
+		echo -e "- ruTorrent...[${bldred} FAILED ${rst}]" && ERROR=3; }
+	[[ $ERROR > 0 ]] && exit || echo ""
 }
 
 chown_rutorrent()
@@ -51,8 +51,8 @@ chown_rutorrent()
 
 get_username()
 {
-	read -p "User Name: " user_name
-	read -p "Give shell access? y|n: " shell_reply
+	read -p "New User's Name: " user_name
+	read -p "Give shell access? [y|n]: " shell_reply
 	[[ "$shell_reply" = 'y' ]] &&
 		user_shell='/bin/bash' || user_shell='/usr/sbin/nologin'
 }
@@ -121,7 +121,7 @@ make_rutorrent_conf()
 	cd $rutorrent/conf
 	sudo -u $webuser mkdir users/$user_name
 	sudo -u $webuser cp config.php users/$user_name
-	if [[ ! $(grep -A 1 "\[rpc\]" $rutorrent/conf/plugins.ini | grep "enabled = yes") || ! $(grep -A 1 "\[httprpc\]" $rutorrent/conf/plugins.ini | grep "enabled = yes") ]]; then
+	if ! [[ $(grep -A 1 "\[rpc\]" $rutorrent/conf/plugins.ini | grep "enabled = yes") || $(grep -A 1 "\[httprpc\]" $rutorrent/conf/plugins.ini | grep "enabled = yes") ]]; then
 		get_scgi_port
 		httpd_add_scgi
 		sudo -u $webuser sed -i "s:\$scgi_port .*:\$scgi_port = $scgi_port;:"                    users/$user_name/config.php
