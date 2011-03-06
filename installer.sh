@@ -31,6 +31,7 @@ while [ "$#" -gt 0 ]; do
 			then passwdlength="$2" && mkpass; shift
 			else error "Specify Length --pass x "; fi ;;
 		--rtorrent-prealloc) alloc='y'; shift ;;
+		--rutorrent-workaround) rutorrent_workaround='y'; shift ;;
 		--save-tmp) RM_TMP='n'; shift ;; 
 		-t|--threads) if [[ "$2" ]]
 			then declare -i OVERWRITE_THREAD_COUNT="$2"; shift 
