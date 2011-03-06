@@ -15,7 +15,7 @@ PHP_SUSE="$PHP_COMMON php5-devel php5-json"
 PHP_ARCHLINUX="php php-curl php-geoip php-suhosin"
 
 	echo -en "${bldred} REFRESHiNG REPOSiTORiES...${rst}"
-	packages update
+	packages update && echo -e "${bldylw} done${rst}"
 	echo -en "${bldred} iNSTALLiNG BASE PACKAGES, this may take a while...${rst}"
 	case "$DISTRO" in
 		[uU]buntu|[Dd]ebian|*Mint) packages install $DEBIAN ;;
