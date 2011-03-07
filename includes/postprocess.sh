@@ -12,6 +12,9 @@ if [[ -f /etc/ssh/sshd_config && ! $(grep '#added by autoscript' /etc/ssh/sshd_c
 	sed -i 's:[#]*ServerKeyBits .*:ServerKeyBits 1024:'          /etc/ssh/sshd_config
 	sed -i 's:[#]*AllowTcpForwarding yes:AllowTcpForwarding no:' /etc/ssh/sshd_config
 	sed -i 's:[#]*X11Forwarding yes:X11Forwarding no:'           /etc/ssh/sshd_config
+	[[ $(grep "AllowUsers" /etc/ssh/sshd_config) ]] &&
+		sed -e "/AllowUsers/s/$/ $USER/"                      -i /etc/ssh/sshd_config ||
+		echo "AllowUsers $USER"                               >> /etc/ssh/sshd_config
 	echo "#added by autoscript"                               >> /etc/ssh/sshd_config
 	if [[ -d /etc/rc.d/ ]]  # restart ssh daemon
 		then /etc/rc.d/sshd restart

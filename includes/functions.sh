@@ -319,9 +319,6 @@ runchecks() {
 	echo -ne ">>> Internet Access ..."
 	[[ $(ping -c 1 74.125.226.116) ]] && [[ $(ping -c 1 208.67.222.222) ]] &&  # Ping google and opendns
 		echo -e ".[${bldylw} OK ${rst}]" || error "Unable to ping outside world..."
-
-	LOG=$BASE/logs/installer.log
-	mkdir --parents logs/ ; touch $LOG
 	sleep 1
 }
 
@@ -382,10 +379,11 @@ if [[ $(uname -s) = "Linux" ]] ; then
 	[[ "$NAME" = 'n/a' ]] && NAME=
 	readonly NAME
 
-	##[ Create folders if not already created ]##
-	mkdir --parents $SOURCE_DIR
-
 	iP=$(wget --quiet --timeout=30 www.whatismyip.com/automation/n09230945.asp -O - 2)
+	LOG=$BASE/logs/installer.log
+
+	mkdir --parents $BASE/logs/
+	mkdir --parents $SOURCE_DIR
 
 	packages setvars
 	readonly iP USER CORES BASE WEB HOME=/home/$USER LOG  # make sure these variables aren't overwritten
