@@ -1,6 +1,6 @@
 ##!=======================>> FUNCTiONS <<=======================!##
 base_install() {  # install dependencies
-COMMON="apache2-utils autoconf automake axel binutils bzip2 ca-certificates cpp curl file gamin gcc git-core gzip htop iptables libexpat1 libtool libxml2 m4 make openssl patch perl pkg-config python python-gamin python-openssl python-setuptools rsync screen subversion sudo unrar unzip"
+COMMON="apache2-utils autoconf automake axel binutils bzip2 ca-certificates cpp curl file gamin gcc git-core gzip htop iptables libexpat1 libtool libxml2 m4 make mcrypt openssl patch perl pkg-config python python-gamin python-openssl python-setuptools rsync screen subversion sudo unrar unzip"
 DYNAMIC="libcurl3 libcurl3-gnutls libcurl4-openssl-dev libncurses5 libncurses5-dev libsigc++-2.0-dev"
 
 DEBIAN="$COMMON $DYNAMIC aptitude autotools-dev build-essential cfv comerr-dev dtach g++ geoip-database libcppunit-dev libperl-dev libssl-dev libterm-readline-gnu-perl libtorrent-rasterbar-dev ncurses-base ncurses-bin ncurses-term perl-modules ssl-cert"
@@ -10,7 +10,7 @@ ARCHLINUX="axel base-devel binutils cppunit curl dtach freetype2 geoip htop libs
 
 PHP_COMMON="php5-curl php5-geoip php5-gd php5-mcrypt php5-mysql php5-suhosin php5-xmlrpc"
 
-PHP_DEBIAN="$PHP_COMMON php5-cgi php5-cli php5-common php5-dev php5-mhash"  # php5-json is provided by php5-common
+PHP_DEBIAN="$PHP_COMMON php5-cgi php5-cli php5-common php5-dev"  # php5-json is provided by php5-common
 PHP_SUSE="$PHP_COMMON php5-devel php5-json"
 PHP_ARCHLINUX="php php-curl php-geoip php-suhosin"
 

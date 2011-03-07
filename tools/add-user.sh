@@ -130,6 +130,7 @@ make_rutorrent_conf()
 	sudo -u $webuser mkdir users/$user_name
 	sudo -u $webuser cp config.php users/$user_name
 	if ! [[ $(grep -A 1 "\[rpc\]" $rutorrent/conf/plugins.ini | grep "enabled = yes") || $(grep -A 1 "\[httprpc\]" $rutorrent/conf/plugins.ini | grep "enabled = yes") ]]; then
+		scgi_inuse=1
 		get_scgi_port
 		httpd_add_scgi
 		sudo -u $webuser sed -i "s:\$scgi_port .*:\$scgi_port = $scgi_port;:"                    users/$user_name/config.php
@@ -185,15 +186,16 @@ httpd_add_scgi()
 restart_services()
 {
 	echo -en "\n${bldred}-${rst} Restarting HTTP/SSH .["
-	[[ -d /etc/rc.d/ ]] &&
-		/etc/rc.d/sshd restart >&/dev/null &&
-		/etc/rc.d/$webserver restart >&/dev/null 
+	if [[ -d /etc/rc.d/ ]]; then
+		[[ $scgi_inuse = 1 ]] && /etc/rc.d/$webserver restart >&/dev/null
+		/etc/rc.d/sshd reload >&/dev/null
+	fi
 
 	if [[ -d /etc/init.d ]]; then
-		/etc/init.d/$webserver restart >&/dev/null 
+		[[ $scgi_inuse = 1 ]] && /etc/init.d/$webserver restart >&/dev/null 
 	[[ -f /etc/init.d/sshd ]] &&
-		/etc/init.d/sshd restart >&/dev/null ||
-		/etc/init.d/ssh restart >&/dev/null 
+		/etc/init.d/sshd reload >&/dev/null ||
+		/etc/init.d/ssh reload >&/dev/null 
 	fi
 	echo -e "${bldpur} DONE ${rst}]"
 }
@@ -203,12 +205,12 @@ start_rtorrent()
 	echo ; read -p "Start rtorrent for $user_name? [y|n]: " start_rt
 	if [[ $start_rt = 'y' ]]; then
 		echo -en "${bldred}-${rst} rTorrent Starting ...["
-		sudo -u $user_name "mkdir -p /home/$user_name/.dtach"
-		sudo -u $user_name "env TERM=linux dtach -n /home/$user_name/.dtach/rtorrent rtorrent"
+		sudo -u $user_name mkdir -p /home/$user_name/.dtach
+		sudo -u $user_name env TERM=linux dtach -n /home/$user_name/.dtach/rtorrent rtorrent
 
 		[[ ! -z $(pgrep -u $user_name rtorrent) ]] &&
-			echo -e "${bldpur} SUCCESS ${rst}]" ||
-			echo -e "${bldred} FAiLED ${rst}]"
+			echo -e "${bldpur} SUCCESS ${rst}]\n" ||
+			echo -e "${bldred} FAiLED ${rst}]\n"
 	fi
 }
 
