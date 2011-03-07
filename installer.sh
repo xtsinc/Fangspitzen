@@ -224,7 +224,7 @@ if [[ $http != @(none|no|[Nn]) ]]; then  # Edit php config
 	sed -i "s:;extension=sockets.so:extension=sockets.so:"                                 $PHPini
 	sed -i "s:;extension=xmlrpc.so:extension=xmlrpc.so:"                                   $PHPini
 	sed -i "s:;date.timezone .*:date.timezone = Europe/Luxembourg:"                        $PHPini
-	sed -i "s|[;]*open_basedir = /srv.*|open_basedir = /srv/http/:/home/:/tmp/:/usr/share/pear/:/usr/bin/:/usr/local/bin/|" $PHPini
+	sed -i "s|[;]*open_basedir = /srv.*|open_basedir = /srv/http/:/home/:/tmp/:/usr/share/pear/:/bin:/usr/bin/:/usr/local/bin/|" $PHPini
 	touch $WEB/favicon.ico
 	[[ $create_phpinfo = 'y' ]] && echo "<?php phpinfo(); ?>" > $WEB/info.php  # Create phpinfo file
 fi

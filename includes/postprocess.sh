@@ -1,7 +1,7 @@
 ##!===================>> Post Processing <<======================!##
 echo -e "\n*******************************"
 echo -e   "******${bldred} POST PROCESSiNG ${rst}********"
-echo -e   "*******************************\n"
+echo -e   "*******************************"
 
 if [[ -f /etc/ssh/sshd_config && ! $(grep '#added by autoscript' /etc/ssh/sshd_config) ]]; then  # Check if this has already been done
 	sed -i 's:[#]*Protocol .*:Protocol 2:'                       /etc/ssh/sshd_config

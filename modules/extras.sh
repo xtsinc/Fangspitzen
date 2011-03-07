@@ -75,6 +75,7 @@ elif [[ $sql = 'postgre' ]]; then
 		sed -i "s:;extension=pgsql.so:extension=pgsql.so:"         $PHPini
 		sed -i "s:;extension=pdo.so:extension=pdo.so:"             $PHPini
 		sed -i "s:;extension=pdo_pgsql.so:extension=pdo_pgsql.so:" $PHPini
+		/etc/rc.d/postgresql start
 	fi
 	if_error "PostgreSQL failed to install"
 	log "PostgreSQL Installation | Completed" ; debug_wait "postgresql.installed"
@@ -210,12 +211,13 @@ cd $SOURCE_DIR
 		download http://downloads.sourceforge.net/project/phpsysinfo/phpsysinfo/3.0.10/phpsysinfo-3.0.10.tar.gz &&
 		extract phpsysinfo-3.0.10.tar.gz
 	cd phpsysinfo
-	rm ChangeLog COPYING README README_PLUGIN 
+	rm ChangeLog COPYING README README_PLUGIN ChangeLog
 	cp config.php.new config.php
 
 	sed -i "s:define('PSI_PLUGINS'.*:define('PSI_PLUGINS', 'PS,PSStatus,Quotas,SMART');:"     config.php
 	sed -i "s:define('PSI_TEMP_FORMAT'.*:define('PSI_TEMP_FORMAT', 'c-f');:"                  config.php
 	sed -i "s:define('PSI_DEFAULT_TEMPLATE',.*);:define('PSI_DEFAULT_TEMPLATE', 'nextgen');:" config.php
+	sed -e "/open_basedir = /s|$|:/proc:/usr/sbin/lspci:/usr/sbin/lsusb|"            -i /etc/php/php.ini
 
 	cd ..
 	mv phpsysinfo $WEB 
