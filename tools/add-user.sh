@@ -52,9 +52,15 @@ chown_rutorrent()
 get_username()
 {
 	read -p "New User's Name: " user_name
+	while [[ $(grep "^$user_name:" /etc/passwd) ]]; do
+		echo -e "\n${bldred}- User Name Exists!${rst}"
+		read -p "New User's Name: " user_name
+	done
 	read -p "Give shell access? [y|n]: " shell_reply
-	[[ "$shell_reply" = 'y' ]] &&
-		user_shell='/bin/bash' || user_shell='/usr/sbin/nologin'
+	if [[ "$shell_reply" = 'y' ]]
+		then user_shell='/bin/bash' && sed -e "/AllowUsers/s/$/ $user_name/" -i /etc/ssh/sshd_config
+		else user_shell='/usr/sbin/nologin'
+	fi
 }
 
 create_user()
@@ -76,7 +82,8 @@ make_rtorrent_rc()
 	cd /home/$user_name
 	sudo -u $user_name mkdir downloads
 	sudo -u $user_name mkdir .session
-	sudo -u $user_name cat > .rtorrent.rc << "EOF"
+	chmod 750 downloads .session
+	cat > .rtorrent.rc << "EOF"
 max_peers = 50
 max_peers_seed = 50
 max_uploads = 250
@@ -94,6 +101,7 @@ encoding_list = UTF-8
 encryption = allow_incoming,try_outgoing,enable_retry
 #schedule = watch_directory,5,5,load_start=/absolute/path/to/watch/*.torrent
 EOF
+chmod 440 .rtorrent.rc
 
 	listen_port=$[($RANDOM % 65534) + 20000]  # Generates a random number from 20000-65534
 	echo "port_range = ${listen_port}-${listen_port}"       >> .rtorrent.rc
@@ -172,8 +180,22 @@ httpd_add_scgi()
 	sudo -u $user_name echo "scgi_port = localhost:$scgi_port" >> /home/$user_name/.rtorrent.rc
 	echo -e "${bldred}-${rst} SCGi Mount ..........[${bldpur} CREATED ${rst}]"
 	echo -e "${bldred}-${rst} SCGi Port ...........[${bldpur} $scgi_port ${rst}]\n"
+}
+
+restart_services()
+{
+	echo -en "\n${bldred}-${rst} Restarting HTTP/SSH .["
 	[[ -d /etc/rc.d/ ]] &&
-		/etc/rc.d/$webserver restart || /etc/init.d/$webserver restart
+		/etc/rc.d/sshd restart >&/dev/null &&
+		/etc/rc.d/$webserver restart >&/dev/null 
+
+	if [[ -d /etc/init.d ]]; then
+		/etc/init.d/$webserver restart >&/dev/null 
+	[[ -f /etc/init.d/sshd ]] &&
+		/etc/init.d/sshd restart >&/dev/null ||
+		/etc/init.d/ssh restart >&/dev/null 
+	fi
+	echo -e "${bldpur} DONE ${rst}]"
 }
 
 start_rtorrent()
@@ -181,8 +203,8 @@ start_rtorrent()
 	echo ; read -p "Start rtorrent for $user_name? [y|n]: " start_rt
 	if [[ $start_rt = 'y' ]]; then
 		echo -en "${bldred}-${rst} rTorrent Starting ...["
-		sudo -u $user_name mkdir -p /home/$user_name/.dtach
-		sudo -u $user_name dtach -n /home/$user_name/.dtach/rtorrent rtorrent
+		sudo -u $user_name "mkdir -p /home/$user_name/.dtach"
+		sudo -u $user_name "env TERM=linux dtach -n /home/$user_name/.dtach/rtorrent rtorrent"
 
 		[[ ! -z $(pgrep -u $user_name rtorrent) ]] &&
 			echo -e "${bldpur} SUCCESS ${rst}]" ||
@@ -199,4 +221,5 @@ create_user           # do useradd
 make_rtorrent_rc      # create new user's .rtorrent.rc
 make_rtorrent_init    # if using rtorrent init script, add config for this user
 make_rutorrent_conf   # add new user to rutorrent
+restart_services      # restart webserver and ssh
 start_rtorrent        # start rtorrent under new user
