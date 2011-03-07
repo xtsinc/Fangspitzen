@@ -237,7 +237,7 @@ if [[ $vnstat = 'y' ]]; then
 cd $SOURCE_DIR
 	notice "iNSTALLiNG VNSTAT"
 	if [[ $DISTRO = @(Ubuntu|[dD]ebian|*Mint) ]]; then
-		packages install libgd2-xpm libgd2-xpm-dev
+		packages install libgd2-xpm-dev
 	elif [[ $DISTRO = @(SUSE|[Ss]use)* ]]; then
 		packages install gd gd-devel
 	elif [[ $DISTRO = @(ARCH|[Aa]rch)* ]]; then
@@ -401,6 +401,7 @@ if [[ $virtualbox = 'y' ]]; then  # TODO
 
 ##[ PHP-ViRTUALBOX ]##
 if [[ $phpvirtualbox = 'y' ]]; then  # TODO
+	echo "TODO"
 	#if [[ $DISTRO = @(Ubuntu|[dD]ebian|*Mint) ]]; then
 	#	packages install
 	#elif [[ $DISTRO = @(SUSE|[Ss]use)* ]]; then

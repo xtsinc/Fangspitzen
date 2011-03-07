@@ -67,10 +67,7 @@ elif [[ $ftpd = 'pureftp' ]]; then
 		/etc/rc.d/pure-ftpd restart || /etc/init.d/pure-ftpd restart
 fi
 
-if [[ "$sql" = 'mysql' ]]; then  # Restart sqlserver
-	[[ -d /etc/rc.d/ ]] &&
-		/etc/rc.d/mysqld restart || /etc/init.d/mysql restart
-elif [[ "$sql" = 'postgre' ]]; then post_ver=8.4  # This needs to change per version
+if [[ "$sql" = 'postgre' ]]; then post_ver=8.4  # This needs to change per version
 	[[ "$NAME" = 'lenny' ]] && post_ver=8.3
 	[[ "$DISTRO" = @(ARCH|[Aa]rch)* ]] && post_ver=9.0
 	post_conf=/etc/postgresql/${post_ver}/main/postgresql.conf

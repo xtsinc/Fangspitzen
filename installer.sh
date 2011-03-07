@@ -419,7 +419,7 @@ fi
 [[ $webui = 'y' ]] && source modules/rutorrent/install.sh
 
 ##[ Extras ]##
-[[ $extras = 'y' ]] && source modules/extras.sh
+[[ $enable_extras = 'y' ]] && source modules/extras.sh
 
 ##[ PostProcess ]##
 source $BASE/includes/postprocess.sh || error "while loading postprocess.sh"
