@@ -197,19 +197,21 @@ EOF
 fi
 
 ##[ phpSysInfo ]##
-if [[ $phpsysinfo = 'y' ]]; then
+if [[ $phpsysinfo = @(y|svn) ]]; then
 cd $SOURCE_DIR
 	notice "iNSTALLiNG phpSysInfo"
-	#checkout https://phpsysinfo.svn.sourceforge.net/svnroot/phpsysinfo/trunk phpsysinfo
-	download http://downloads.sourceforge.net/project/phpsysinfo/phpsysinfo/3.0.7/phpsysinfo-3.0.7.tar.gz
-	extract phpsysinfo-3.0.7.tar.gz
+	[[ $phpsysinfo = 'svn' ]] &&
+		checkout https://phpsysinfo.svn.sourceforge.net/svnroot/phpsysinfo/trunk phpsysinfo
+	[[ $phpsysinfo = 'y' ]] &&
+		download http://downloads.sourceforge.net/project/phpsysinfo/phpsysinfo/3.0.10/phpsysinfo-3.0.10.tar.gz &&
+		extract phpsysinfo-3.0.10.tar.gz
 	cd phpsysinfo
 	rm ChangeLog COPYING README README_PLUGIN 
 	cp config.php.new config.php
 
-	sed -i "s:define('PSI_PLUGINS'.*:define('PSI_PLUGINS', 'PS,PSStatus,Quotas,SMART');:"  config.php
-	sed -i "s:define('PSI_TEMP_FORMAT'.*:define('PSI_TEMP_FORMAT', 'c-f');:"                        config.php
-	sed -i "s:define('PSI_DEFAULT_TEMPLATE',.*);:define('PSI_DEFAULT_TEMPLATE', 'nextgen');:"       config.php
+	sed -i "s:define('PSI_PLUGINS'.*:define('PSI_PLUGINS', 'PS,PSStatus,Quotas,SMART');:"     config.php
+	sed -i "s:define('PSI_TEMP_FORMAT'.*:define('PSI_TEMP_FORMAT', 'c-f');:"                  config.php
+	sed -i "s:define('PSI_DEFAULT_TEMPLATE',.*);:define('PSI_DEFAULT_TEMPLATE', 'nextgen');:" config.php
 
 	cd ..
 	mv phpsysinfo $WEB 
