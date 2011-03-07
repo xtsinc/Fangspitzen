@@ -221,7 +221,7 @@ packages() {  # use appropriate package manager depending on distro
 			clean  ) apt-get $quiet autoclean                                    ;;
 			install) shift; apt-get install --yes $quiet $@ 2>> $LOG; E_=$?      ;;
 			remove ) shift; apt-get autoremove --yes $quiet $@ 2>> $LOG; E_=$?   ;;
-			update ) apt-get update $quiet                                       ;;
+			update ) apt-get update $quiet >/dev/null                            ;;
 			upgrade) apt-get upgrade --yes $quiet                                ;;
 			version) aptitude show $2 | grep Version:                            ;;
 			setvars)

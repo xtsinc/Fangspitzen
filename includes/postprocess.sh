@@ -67,14 +67,14 @@ elif [[ $ftpd = 'pureftp' ]]; then
 		/etc/rc.d/pure-ftpd restart || /etc/init.d/pure-ftpd restart
 fi
 
-if [[ "$sql" = 'postgre' ]]; then post_ver=8.4  # This needs to change per version
-	[[ "$NAME" = 'lenny' ]] && post_ver=8.3
-	[[ "$DISTRO" = @(ARCH|[Aa]rch)* ]] && post_ver=9.0
-	post_conf=/etc/postgresql/${post_ver}/main/postgresql.conf
+if [[ "$sql" = 'postgre' ]]; then
+	post_ver=$(psql -V | head -n 1 | cut -c 19-21)
+	post_conf=/etc/postgresql/$post_ver/main/postgresql.conf
+	[[ "$DISTRO" = @(ARCH|[Aa]rch)* ]] && post_conf=/var/lib/postgres/data/postgresql.conf
 	sed -i "s:#autovacuum .*:autovacuum = on:"     $post_conf
 	sed -i "s:#track_counts .*:track_counts = on:" $post_conf
 	[[ -d /etc/rc.d/ ]] &&
-		/etc/rc.d/postgresql restart || /etc/init.d/postgresql-${post_ver} restart
+		/etc/rc.d/postgresql restart || /etc/init.d/postgresql restart
 fi
 
 if [[ $fail2ban = 'y' ]]; then
