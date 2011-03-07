@@ -66,11 +66,15 @@ elif [[ $sql = 'sqlite' ]]; then
 elif [[ $sql = 'postgre' ]]; then
 	notice "iNSTALLiNG PostgreSQL"
 	if [[ $DISTRO = @(Ubuntu|[dD]ebian|*Mint|ARCH*|[Aa]rch*) ]]; then
-		packages install postgresql
+		packages install postgresql php5-pgsql
 	elif [[ $DISTRO = @(SUSE|[Ss]use)* ]]; then
-		packages install postgresql postgresql-server
+		packages install postgresql postgresql-server php5-pgsql
+	elif [[ $DISTRO = @(ARCH|[Aa]rch)* ]]; then
+		packages install postgresql php-pgsql
 		echo "/etc/rc.d/postgresql start" >> /etc/rc.local
-		sed -i "s:;extension=pgsql.so:extension=pgsql.so:" $PHPini
+		sed -i "s:;extension=pgsql.so:extension=pgsql.so:"         $PHPini
+		sed -i "s:;extension=pdo.so:extension=pdo.so:"             $PHPini
+		sed -i "s:;extension=pdo_pgsql.so:extension=pdo_pgsql.so:" $PHPini
 	fi
 	if_error "PostgreSQL failed to install"
 	log "PostgreSQL Installation | Completed" ; debug_wait "postgresql.installed"
