@@ -94,13 +94,20 @@ if [[ $bnc != @(none|no|[Nn]) ]]; then
 fi
 
 ##[ ZNC ]##
-if [[ $bnc = 'znc' ]]; then
+if [[ $bnc = @(znc|znc dev) ]]; then
 cd $BASE
 	notice "iNSTALLiNG ZNC"
-	download http://downloads.sourceforge.net/project/znc/znc/0.094/znc-0.094.tar.gz
-		if_error "ZNC Download Failed"
-	extract znc-0.094.tar.gz && cd znc-0.094  # Unpack
-		log "ZNC | Downloaded + Unpacked"
+	if [[ $bnc = 'znc' ]]; then
+		download http://people.znc.in/~psychon/znc//releases/znc-latest.tar.gz
+			if_error "ZNC Download Failed"
+		extract znc-latest.tar.gz && rm znc-latest.tar.gz
+		cd znc-*  # seriously?
+	elif [[ $bnc = 'znc dev' ]]; then
+		git clone git://github.com/znc/znc.git znc-git ;E=$?
+			if_error "ZNC Download Failed"
+		cd znc-git
+	fi
+	log "ZNC | Downloaded + Unpacked"
 	notice "Be aware that compiling znc is a cpu intensive task and may take up to 10 min to complete"
 	sleep 3
 	sh configure --enable-extra --enable-run-from-source
@@ -202,10 +209,10 @@ EOF
 fi
 
 ##[ phpSysInfo ]##
-if [[ $phpsysinfo = @(y|svn) ]]; then
+if [[ $phpsysinfo = @(y|dev) ]]; then
 cd $SOURCE_DIR
 	notice "iNSTALLiNG phpSysInfo"
-	[[ $phpsysinfo = 'svn' ]] &&
+	[[ $phpsysinfo = 'dev' ]] &&
 		checkout https://phpsysinfo.svn.sourceforge.net/svnroot/phpsysinfo/trunk phpsysinfo
 	[[ $phpsysinfo = 'y' ]] &&
 		download http://downloads.sourceforge.net/project/phpsysinfo/phpsysinfo/3.0.10/phpsysinfo-3.0.10.tar.gz &&
