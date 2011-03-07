@@ -65,7 +65,7 @@ elif [[ $sql = 'sqlite' ]]; then
 ##[ PostGreSQL ]##
 elif [[ $sql = 'postgre' ]]; then
 	notice "iNSTALLiNG PostgreSQL"
-	if [[ $DISTRO = @(Ubuntu|[dD]ebian|*Mint|ARCH*|[Aa]rch*) ]]; then
+	if [[ $DISTRO = @(Ubuntu|[dD]ebian|*Mint) ]]; then
 		packages install postgresql php5-pgsql
 	elif [[ $DISTRO = @(SUSE|[Ss]use)* ]]; then
 		packages install postgresql postgresql-server php5-pgsql
