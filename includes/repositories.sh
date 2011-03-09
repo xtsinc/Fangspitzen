@@ -10,8 +10,10 @@ if [[ "$DISTRO" = @([uU]buntu) ]]; then
 	echo "deb http://archive.ubuntu.com/ubuntu/ ${NAME}-updates multiverse"       >> $REPO_PATH/multiverse.list  # non-free
 	echo "deb-src http://archive.ubuntu.com/ubuntu/ ${NAME}-updates multiverse"   >> $REPO_PATH/multiverse.list  # non-free
 
-	echo "deb http://ppa.launchpad.net/cherokee-webserver/ppa/ubuntu "$NAME" main" > $REPO_PATH/autoinstaller.list  # Cherokee
-	#echo "deb http://ppa.launchpad.net/cherokee-webserver/i-tse/ubuntu "$NAME" main" > $REPO_PATH/autoinstaller.list  # Uncomment for Unstable-Cherokee
+	# TODO # USE packages addrepo $2
+	#echo "deb http://ppa.launchpad.net/cherokee-webserver/ppa/ubuntu "$NAME" main" > $REPO_PATH/autoinstaller.list  # Cherokee
+	echo "deb http://ppa.launchpad.net/nginx/stable/ubuntu lucid main"            >> $REPO_PATH/autoinstaller.list  # Nginx
+	echo "deb http://ppa.launchpad.net/nginx/php5/ubuntu lucid main"              >> $REPO_PATH/autoinstaller.list  # Nginx-PHP
 	echo "deb http://ppa.launchpad.net/stbuehler/ppa/ubuntu "$NAME" main"         >> $REPO_PATH/autoinstaller.list  # Lighttp
 	echo "deb http://ppa.launchpad.net/deluge-team/ppa/ubuntu "$NAME" main"       >> $REPO_PATH/autoinstaller.list  # Deluge
 	echo "deb http://ppa.launchpad.net/transmissionbt/ppa/ubuntu "$NAME" main"    >> $REPO_PATH/autoinstaller.list  # Transmission
@@ -30,14 +32,14 @@ elif [[ "$DISTRO" = @(Debian|*Mint) ]]; then
 		echo "deb http://ftp.debian.org/debian/ squeeze main non-free contrib"       >> /etc/apt/sources.list
 		echo "deb http://security.debian.org/ squeeze/updates main non-free contrib" >> /etc/apt/sources.list
 		echo "deb http://ppa.launchpad.net/stbuehler/ppa/ubuntu jaunty main"         >> $REPO_PATH/autoinstaller.list  # Lighttp
-	#elif [[ "$NAME" = @(squeeze|debian) ]]; then  # 'debian' is used for mint debian releases
 	else
 		echo "deb http://ftp.debian.org/debian/ squeeze non-free contrib"            >> /etc/apt/sources.list
 		echo "deb http://security.debian.org/ squeeze/updates non-free contrib"      >> /etc/apt/sources.list
 	fi
 
-	echo "deb http://ppa.launchpad.net/cherokee-webserver/ppa/ubuntu jaunty main"  > $REPO_PATH/autoinstaller.list  # Cherokee
-	#echo "deb http://ppa.launchpad.net/cherokee-webserver/i-tse/ubuntu jaunty main" > $REPO_PATH/autoinstaller.list  # Uncomment for Unstable-Cherokee
+	#echo "deb http://ppa.launchpad.net/cherokee-webserver/ppa/ubuntu jaunty main"  > $REPO_PATH/autoinstaller.list  # Cherokee
+	echo "deb http://ppa.launchpad.net/nginx/stable/ubuntu lucid main"            >> $REPO_PATH/autoinstaller.list  # Nginx
+	echo "deb http://ppa.launchpad.net/nginx/php5/ubuntu lucid main"              >> $REPO_PATH/autoinstaller.list  # Nginx-PHP
 	echo "deb http://ppa.launchpad.net/deluge-team/ppa/ubuntu karmic main"        >> $REPO_PATH/autoinstaller.list  # Deluge
 	echo "deb http://ppa.launchpad.net/transmissionbt/ppa/ubuntu karmic main"     >> $REPO_PATH/autoinstaller.list  # Transmission
 	echo "deb http://ppa.launchpad.net/ssakar/ppa/ubuntu karmic main"             >> $REPO_PATH/autoinstaller.list  # iPList
@@ -71,6 +73,7 @@ fi
 
 ##!=====================>> PUBLiC KEYS <<========================!##
 if [[ "$DISTRO" = @([uU]buntu|[dD]ebian|*Mint) ]]; then  # Add signing keys
+	packages addkey C300EE8C
 	packages addkey EBA7BD49
 	packages addkey 5A43ED73
 	packages addkey 249AD24C

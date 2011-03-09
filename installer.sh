@@ -15,8 +15,8 @@
 # Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 ##################################################################
-VERSION='1.0.0~git'                                              #
-DATE='Feb 21 2011'                                               #
+VERSION='1.1.0~git'                                              #
+DATE='Mar 10 2011'                                               #
 ##################################################################
 trap ctrl_c SIGINT
 if [ `bash --version | head -n1 | cut -c 19` -gt '3' ]  # Check for bash verion 4+
@@ -69,8 +69,8 @@ ${bldylw}       (@${bldgrn}           '--------'
   fix it.
 
       Supported:                InProgress:
-        Ubuntu                    OpenSUSE
-        Debian                    
+        Ubuntu 9 +                OpenSUSE 11.3 +
+        Debian 5 +                   
         ArchLinux
 
   If your OS is not listed, this script will most likey explode.${rst}"
@@ -108,15 +108,15 @@ if [[ $http = 'apache' ]]; then
 	notice "iNSTALLiNG APACHE"
 	if [[ "$DISTRO" = @([Uu]buntu|[dD]ebian|*Mint) ]]; then
 		packages install apache2 apache2-mpm-prefork apachetop &&
-		packages install $PHP_DEBIAN php5 libapache2-mod-php5 libapache2-mod-suphp suphp-common # libapache2-mod-geoip
+		packages install $PHP_DEBIAN php5 libapache2-mod-php5 libapache2-mod-suphp suphp-common
 		PHPini=/etc/php5/apache2/php.ini
 	elif [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]; then
 		packages install apache2 apache2-prefork &&
-		packages install $PHP_SUSE php5 suphp apache2-mod_php5 # apache2-mod_geoip
+		packages install $PHP_SUSE php5 suphp apache2-mod_php5
 		PHPini=/etc/php5/apache2/php.ini
 	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
 		packages install apache php-apache &&
-		packages install $PHP_ARCHLINUX # apache-mod_geoip2
+		packages install $PHP_ARCHLINUX
 		echo "/etc/rc.d/httpd start" >> /etc/rc.local
 		PHPini=/etc/php/php.ini
 	fi
@@ -135,7 +135,6 @@ if [[ $http = 'apache' ]]; then
 		if [[ ! $(grep 'LoadModule php5_module' /etc/httpd/conf/httpd.conf) ]]; then
 		 echo "LoadModule php5_module modules/libphp5.so"                 >> /etc/httpd/conf/httpd.conf
 		 echo "Include conf/extra/php5_module.conf"                       >> /etc/httpd/conf/httpd.conf
-		 #echo -e "<IfModule mod_geoip.c>\n\tGeoIPEnable On\n</IfModule>" >> /etc/httpd/conf/httpd.conf
 		fi
 		sed -i "s:Include conf/extra/httpd-userdir.conf:#Include conf/extra/httpd-userdir.conf:"       /etc/httpd/conf/httpd.conf  # Disable User-Dir
 		sed -i "s:#Include conf/extra/httpd-ssl.conf:Include conf/extra/httpd-ssl.conf:"               /etc/httpd/conf/httpd.conf  # Enable SSL
@@ -171,12 +170,12 @@ elif [[ $http = 'lighttp' ]]; then
 		lighty-enable-mod fastcgi fastcgi-php auth access accesslog compress ssl      # Enable modules
 		PHPini=/etc/php5/cgi/php.ini
 	elif [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]; then
-		packages install $PHP_SUSE lighttpd # lighttpd-mod_geoip
+		packages install $PHP_SUSE lighttpd
 		PHPini=/etc/php5/fastcgi/php.ini
 	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
 		packages install apache-tools lighttpd &&
 		packages install $PHP_ARCHLINUX fcgi php-cgi 
-		cp includes/archlinux/lighttpd.conf /etc/lighttpd/lighttpd.conf
+		cp modules/lighttp/lighttpd.conf.arch /etc/lighttpd/lighttpd.conf
 		echo "/etc/rc.d/lighttpd start" >> /etc/rc.local
 		PHPini=/etc/php/php.ini
 	fi
@@ -187,27 +186,61 @@ elif [[ $http = 'lighttp' ]]; then
 		log "Lighttpd SSL Key created"
 	fi
 	log "Lighttp Installation | Completed" ; debug_wait "lighttpd.installed"
+	
+##[ NGiNX ]##
+elif [[ $http = 'nginx' ]]; then  # TODO
+	notice "iNSTALLiNG NGiNX"
+	if [[ "$DISTRO" = @([Uu]buntu|[dD]ebian|*Mint) ]]; then
+		packages install nginx nginx-common nginx-full &&
+		packages install $PHP_DEBIAN php5-fpm
+		cp modules/nginx/nginx.conf.ubuntu /etc/nginx/nginx.conf
+		cp modules/nginx/default.ubuntu /etc/nginx/site-available/default
+		sed -i "s:worker_processes .*:worker_processes  $(($CORES+2));:"         /etc/nginx/nginx.conf
+		sed -i "s:listen.allowed_clients .*:listen.allowed_clients = 127.0.0.1:" /etc/php5/fpm/php5-fpm.conf
+		/etc/init.d/nginx restart && /etc/init.d/php5-fpm restart
+		PHPini=/etc/php5/fpm/php.ini
+	elif [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]; then
+		echo "TODO"
+		#packages install nginx-0.8 &&
+		#packages install $PHP_SUSE
+	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
+		packages install nginx &&
+		packages install $PHP_ARCHLINUX php-fpm
+		cp modules/nginx/nginx.conf.arch /etc/nginx/conf/nginx.conf
+		sed -i "s:worker_processes .*:worker_processes  $(($CORES+2));:"         /etc/nginx/conf/nginx.conf
+		sed -i "s:listen.allowed_clients .*:listen.allowed_clients = 127.0.0.1:" /etc/php/php-fpm.conf
+		if [[ ! -f /etc/nginx/conf/cert.pem ]]; then
+			mksslcert "/etc/nginx/conf/cert.pem" "/etc/nginx/conf/cert.key"
+			log "Nginx SSL Key created"
+		fi
+		/etc/rc.d/nginx start && /etc/rc.d/php-fpm start
+		echo -e "/etc/rc.d/nginx start\n/etc/rc.d/php-fpm start" >> /etc/rc.local
+		WEB=/srv/http/nginx
+		PHPini=/etc/php/php.ini
+	fi
+	if_error "Nginx failed to install"
+
+	PHPini=/etc/php5/cgi/php.ini
+	log "Nginx Installation | Completed" ; debug_wait "nginx.installed"
 
 ##[ Cherokee ]##
 elif [[ $http = 'cherokee' ]]; then
 	notice "iNSTALLiNG CHEROKEE"
-	#if [[ $NAME = 'lenny' ]]; then
-	#	packages install cherokee spawn-fcgi
-	#fi
 	if [[ "$DISTRO" = @([Uu]buntu|[dD]ebian|*Mint) ]]; then
 		packages install cherokee libcherokee-mod-libssl libcherokee-mod-rrd libcherokee-mod-admin spawn-fcgi &&
 		packages install $PHP_DEBIAN
+		PHPini=/etc/php5/cgi/php.ini
 	elif [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]; then
 		packages install cherokee &&
 		packages install $PHP_SUSE
+		PHPini=/etc/php5/fastcgi/php.ini
 	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
 		packages install cherokee apache-tools &&
 		packages install $PHP_ARCHLINUX php-cgi
 		echo "/etc/rc.d/cherokee start" >> /etc/rc.local
+		PHPini=/etc/php/php.ini
 	fi
 	if_error "Cherokee failed to install"
-
-	PHPini=/etc/php5/cgi/php.ini
 	log "Cherokee Installation | Completed" ; debug_wait "cherokee.installed"
 fi
 

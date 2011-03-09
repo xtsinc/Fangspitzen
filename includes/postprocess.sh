@@ -52,8 +52,11 @@ if [[ "$http" = 'apache' ]]; then  # Restart webserver
 elif [[ "$http" = 'lighttp' ]]; then
 	[[ -d /etc/rc.d/ ]] &&
 		/etc/rc.d/lighttpd restart || /etc/init.d/lighttpd restart
+elif [[ "$http" = 'nginx' ]]; then
+	[[ -d /etc/rc.d/ ]] &&
+		etc/rc.d/nginx restart || /etc/init.d/nginx restart
 elif [[ "$http" = 'cherokee' ]]; then
-	notice "Run  sudo cherokee-admin -b  to configure Cherokee."
+	notice "Run [ sudo cherokee-admin -b ] to launch Cherokee's webinterface."
 fi
 
 if [[ $ftpd = 'vsftp' ]]; then  # Restart ftpserver

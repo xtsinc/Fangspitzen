@@ -2,7 +2,7 @@
 while [[ "$skip_ques" = n ]]; do
 echo -e "\n ${txtred}-------------->>${bldred} CONFiGURATiON ${txtred}<<---------------${rst}"
 
-read -p "[ HTTP SERVER ]     [apache|lighttp|cherokee|none]: " http
+read -p "[ HTTP SERVER ]        [apache|lighttp|nginx|none]: " http
 [[ "$http" = 'lighttpd' ]] && http='lighttp'
 if [[ "$http" != @(none|[Nn]) && "$DEBUG" = 1 ]]; then
 read -p "[ Create info.php? ]                         [y|n]: " create_phpinfo ;fi
@@ -32,9 +32,13 @@ if [[ $http = 'apache' ]]; then
 elif [[ $http = 'lighttp' ]]; then
 	v1=$(packages version lighttpd)
 	echo -e "${bldblu} Lighttpd: $v1 ${rst}"
-elif [[ $http = 'cherokee' ]]; then
-	v1=$(packages version cherokee)
-	echo -e "${bldblu} Cherokee: $v1 ${rst}"
+elif [[ $http = 'nginx' ]]; then
+	if [[ $NAME = @(karmic|jaunty|hardy) ]]; then
+		echo -e "${bldred} UPDATE to Lucid or higher ${rst}"
+		http='none'
+	else
+		v1=$(packages version nginx)
+		echo -e "${bldblu} Nginx: $v1 ${rst}" ;fi
 elif [[ $http = @(none|no|[Nn]) ]]
 	then echo -e "${bldylw} WEB SERVER NOT BEiNG iNSTALLED ${rst}"
 	else echo -e "${bldred}--> ERROR iN HTTP iNPUT! ${rst}"; http='none'
