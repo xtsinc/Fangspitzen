@@ -13,7 +13,8 @@ if [[ "$DISTRO" = @([uU]buntu) ]]; then
 	# TODO # USE packages addrepo $2
 	#echo "deb http://ppa.launchpad.net/cherokee-webserver/ppa/ubuntu "$NAME" main" > $REPO_PATH/autoinstaller.list  # Cherokee
 	echo "deb http://ppa.launchpad.net/nginx/stable/ubuntu lucid main"            >> $REPO_PATH/autoinstaller.list  # Nginx
-	echo "deb http://ppa.launchpad.net/nginx/php5/ubuntu lucid main"              >> $REPO_PATH/autoinstaller.list  # Nginx-PHP
+	#echo "deb http://ppa.launchpad.net/nginx/php5/ubuntu lucid main"              >> $REPO_PATH/autoinstaller.list  # Nginx-PHP BROKEN
+	echo "deb http://ppa.launchpad.net/brianmercer/php/ubuntu lucid main"         >> $REPO_PATH/autoinstaller.list  # Nginx-PHP
 	echo "deb http://ppa.launchpad.net/stbuehler/ppa/ubuntu "$NAME" main"         >> $REPO_PATH/autoinstaller.list  # Lighttp
 	echo "deb http://ppa.launchpad.net/deluge-team/ppa/ubuntu "$NAME" main"       >> $REPO_PATH/autoinstaller.list  # Deluge
 	echo "deb http://ppa.launchpad.net/transmissionbt/ppa/ubuntu "$NAME" main"    >> $REPO_PATH/autoinstaller.list  # Transmission
@@ -39,7 +40,8 @@ elif [[ "$DISTRO" = @(Debian|*Mint) ]]; then
 
 	#echo "deb http://ppa.launchpad.net/cherokee-webserver/ppa/ubuntu jaunty main"  > $REPO_PATH/autoinstaller.list  # Cherokee
 	echo "deb http://ppa.launchpad.net/nginx/stable/ubuntu lucid main"            >> $REPO_PATH/autoinstaller.list  # Nginx
-	echo "deb http://ppa.launchpad.net/nginx/php5/ubuntu lucid main"              >> $REPO_PATH/autoinstaller.list  # Nginx-PHP
+	#echo "deb http://ppa.launchpad.net/nginx/php5/ubuntu lucid main"              >> $REPO_PATH/autoinstaller.list  # Nginx-PHP BROCKEN
+	echo "deb http://ppa.launchpad.net/brianmercer/php/ubuntu lucid main"         >> $REPO_PATH/autoinstaller.list  # Nginx-PHP
 	echo "deb http://ppa.launchpad.net/deluge-team/ppa/ubuntu karmic main"        >> $REPO_PATH/autoinstaller.list  # Deluge
 	echo "deb http://ppa.launchpad.net/transmissionbt/ppa/ubuntu karmic main"     >> $REPO_PATH/autoinstaller.list  # Transmission
 	echo "deb http://ppa.launchpad.net/ssakar/ppa/ubuntu karmic main"             >> $REPO_PATH/autoinstaller.list  # iPList
@@ -74,6 +76,7 @@ fi
 ##!=====================>> PUBLiC KEYS <<========================!##
 if [[ "$DISTRO" = @([uU]buntu|[dD]ebian|*Mint) ]]; then  # Add signing keys
 	packages addkey C300EE8C
+	packages addkey 8D0DC64F
 	packages addkey EBA7BD49
 	packages addkey 5A43ED73
 	packages addkey 249AD24C
@@ -83,6 +86,7 @@ if [[ "$DISTRO" = @([uU]buntu|[dD]ebian|*Mint) ]]; then  # Add signing keys
 	wget -q http://download.virtualbox.org/virtualbox/debian/oracle_vbox.asc -O- | apt-key add -
 	wget -q http://www.webmin.com/jcameron-key.asc -O- | apt-key add -
 fi
-debug_wait "repos.added"
+packages update
+debug_wait "repos.added.and.updated"
 echo $(date) > $BASE/.repos.installed
 clear

@@ -10,7 +10,7 @@ ARCHLINUX="axel base-devel binutils cppunit curl dtach freetype2 geoip htop libs
 
 PHP_COMMON="php5-curl php5-geoip php5-gd php5-mcrypt php5-mysql php5-suhosin php5-xmlrpc"
 
-PHP_DEBIAN="$PHP_COMMON php5-cgi php5-cli php5-common php5-dev"  # php5-json is provided by php5-common
+PHP_DEBIAN="$PHP_COMMON php5-cgi php5-cli php5-dev"  # php5-json is provided by php5-common
 PHP_SUSE="$PHP_COMMON php5-devel php5-json"
 PHP_ARCHLINUX="php php-curl php-geoip php-suhosin"
 

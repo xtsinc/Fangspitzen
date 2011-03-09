@@ -54,7 +54,7 @@ elif [[ "$http" = 'lighttp' ]]; then
 		/etc/rc.d/lighttpd restart || /etc/init.d/lighttpd restart
 elif [[ "$http" = 'nginx' ]]; then
 	[[ -d /etc/rc.d/ ]] &&
-		etc/rc.d/nginx restart || /etc/init.d/nginx restart
+		/etc/rc.d/nginx restart || /etc/init.d/nginx restart
 elif [[ "$http" = 'cherokee' ]]; then
 	notice "Run [ sudo cherokee-admin -b ] to launch Cherokee's webinterface."
 fi

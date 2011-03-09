@@ -191,8 +191,8 @@ elif [[ $http = 'lighttp' ]]; then
 elif [[ $http = 'nginx' ]]; then  # TODO
 	notice "iNSTALLiNG NGiNX"
 	if [[ "$DISTRO" = @([Uu]buntu|[dD]ebian|*Mint) ]]; then
-		packages install nginx nginx-common nginx-full &&
-		packages install $PHP_DEBIAN php5-fpm
+		packages install nginx nginx-common nginx-full php5-fpm &&
+		packages install $PHP_COMMON php5-cli
 		cp modules/nginx/nginx.conf.ubuntu /etc/nginx/nginx.conf
 		cp modules/nginx/default.ubuntu /etc/nginx/site-available/default
 		sed -i "s:worker_processes .*:worker_processes  $(($CORES+2));:"         /etc/nginx/nginx.conf
@@ -219,8 +219,6 @@ elif [[ $http = 'nginx' ]]; then  # TODO
 		PHPini=/etc/php/php.ini
 	fi
 	if_error "Nginx failed to install"
-
-	PHPini=/etc/php5/cgi/php.ini
 	log "Nginx Installation | Completed" ; debug_wait "nginx.installed"
 
 ##[ Cherokee ]##
