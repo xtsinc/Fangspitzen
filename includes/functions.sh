@@ -108,6 +108,15 @@ ctrl_c() {  # interrupt trap
 	exit 0
 }
 
+debian_addrepo() {
+	[[ "$DISTRO" = @(Debian|*Mint) ]] && ppa_dist='lucid' || ppa_dist=$NAME
+	ppa=$(echo "$1" | cut -d":" -f2 -s)
+	key=$2
+	echo "deb http://ppa.launchpad.net/$ppa/ubuntu $ppa_dist main" >> /etc/apt/sources.list.d/autoinstaller.list
+	apt-key adv --keyserver keyserver.ubuntu.com --recv-keys $key
+	log "Repository: $ppa|$ppa_dist ADDED"
+}
+
 debug_wait() {  # prints a message and wait for user before continuing
 	if [[ "$DEBUG" = '1' || "$2" = 'force' ]]; then
 		echo -e "${bldpur} DEBUG: $1"
@@ -217,8 +226,7 @@ packages() {  # use appropriate package manager depending on distro
 	if [[ "$DISTRO" = @(Ubuntu|[dD]ebian|*Mint) ]]; then
 		[[ "$DEBUG" = 0 ]] && quiet="-qq" || quiet=
 		case "$1" in
-			addkey ) apt-key adv --keyserver keyserver.ubuntu.com --recv-keys $2 ;;
-			addrepo) add-apt-repository $2                                       ;;
+			addrepo) debian_addrepo $2 $3                                        ;;
 			clean  ) apt-get $quiet autoclean                                    ;;
 			install) shift; apt-get install --yes $quiet $@ 2>> $LOG; E_=$?      ;;
 			remove ) shift; apt-get autoremove --yes $quiet $@ 2>> $LOG; E_=$?   ;;
