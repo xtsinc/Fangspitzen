@@ -4,7 +4,7 @@ echo -e   "*****${bldred} ADDiNG REPOSiTORiES  ${rst}*****"
 echo -e   "********************************\n"
 
 if [[ "$DISTRO" = @([uU]buntu|[dD]ebian|*Mint) ]]; then
-! is_installed "apt" && packages install apt
+! is_installed "apt-key" && packages install apt
 	if [[ "$DISTRO" = @([uU]buntu) ]]; then
 		echo "deb http://archive.ubuntu.com/ubuntu/ "$NAME" multiverse"                > $REPO_PATH/multiverse.list  # non-free
 		echo "deb-src http://archive.ubuntu.com/ubuntu/ "$NAME" multiverse"           >> $REPO_PATH/multiverse.list  # non-free
