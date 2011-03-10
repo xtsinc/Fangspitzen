@@ -19,6 +19,7 @@ if [[ "$DISTRO" = @([uU]buntu|[dD]ebian|*Mint) ]]; then
 			echo "deb http://ftp.debian.org/debian/ squeeze non-free contrib"            >> /etc/apt/sources.list
 			echo "deb http://security.debian.org/ squeeze/updates non-free contrib"      >> /etc/apt/sources.list
 		fi
+	fi
 	packages addrepo "ppa:cherokee-webserver/ppa" "EBA7BD49" # Cherokee
 	packages addrepo "ppa:nginx/stable"           "C300EE8C" # Nginx (ppa:nginx/php5 is Broken)
 	packages addrepo "ppa:brianmercer/php"        "8D0DC64F" # Nginx-PHP
@@ -31,7 +32,6 @@ if [[ "$DISTRO" = @([uU]buntu|[dD]ebian|*Mint) ]]; then
 	echo "deb http://download.webmin.com/download/repository sarge contrib"      >> $REPO_PATH/autoinstaller.list  # Webmin
 	wget -q http://download.virtualbox.org/virtualbox/debian/oracle_vbox.asc -O- | apt-key add -
 	wget -q http://www.webmin.com/jcameron-key.asc -O- | apt-key add -
-	fi
 
 elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
 	if [[ "$ARCH" = "x86_64" ]] && [[ ! $(grep '\[multilib\]' /etc/pacman.conf) || $(grep '#\[multilib\]' /etc/pacman.conf) ]]; then
