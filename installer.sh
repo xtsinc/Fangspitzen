@@ -208,7 +208,7 @@ elif [[ $http = 'nginx' ]]; then  # TODO
 		#packages install nginx-0.8 &&
 		#packages install $PHP_SUSE
 	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
-		packages install nginx &&
+		packages install  apache-tools nginx &&
 		packages install $PHP_ARCHLINUX php-fpm
 		cp modules/nginx/nginx.conf.arch /etc/nginx/conf/nginx.conf
 		sed -i "s:worker_processes .*:worker_processes  $(($CORES+2));:"         /etc/nginx/conf/nginx.conf
@@ -236,7 +236,7 @@ elif [[ $http = 'cherokee' ]]; then
 		packages install $PHP_SUSE
 		PHPini=/etc/php5/fastcgi/php.ini
 	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
-		packages install cherokee apache-tools &&
+		packages install apache-tools cherokee apache-tools &&
 		packages install $PHP_ARCHLINUX php-cgi
 		echo "/etc/rc.d/cherokee start" >> /etc/rc.local
 		PHPini=/etc/php/php.ini

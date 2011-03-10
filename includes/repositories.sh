@@ -42,16 +42,16 @@ elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
 
 elif [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]; then
 	! is_installed "zypper" && packages install zypper
-	packages addrepo http://download.opensuse.org/repositories/openSUSE:/11.3:/Contrib/standard/      "Contrib"
-	packages addrepo http://download.opensuse.org/repositories/network:/utilities/openSUSE_11.3/      "Axel"
-	packages addrepo http://ftp.uni-erlangen.de/pub/mirrors/packman/suse/11.3/                        "Packman"
-	packages addrepo http://download.opensuse.org/repositories/Apache/openSUSE_11.3/                  "Apache"
-	packages addrepo http://download.opensuse.org/repositories/Apache:/Modules/Apache_openSUSE_11.3/  "Apache-Modules"
-	packages addrepo http://download.opensuse.org/repositories/server:/php/openSUSE_11.3/             "Apache-PHP"
-	packages addrepo http://download.opensuse.org/repositories/server:/php:/extensions/openSUSE_11.3/ "PHP-Extensions"
-	packages addrepo http://download.opensuse.org/repositories/server:/http/openSUSE_11.3/            "Cherokee"
-	packages addrepo http://download.opensuse.org/repositories/filesharing/openSUSE_11.3/             "Transmission"
-	packages addrepo http://download.opensuse.org/repositories/home:/uljanow/openSUSE_11.2/           "iPList"
+	packages addrepo http://download.opensuse.org/repositories/openSUSE:/${RELEASE}:/Contrib/standard/      "Contrib"
+	packages addrepo http://download.opensuse.org/repositories/network:/utilities/openSUSE_${RELEASE}/      "Axel"
+	packages addrepo http://ftp.uni-erlangen.de/pub/mirrors/packman/suse/${RELEASE}/                        "Packman"
+	packages addrepo http://download.opensuse.org/repositories/Apache/openSUSE_${RELEASE}/                  "Apache"
+	packages addrepo http://download.opensuse.org/repositories/Apache:/Modules/Apache_openSUSE_${RELEASE}/  "Apache-Modules"
+	packages addrepo http://download.opensuse.org/repositories/server:/php/openSUSE_${RELEASE}/             "Apache-PHP"
+	packages addrepo http://download.opensuse.org/repositories/server:/php:/extensions/openSUSE_${RELEASE}/ "PHP-Extensions"
+	packages addrepo http://download.opensuse.org/repositories/server:/http/openSUSE_${RELEASE}/            "Cherokee"
+	packages addrepo http://download.opensuse.org/repositories/filesharing/openSUSE_${RELEASE}/             "Transmission"
+	packages addrepo http://download.opensuse.org/repositories/home:/uljanow/openSUSE_11.2/                 "iPList"
 	log "Repositories ADD | Success"
 else
 	error "Failed to add repositories to unknown distro... exiting (${DISTRO})"
