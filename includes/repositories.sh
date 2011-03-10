@@ -4,15 +4,14 @@ echo -e   "*****${bldred} ADDiNG REPOSiTORiES  ${rst}*****"
 echo -e   "********************************\n"
 
 if [[ "$DISTRO" = @([uU]buntu|[dD]ebian|*Mint) ]]; then
+! is_installed "apt" && packages install apt
 	if [[ "$DISTRO" = @([uU]buntu) ]]; then
-		! is_installed "add-apt-repository" && packages install python-software-properties
 		echo "deb http://archive.ubuntu.com/ubuntu/ "$NAME" multiverse"                > $REPO_PATH/multiverse.list  # non-free
 		echo "deb-src http://archive.ubuntu.com/ubuntu/ "$NAME" multiverse"           >> $REPO_PATH/multiverse.list  # non-free
 		echo "deb http://archive.ubuntu.com/ubuntu/ ${NAME}-updates multiverse"       >> $REPO_PATH/multiverse.list  # non-free
 		echo "deb-src http://archive.ubuntu.com/ubuntu/ ${NAME}-updates multiverse"   >> $REPO_PATH/multiverse.list  # non-free
 
 	elif [[ "$DISTRO" = @(Debian|*Mint) ]]; then
-		! is_installed "apt" && packages install apt
 		if [[ "$NAME" = 'lenny' ]]; then  # Bascially updates to squeeze since packages are so old on lenny
 			echo "deb http://ftp.debian.org/debian/ squeeze main non-free contrib"       >> /etc/apt/sources.list
 			echo "deb http://security.debian.org/ squeeze/updates main non-free contrib" >> /etc/apt/sources.list
