@@ -323,8 +323,6 @@ runchecks() {
 		echo -e ">>> Debug Mode .........[${bldylw} OFF ${rst}]"
 	[[ $(grep /tmp /etc/mtab | grep noexec) != "" ]] &&  # Check whether /tmp is mounted 'noexec'
 			SOURCE_DIR=$BASE/tmp || SOURCE_DIR=/tmp/.fangspitzen
-	[[ "$DEBUG" = 1 ]] &&
-		echo -e ">>> SOURCE_DIR .........[${bldylw} $SOURCE_DIR ${rst}]"
 	echo -ne ">>> Internet Access ..."
 	[[ $(ping -c 1 74.125.226.116) ]] && [[ $(ping -c 1 208.67.222.222) ]] &&  # Ping google and opendns
 		echo -e ".[${bldylw} OK ${rst}]" || error "Unable to ping outside world..."

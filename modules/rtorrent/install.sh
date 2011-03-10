@@ -122,11 +122,10 @@ if [[ $rtorrent_svn != 'y' ]]; then
 	echo "preload_type = 1"        >> $PATH_rt
 fi
 
-[[ $alloc = 'y' ]] &&
-	echo "system.file_allocate.set = yes" >> $PATH_rt  # Enable file pre-allocation
+[[ $alloc = 'y' ]] && echo "system.file_allocate.set = yes" >> $PATH_rt  # Enable file pre-allocation
 
 #if [[ -d /etc/apache2 ]]; then
-	#echo 'scgi_port = 127.0.0.1:5000'     >> $PATH_rt  # Create scgi port
+	echo 'scgi_port = 127.0.0.1:5000'     >> $PATH_rt  # Create scgi port [REQUIRED]
 #elif [[ -d /etc/lighttpd || -d /etc/cherokee ]]; then
 	#echo "scgi_local = /tmp/rpc.socket"                             >> $PATH_rt  # Create sgci socket
 	#echo 'schedule = chmod,0,0,"execute=chmod,777,/tmp/rpc.socket"' >> $PATH_rt  # Make socket readable

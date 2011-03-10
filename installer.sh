@@ -194,14 +194,14 @@ elif [[ $http = 'nginx' ]]; then  # TODO
 		packages install nginx nginx-common nginx-full php5-fpm &&
 		packages install $PHP_COMMON php5-cli
 		cp modules/nginx/nginx.conf.ubuntu /etc/nginx/nginx.conf
-		cp modules/nginx/default.ubuntu /etc/nginx/site-available/default
+		cp modules/nginx/default.ubuntu /etc/nginx/sites-available/default
 		sed -i "s:worker_processes .*:worker_processes  $(($CORES+2));:"         /etc/nginx/nginx.conf
 		sed -i "s:listen.allowed_clients .*:listen.allowed_clients = 127.0.0.1:" /etc/php5/fpm/php5-fpm.conf
 		if [[ ! -f /etc/nginx/cert.pem ]]; then
 			mksslcert "/etc/nginx/cert.pem" "/etc/nginx/cert.key"
 			log "Nginx SSL Key created"
 		fi
-		/etc/init.d/nginx restart && /etc/init.d/php5-fpm restart
+		/etc/init.d/nginx restart && /etc/init.d/php5-fpm start
 		PHPini=/etc/php5/fpm/php.ini
 	elif [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]; then
 		echo "TODO"
@@ -219,7 +219,6 @@ elif [[ $http = 'nginx' ]]; then  # TODO
 		fi
 		/etc/rc.d/nginx start && /etc/rc.d/php-fpm start
 		echo -e "/etc/rc.d/nginx start\n/etc/rc.d/php-fpm start" >> /etc/rc.local
-		WEB=/srv/http/nginx
 		PHPini=/etc/php/php.ini
 	fi
 	if_error "Nginx failed to install"

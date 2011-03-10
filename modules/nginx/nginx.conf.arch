@@ -1,89 +1,71 @@
-
 user http;
-worker_processes  1;
-
-error_log  logs/error.log;
-#error_log  logs/error.log  notice;
-#error_log  logs/error.log  info;
-
+worker_processes  4;
 #pid        logs/nginx.pid;
 
 events {
     worker_connections  1024;
 }
 
-
 http {
     include       mime.types;
     default_type  application/octet-stream;
 
-    #log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
-    #                  '$status $body_bytes_sent "$http_referer" '
-    #                  '"$http_user_agent" "$http_x_forwarded_for"';
+    log_format main '$remote_addr - $remote_user [$time_local] '
+					'"$request" $status $body_bytes_sent "$http_referer" '
+					'"$http_user_agent" "$http_x_forwarded_for"';
 
-    #access_log  logs/access.log  main;
+    access_log /var/log/nginx/access.log  main;
+	error_log  /var/log/nginx/error.log;
 
-    sendfile        on;
-    #tcp_nopush     on;
-
-    #keepalive_timeout  0;
+    sendfile       on;
+    tcp_nopush     on;
+    tcp_nodelay    off;
+    server_tokens  off;
+    
     keepalive_timeout  30;
 
-    gzip  on;
+    gzip            on;
+    gzip_comp_level  2;
+    gzip_proxied   any;
+    gzip_types text/plain text/css application/x-javascript text/xml application/xml application/xml+rss text/javascript;
 
     server {
         listen       80;
         server_name  localhost;
-
-        #charset koi8-r;
-
-        #access_log  logs/host.access.log  main;
+        
+		auth_basic	"ruTorrent";
+		auth_basic_user_file	/etc/nginx/.htpasswd;
 
         location / {
-            root   html;
+            root   /srv/http;
             index  index.html index.htm index.php;
         }
 
-        #error_page  404              /404.html;
-
-        # redirect server error pages to the static page /50x.html
-        #
         error_page   500 502 503 504  /50x.html;
         location = /50x.html {
             root   html;
         }
 
-        # proxy the PHP scripts to Apache listening on 127.0.0.1:80
-        #
-        #location ~ \.php$ {
-        #    proxy_pass   http://127.0.0.1;
-        #}
-
-        # pass the PHP scripts to FastCGI server listening on php-fpm.sock
-        #
         location ~ \.php$ {
             root           html;
             fastcgi_pass   unix:/var/run/php-fpm/php-fpm.sock;
             fastcgi_index  index.php;
-            fastcgi_param  SCRIPT_FILENAME  /srv/http/nginx/$fastcgi_script_name;
+            fastcgi_param  SCRIPT_FILENAME  /srv/http/$fastcgi_script_name;
             include        fastcgi_params;
         }
 
-
-        # deny access to .htaccess files, if Apache's document root
-        # concurs with nginx's one
-        #
         location ~ /\.ht {
             deny  all;
         }
     }
 
-
     # HTTPS server
-    #
     server {
         listen       443;
         server_name  localhost;
+        
+		auth_basic	"ruTorrent";
+		auth_basic_user_file	/etc/nginx/.htpasswd;
 
         ssl                  on;
         ssl_certificate      cert.pem;
@@ -96,7 +78,7 @@ http {
         ssl_prefer_server_ciphers   on;
 
         location / {
-            root   html;
+            root   /srv/http;
             index  index.html index.htm index.php;
         }
     }
