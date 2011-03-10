@@ -31,9 +31,9 @@ if [[ "$DISTRO" = @([uU]buntu|[dD]ebian|*Mint) ]]; then
 	echo "deb http://download.webmin.com/download/repository sarge contrib"      >> $REPO_PATH/autoinstaller.list  # Webmin
 	wget -q http://download.virtualbox.org/virtualbox/debian/oracle_vbox.asc -O- | apt-key add -
 	wget -q http://www.webmin.com/jcameron-key.asc -O- | apt-key add -
-fi
+	fi
 
-if [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
+elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
 	if [[ "$ARCH" = "x86_64" ]] && [[ ! $(grep '\[multilib\]' /etc/pacman.conf) || $(grep '#\[multilib\]' /etc/pacman.conf) ]]; then
 		echo "[multilib]" >> /etc/pacman.conf
 		echo "Include = /etc/pacman.d/mirrorlist" >> /etc/pacman.conf
@@ -56,8 +56,7 @@ elif [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]; then
 else
 	error "Failed to add repositories to unknown distro... exiting (${DISTRO})"
 fi
-
+echo $(date) > $BASE/.repos.installed
 packages update
 debug_wait "repos.added.and.updated"
-echo $(date) > $BASE/.repos.installed
 clear
