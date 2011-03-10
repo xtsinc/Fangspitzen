@@ -1,4 +1,3 @@
-echo
 compile_xmlrpc='no'
 while [[ $compile_xmlrpc = 'no' ]]; do
 	if is_installed "xmlrpc-c-config"  # Ask to re-compile xmlrpc if already installed
