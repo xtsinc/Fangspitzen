@@ -197,6 +197,10 @@ elif [[ $http = 'nginx' ]]; then  # TODO
 		cp modules/nginx/default.ubuntu /etc/nginx/site-available/default
 		sed -i "s:worker_processes .*:worker_processes  $(($CORES+2));:"         /etc/nginx/nginx.conf
 		sed -i "s:listen.allowed_clients .*:listen.allowed_clients = 127.0.0.1:" /etc/php5/fpm/php5-fpm.conf
+		if [[ ! -f /etc/nginx/cert.pem ]]; then
+			mksslcert "/etc/nginx/cert.pem" "/etc/nginx/cert.key"
+			log "Nginx SSL Key created"
+		fi
 		/etc/init.d/nginx restart && /etc/init.d/php5-fpm restart
 		PHPini=/etc/php5/fpm/php.ini
 	elif [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]; then
