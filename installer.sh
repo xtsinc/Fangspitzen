@@ -236,7 +236,7 @@ elif [[ $http = 'cherokee' ]]; then
 		packages install $PHP_SUSE
 		PHPini=/etc/php5/fastcgi/php.ini
 	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
-		packages install apache-tools cherokee apache-tools &&
+		packages install apache-tools cherokee &&
 		packages install $PHP_ARCHLINUX php-cgi
 		echo "/etc/rc.d/cherokee start" >> /etc/rc.local
 		PHPini=/etc/php/php.ini
