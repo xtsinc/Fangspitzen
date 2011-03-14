@@ -266,7 +266,7 @@ cd $SOURCE_DIR
 
 	compile all
 		if_error "VnStat Build Failed"
-		log "VnStat Compile | Completed in $compile_time seconds" ; debug_wait "vnstat.compiled"
+		log "VnStat Compile | Completed in $compile_time seconds"
 	make install
 	cd ..
 		log "VnStat Installation | Completed"
@@ -291,6 +291,7 @@ cd $SOURCE_DIR
 	sed -i "s:UseLogging 2:UseLogging 1:"           /etc/vnstat.conf  # Log to file instead of syslog
 	
 	if [[ $vnstat = 'vnstatphp' ]]; then
+		notice "iNSTALLiNG VNSTAT-PHP"
 		git clone -q git://github.com/bjd/vnstat-php-frontend.git vnstat-web                           # Checkout VnStat-Web
 		rm -rf vnstat-web/themes/espresso vnstat-web/themes/light vnstat-web/themes/red                # Remove extra themes
 		rm -rf vnstat-web/COPYING vnstat-web/vera_copyright.txt vnstat-web/config.php vnstat-web/.git  # Remove extra files
@@ -298,6 +299,7 @@ cd $SOURCE_DIR
 		sed -i "s|\$iface_list = .*|\$iface_list = array('$iFACE');|" vnstat-web/config.php
 		mv vnstat-web $WEB
 	elif [[ $vnstat = 'jsvnstat' ]]; then
+		notice "iNSTALLiNG JSVNSTAT"
 		download http://www.rakudave.ch/userfiles/javascript/jsvnstat/jsvnstat.zip  # Download jsvnstat
 		extract jsvnstat.zip && rm jsvnstat/README.txt jsvnstat/js/API.txt          # Remove extra files
 		sed -i "s|\$interface =.*|\$interface = \"$iFACE\";|" jsvnstat/settings.php
