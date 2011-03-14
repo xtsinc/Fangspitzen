@@ -118,7 +118,7 @@ cd $HOME
 		debug_wait "znc.compiled"
 		log "ZNC Installation | Completed"
 	notice "Starting znc for first time ${rst}"
-	sudo -u $USER ./znc --makeconf	
+	sudo -u $USER ./znc --makeconf
 
 ##[ sBNC ]##
 elif [[ $bnc = 'sbnc' ]]; then
@@ -249,7 +249,7 @@ if [[ $webmin = 'y' ]]; then
 fi
 
 ##[ vnStat ]##
-if [[ $vnstat = 'y' ]]; then
+if [[ $vnstat = @(jsvnstat|vnstatphp) ]]; then
 cd $SOURCE_DIR
 	notice "iNSTALLiNG VNSTAT"
 	if [[ $DISTRO = @(Ubuntu|[dD]ebian|*Mint) ]]; then
@@ -261,18 +261,8 @@ cd $SOURCE_DIR
 	fi
 	if_error "vnStat deps failed to install"
 	
-	download http://humdi.net/vnstat/vnstat-1.10.tar.gz                   # Download VnStat
-	git clone -q git://github.com/bjd/vnstat-php-frontend.git vnstat-web  # Checkout VnStat-Web
-	extract vnstat-1.10.tar.gz && cd vnstat-1.10                          # Unpack
-
-	##[ Alternative - JSvnStat ]##
-	# download http://www.rakudave.ch/userfiles/javascript/jsvnstat/jsvnstat.zip
-	# mkdir -p jsvnstat && mv jsvnstat.zip jsvnstat && cd jsvnstat
-	# unzip jsvnstat.zip
-	# rm README
-	# sed -i "s|\$interface =.*|\$interface = \"$iFACE\";|" settings.php
-	# cd ..
-	# mv jsvnstat $WEB
+	download http://humdi.net/vnstat/vnstat-1.10.tar.gz # Download VnStat
+	extract vnstat-1.10.tar.gz && cd vnstat-1.10        # Unpack
 
 	compile all
 		if_error "VnStat Build Failed"
@@ -280,6 +270,8 @@ cd $SOURCE_DIR
 	make install
 	cd ..
 		log "VnStat Installation | Completed"
+		debug_wait "vnstat.compiled"
+
 	if [[ $DISTRO = @(ARCH|[Aa]rch)* && ! -f /etc/rc.d/vnstat ]]; then
 		install -m 755 vnstat-1.10/examples/init.d/arch/vnstat /etc/rc.d/  # Copy init script if one doesnt exist
 		echo "/etc/rc.d/vnstat start" >> /etc/rc.local                     # Start at boot
@@ -297,21 +289,26 @@ cd $SOURCE_DIR
 	sed -i "s:PollInterval 5:PollInterval 10:"      /etc/vnstat.conf  # ^^^^^^^^ ^^^^^^ ^^^^^^
 	sed -i "s:SaveInterval 5:SaveInterval 10:"      /etc/vnstat.conf  # Less saves to disk
 	sed -i "s:UseLogging 2:UseLogging 1:"           /etc/vnstat.conf  # Log to file instead of syslog
-
-	rm -rf vnstat-web/themes/espresso vnstat-web/themes/light vnstat-web/themes/red                # Remove extra themes
-	rm -rf vnstat-web/COPYING vnstat-web/vera_copyright.txt vnstat-web/config.php vnstat-web/.git  # Remove extra files
-
-	cp $BASE/modules/vnstat/config.php vnstat-web
-	sed -i "s|\$iface_list = .*|\$iface_list = array('$iFACE');|" vnstat-web/config.php  # Edit web config
-
-
-	mv vnstat-web $WEB  # Copy VnStat-web to WebRoot
-	log "Frontend Installed | http://$iP/vnstat-web"
+	
+	if [[ $vnstat = 'vnstatphp' ]]; then
+		git clone -q git://github.com/bjd/vnstat-php-frontend.git vnstat-web                           # Checkout VnStat-Web
+		rm -rf vnstat-web/themes/espresso vnstat-web/themes/light vnstat-web/themes/red                # Remove extra themes
+		rm -rf vnstat-web/COPYING vnstat-web/vera_copyright.txt vnstat-web/config.php vnstat-web/.git  # Remove extra files
+		cp $BASE/modules/vnstat/vnstat-web.config.php vnstat-web/config.php
+		sed -i "s|\$iface_list = .*|\$iface_list = array('$iFACE');|" vnstat-web/config.php
+		mv vnstat-web $WEB
+	elif [[ $vnstat = 'jsvnstat' ]]; then
+		download http://www.rakudave.ch/userfiles/javascript/jsvnstat/jsvnstat.zip  # Download jsvnstat
+		extract jsvnstat.zip && rm jsvnstat/README.txt jsvnstat/js/API.txt          # Remove extra files
+		sed -i "s|\$interface =.*|\$interface = \"$iFACE\";|" jsvnstat/settings.php
+		mv jsvnstat $WEB
+	fi
 
 	! is_running "vnstatd" &&  # Make database and start vnstatd
 		vnstat -u -i $iFACE && vnstatd -d
 
-	debug_wait "vnstat-web.installed"
+	log "VnStat | Frontend Installed"
+	debug_wait "vnstat.installed"
 fi
 
 ##[ SABnzbd ]##

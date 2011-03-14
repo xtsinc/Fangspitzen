@@ -171,11 +171,13 @@ elif [[ $webmin = @(none|no|[Nn]) ]]
 fi
 
 ##[ Check for VnStat ]##
-if [[ $vnstat = 'y' ]]
-	then echo -e "${bldblu} Package: VnStat: Version: 1.10 ${rst}"
+if [[ $vnstat = 'jsvnstat' ]]
+	then echo -e "${bldblu} Package: jsvnstat: Version: 1.9 ${rst}"
+elif [[ $vnstat = 'vnstatphp' ]]
+	then echo -e "${bldblu} Package: vnstat-php: Version: 1.5.1~git ${rst}"
 elif [[ $vnstat = @(none|no|[Nn]) ]]
 	then echo -e "${bldylw} VNSTAT NOT BEiNG iNSTALLED ${rst}"
-	else echo -e "${bldred}--> ERROR iN VNSTAT iNPUT! ${rst}"; vnstat='n'
+	else echo -e "${bldred}--> ERROR iN VNSTAT iNPUT! ${rst}"; vnstat='none'
 fi
 
 ##[ Check for SABnzbd ]##
