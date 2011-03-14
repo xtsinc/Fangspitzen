@@ -282,29 +282,11 @@ packages() {  # use appropriate package manager depending on distro
 				alias_update="sudo zypper refresh"
 				alias_upgrade="sudo zypper update" ;;
 		esac
-
-	elif [[ "$DISTRO" = "Fedora" ]]; then
-		[[ "$DEBUG" = 0 ]] && quiet="-e 0" || quiet=
-		case "$1" in
-			clean  ) yum clean all -y                                ;;
-			install) shift; yum install $quiet -y $@ 2>> $LOG; E_=$? ;;
-			remove ) shift; yum remove $quiet -y $@ 2>> $LOG; E_=$?  ;;
-			update ) yum check-update -y                             ;;
-			upgrade) yum upgrade -y                                  ;;
-			version) yum info $2 | grep Version:                     ;;
-			setvars)
-				REPO_PATH=/etc/yum/repos.d
-				alias_autoclean="sudo yum clean all"
-				alias_install="sudo yum install"
-				alias_remove="sudo yum remove"
-				alias_update="sudo yum check-update"
-				alias_upgrade="sudo yum upgrade" ;;
-		esac
 	fi
 }
 
 runchecks() {
-	clear
+if [[ $(uname -s) = "Linux" ]] ; then
 	if [[ -f config.ini ]]; then  # Find Config and Load it
 		source config.ini || error "while loading config.ini"
 		[[ "$iDiDNTEDiTMYCONFiG" ]] && error "PLEASE EDiT THE CONFiG"  # Die if it hasnt been edited
@@ -327,6 +309,8 @@ runchecks() {
 	[[ $(ping -c 1 74.125.226.116) ]] && [[ $(ping -c 1 208.67.222.222) ]] &&  # Ping google and opendns
 		echo -e ".[${bldylw} OK ${rst}]" || error "Unable to ping outside world..."
 	sleep 1
+else error "Unsupported OS"
+fi
 }
 
 spanner() {
@@ -374,10 +358,7 @@ yes() {  # user input for yes or no
 }
 
 init() {  # find distro and architecture
-if [[ $(uname -s) = "Linux" ]] ; then
-	clear ; echo -n ">>> iNiTiALiZiNG......"
-	[[ -f /etc/fedora-release ]] && error "TODO - Fedora"
-
+	echo -n ">>> iNiTiALiZiNG......"
 	# Distributor -i > Ubuntu  > Debian  > Debian   > LinuxMint     > Arch  > SUSE LINUX  ($DISTRO)
 	# Release     -r > 10.04   > 5.0.6   > 6.0      > 1|10          > n/a   > 11.3        ($RELASE)
 	# Codename    -c > lucid   > lenny   > squeeze  > debian|julia  > n/a   > n/a         ($NAME)
@@ -396,8 +377,6 @@ if [[ $(uname -s) = "Linux" ]] ; then
 	readonly iP USER CORES BASE HOME=/home/$USER LOG  # make sure these variables aren't overwritten
 	echo -e "[${bldylw} done ${rst}]"
 	sleep 1
-else error "Unsupported OS"
-fi
 }
 
 ##[ VARiABLE iNiT ]##

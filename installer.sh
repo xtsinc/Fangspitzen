@@ -41,8 +41,8 @@ while [ "$#" -gt 0 ]; do
 	esac
 	shift
 done
-runchecks
-init
+clear && runchecks
+clear && init
 
 #!=======================>> DiSCLAiMER <<=======================!#
 if [[ ! -f "$LOG" ]]; then  # only show for first run
