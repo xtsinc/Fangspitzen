@@ -39,6 +39,7 @@ base_configure() {  # do this before base_install ^
 		# SUSE*|[Ss]use* ) ;;
 		ARCH*|[Aa]rch* ) if ! is_installed "clyde" ;then
 						 echo -en "${bldred} iNSTALLiNG CLYDE...${rst}"
+						 	pacman -S --needed --quiet --noconfirm base-devel
 							build_from_aur "clyde" "clyde-git"
 							install -m 644 $BASE/includes/archlinux/clyde.conf /etc
 							sed -i "s;BuildUser .*;BuildUser = $USER;" /etc/clyde.conf
@@ -57,16 +58,17 @@ archlinux_add_module() {
 }
 
 build_from_aur() {  # compile and install PKBUILDs
+	BIN_NAME="$1"
 	PKG_NAME="$2"
 	PKG_URL="https://aur.archlinux.org/packages/$PKG_NAME/${PKG_NAME}.tar.gz"
-	is_version "gcc" "11-13" ">" "4.1" && 
+	is_version "gcc" "11-13" ">" "4.1" && {
 		if [[ $(grep "mtune=generic" /etc/makepkg.conf) ]]; then
 			sed -i "s;[#]*CFLAGS=.*;CFLAGS=\"-march=native\";" /etc/makepkg.conf  # implies -mtune=native
 			sed -i "s;[#]*CXXFLAGS=.*;CXXFLAGS=\"${CFLAGS}\";" /etc/makepkg.conf
 		fi
-		sed -i "s;[#]*MAKEFLAGS=.*;MAKEFLAGS=\"-j$(($(grep -c ^processor /proc/cpuinfo) + 1))\";" /etc/makepkg.conf
+		sed -i "s;[#]*MAKEFLAGS=.*;MAKEFLAGS=\"-j$(($(grep -c ^processor /proc/cpuinfo) + 1))\";" /etc/makepkg.conf ;}
 
-	if ! is_installed "$1" ;then
+	if ! is_installed "$BIN_NAME" ;then
 		[[ $3 = 'ignore-deps' ]] && PKG_OPTS="-di" || PKG_OPTS="-si"
 		cd $SOURCE_DIR
 		download $PKG_URL

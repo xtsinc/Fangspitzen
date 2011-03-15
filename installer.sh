@@ -75,7 +75,7 @@ ${bldylw}       (@${bldgrn}           '--------'
 
   If your OS is not listed, this script will most likey explode.${rst}"
 echo -e " ${undred}___________________________________________${rst}"
-echo -e "  Distro:${bldylw} $DISTRO $RELEASE ${rst}"
+echo -e "  Distro:${bldylw} $DISTRO $NAME ${rst}"
 echo -e "  Kernel:${bldylw} $KERNEL${rst}-${bldylw}$ARCH ${rst}"
 
 echo -en "\n Continue? [y/n]: "
