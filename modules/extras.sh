@@ -403,9 +403,8 @@ if [[ $virtualbox = 'y' ]]; then  # TODO
 		/etc/rc.d/vboxdrv setup  # Build kernel modules
 		modprobe vboxdrv && archlinux_add_module "vboxdrv"
 	fi
-	if_error "ViRTUALBOX failed to install"
 	
-	notice "VBoxManage --help\nVBoxHeadless --help"
+	notice "VBoxManage --help \n VBoxHeadless --help"
 	log "ViRTUALBOX Installation | Completed" ; debug_wait "virtualbox.installed"
 	
 	echo -en "\n Install php-virtualbox frontend? [y/n]: "

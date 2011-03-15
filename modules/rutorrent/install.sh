@@ -22,7 +22,14 @@ cd $SOURCE_DIR
 	sed -i "s:\$defaultTheme .*:\$defaultTheme = \"Oblivion\";:"                  rutorrent/plugins/theme/conf.php
 
 	notice "CONFiGURiNG USER AUTHENTiCATiON"
-	if [[ $(pgrep apache2) || $(pgrep httpd) || $http = 'apache' ]]; then  # Apache - Create user authentication
+	if [[ $(pgrep lighttpd) || $http = 'lighttp' ]]; then  # Lighttp - Create user authentication
+		if [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]
+			then htdigest2 -c /etc/lighttpd/.htpasswd "ruTorrent" $USER
+			else htdigest -c /etc/lighttpd/.htpasswd "ruTorrent" $USER
+		fi
+	elif [[ $(pgrep nginx) || $http='nginx' ]]; then
+		htpasswd -c /etc/nginx/.htpasswd $USER
+	elif [[ $(pgrep apache2) || $(pgrep httpd) || $http = 'apache' ]]; then  # Apache - Create user authentication
 		cp $BASE/modules/apache/htaccess rutorrent/.htaccess
 		if [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
 			htdigest -c /etc/httpd/.htpasswd "ruTorrent" $USER
@@ -31,13 +38,6 @@ cd $SOURCE_DIR
 			then htdigest2 -c /etc/apache2/.htpasswd "ruTorrent" $USER
 			else htdigest -c /etc/apache2/.htpasswd "ruTorrent" $USER
 		fi
-	elif [[ $(pgrep lighttpd) || $http = 'lighttp' ]]; then  # Lighttp - Create user authentication
-		if [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]
-			then htdigest2 -c /etc/lighttpd/.htpasswd "ruTorrent" $USER
-			else htdigest -c /etc/lighttpd/.htpasswd "ruTorrent" $USER
-		fi
-	elif [[ $(pgrep nginx) || $http='nginx' ]]; then
-		htpasswd -c /etc/nginx/.htpasswd $USER
 	fi
 
 	if is_installed "buildtorrent"
