@@ -28,8 +28,9 @@ fi
 while [ "$#" -gt 0 ]; do
   	case "$1" in
 		-p|--pass) if [[ "$2" ]]
-			then passwdlength="$2" && mkpass; shift
-			else error "Specify Length --pass x "; fi ;;
+					then passwdlength="$2" && mkpass; shift
+					else error "Specify Length --pass x "; fi ;;
+		--adduser) source tools/add-user.sh ;;
 		--rtorrent-prealloc) alloc='y'; shift ;;
 		--rutorrent-workaround) rutorrent_workaround='y'; shift ;;
 		--save-tmp) RM_TMP='n'; shift ;; 

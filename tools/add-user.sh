@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-[[ $(uname -s) != "Linux" || $UID != 0 ]] && echo "Run with sudo" && exit
 
 # Assumptions:
 #	Apache or Lighttp using mod_auth_digest
@@ -215,13 +214,17 @@ start_rtorrent()
 }
 
 ##[ Main ]##
-init_variables        # create some variables
-assumption_check      # check if our paths are correct 
-chown_rutorrent       # make sure rutorrent is writeable by our webserver
-get_username          # get username and if it can have shell access
-create_user           # do useradd
-make_rtorrent_rc      # create new user's .rtorrent.rc
-make_rtorrent_init    # if using rtorrent init script, add config for this user
-make_rutorrent_conf   # add new user to rutorrent
-restart_services      # restart webserver and ssh
-start_rtorrent        # start rtorrent under new user
+if [[ $(uname -s) != "Linux" || $UID != 0 ]]; then
+	echo "Run with sudo"
+else
+	init_variables        # create some variables
+	assumption_check      # check if our paths are correct 
+	chown_rutorrent       # make sure rutorrent is writeable by our webserver
+	get_username          # get username and if it can have shell access
+	create_user           # do useradd
+	make_rtorrent_rc      # create new user's .rtorrent.rc
+	make_rtorrent_init    # if using rtorrent init script, add config for this user
+	make_rutorrent_conf   # add new user to rutorrent
+	restart_services      # restart webserver and ssh
+	start_rtorrent        # start rtorrent under new user
+fi; exit 0

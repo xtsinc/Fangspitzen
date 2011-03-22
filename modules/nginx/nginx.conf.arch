@@ -30,7 +30,7 @@ http {
     gzip_types text/plain text/css application/x-javascript text/xml application/xml application/xml+rss text/javascript;
 
     server {
-        listen       80;
+        listen       *:80;
         server_name  localhost;
         
 		auth_basic	"ruTorrent";
@@ -61,7 +61,7 @@ http {
 
     # HTTPS server
     server {
-        listen       443;
+        listen       *:443;
         server_name  localhost;
         
 		auth_basic	"ruTorrent";
