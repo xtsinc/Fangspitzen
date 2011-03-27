@@ -100,7 +100,7 @@ echo -e "\n********************************"
 echo -e   "****${bldred} BEGiNiNG iNSTALLATiON ${rst}*****"
 echo -e   "********************************\n"
 
-base_configure
+#base_configure
 base_install
 
 cd "$BASE"

@@ -37,14 +37,7 @@ base_configure() {  # do this before base_install ^
 	case "$DISTRO" in
 		# [uU]buntu|[Dd]ebian|*Mint) ;;
 		# SUSE*|[Ss]use* ) ;;
-		ARCH*|[Aa]rch* ) if ! is_installed "clyde" ;then
-						 echo -en "${bldred} iNSTALLiNG CLYDE...${rst}"
-						 	pacman -S --needed --quiet --noconfirm base-devel
-							build_from_aur "clyde" "clyde-git"
-							install -m 644 $BASE/includes/archlinux/clyde.conf /etc
-							sed -i "s;BuildUser .*;BuildUser = $USER;" /etc/clyde.conf
-						 echo -e "${bldylw} DONE${rst}\n"
-						 fi ;;
+		# ARCH*|[Aa]rch* ) ;;
 	esac
 	log "Base Configuration | Completed"
 }
@@ -245,23 +238,23 @@ packages() {  # use appropriate package manager depending on distro
 		esac
 	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
 		case "$1" in
-			clean  ) clyde --sync --clean --noconfirm ; echo
+			clean  ) pacman --sync --clean --noconfirm ; echo
 					 pacman-optimize >/dev/null                                  ;;
-			install) shift; clyde --sync --noconfirm --needed $@ 2>> $LOG ;E_=$? ;;
-			remove ) shift; clyde --remove --unneeded $@ 2>> $LOG; E_=$?         ;;
-			update ) clyde --sync --refresh --refresh 2>> $LOG                   ;;
-			upgrade) clyde --sync --refresh --sysupgrade --noconfirm 2>> $LOG    ;;
-			version) clyde --sync --info $2 | grep Version                       ;;
+			install) shift; pacman --sync --noconfirm --needed $@ 2>> $LOG ;E_=$? ;;
+			remove ) shift; pacman --remove --unneeded $@ 2>> $LOG; E_=$?         ;;
+			update ) pacman --sync --refresh --refresh 2>> $LOG                   ;;
+			upgrade) pacman --sync --refresh --sysupgrade --noconfirm 2>> $LOG    ;;
+			version) pacman --sync --info $2 | grep Version                       ;;
 			setvars)
-				REPO_PATH=/etc/clyde.conf
+				REPO_PATH=/etc/pacman.conf
 				WEB=/srv/http
 				WEBUSER='http'
 				WEBGROUP='http'
-				alias_autoclean="sudo clyde -Sc"
-				alias_install="sudo clyde -S --needed"
-				alias_remove="sudo clyde -R"
-				alias_update="sudo clyde -Sy"
-				alias_upgrade="sudo clyde -Syu" ;;
+				alias_autoclean="sudo pacman -Sc"
+				alias_install="sudo pacmane -S --needed"
+				alias_remove="sudo pacman -R"
+				alias_update="sudo pacman -Sy"
+				alias_upgrade="sudo pacman -Syu" ;;
 		esac
 	elif [[ $DISTRO = @(SUSE|[Ss]use)* ]]; then
 		[[ "$DEBUG" = 0 ]] && quiet="--quiet" || quiet=

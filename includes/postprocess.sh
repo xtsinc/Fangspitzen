@@ -91,6 +91,22 @@ fi
 
 #[ Add Some Useful Command Alias' ]#
 if [[ -f $HOME/.bashrc && ! $(grep '# added by autoscript' $HOME/.bashrc) ]]; then  # Check if this has already been added or not
+echo "
+#sudo completion
+complete -cf sudo
+#system
+alias ls='ls -o -h --color=always --group-directories-first'
+alias rm='rm -r'
+alias mkdir='mkdir -p'
+alias sizeof='du -sh'
+alias killall='sudo killall'
+alias grep='grep --color'
+alias df='df -h -T --total'
+#chmod
+alias chx='chmod +x'
+alias chfile='chmod 644'
+alias chdir='chmod 755'
+" > $HOME/.bashrc
 	sed -i 's:force_color_prompt=no:force_color_prompt=yes:' $HOME/.bashrc
 	echo "# added by autoscript">> $HOME/.bashrc
 	echo "alias install='$alias_install'"     >> $HOME/.bashrc

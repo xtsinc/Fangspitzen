@@ -21,7 +21,14 @@ while [[ $compile_rtorrent = 'no' ]]; do
 	else compile_rtorrent='yes'
 	fi
 done ; done
-	
+
+if [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
+	compile_rtorrent='no' compile_xmlrpc='no' rtorrent_svn='n'
+	packages install "libsigc++ openssl curl xmlrpc-c"
+	build_from_aur "/usr/lib/libtorrent.so" "libtorrent-extended"
+	build_from_aur "rtorrent" "rtorrent-extended"
+fi
+
 if [[ $compile_xmlrpc = 'yes' ]]; then
 cd $SOURCE_DIR
 	notice "DOWNLOADiNG... XMLRPC"
@@ -39,7 +46,7 @@ cd $SOURCE_DIR
 	make install ; cd ..
 	rm -r xmlrpc
 		log "XMLRPC Installation | Completed" ; debug_wait "xmlrpc.installed"
-fi
+fi #`end compile_xmlrpc`
 
 if [[ $compile_rtorrent = 'yes' ]]; then
 cd $SOURCE_DIR
@@ -92,7 +99,7 @@ cd $SOURCE_DIR
 	make install ; cd ..
 	rm -r rtorrent
 		log "rTorrent Installation | Completed"
-fi
+fi #`end compile_rtorrent`
 
 if [[ -f .rtorrent.rc ]]; then
 	log "Previous rTorrent.rc config found, creating backup..."
@@ -119,20 +126,23 @@ if [[ $rtorrent_svn != 'y' ]]; then
 	echo "max_open_files = 256"    >> $PATH_rt
 	echo "max_memory_usage = 800M" >> $PATH_rt
 	echo "preload_type = 1"        >> $PATH_rt
+	if [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
+		download "http://iblocklist.charlieprice.org/files/bt_level1.gz"
+		download "http://iblocklist.charlieprice.org/files/tbg_primarythreats.gz"
+		echo "ip_filter=bt_level1.gz,tbg_primarythreats.gz"             >> $PATH_rt
+		echo "schedule = filter,18:30:00,24:00:00,reload_ip_filter="    >> $PATH_rt
+		echo 'schedule = snub_leechers,120,120,"snub_leechers=10,5,1M"' >> $PATH_rt
+		echo 'schedule = ban_slow_peers,120,120,"ban_slow_peers=5,2K,64K,5,128K,10,1M,30"' >> $PATH_rt
+		echo 'on_finished = unban,"d.unban_peers="'                     >> $PATH_rt
+		echo 'on_finished = unsnub,"d.unsnub_peers="'                   >> $PATH_rt
+		echo "done_fg_color = 1" >> $PATH_rt
+	fi
 fi
 
-[[ $alloc = 'y' ]] && echo "system.file_allocate.set = yes" >> $PATH_rt  # Enable file pre-allocation
+[[ $alloc = 'y' ]] &&
+	echo "system.file_allocate.set = yes" >> $PATH_rt  # Enable file pre-allocation
 
-#if [[ -d /etc/apache2 ]]; then
-	echo 'scgi_port = 127.0.0.1:5000'     >> $PATH_rt  # Create scgi port [REQUIRED]
-#elif [[ -d /etc/lighttpd || -d /etc/cherokee ]]; then
-	#echo "scgi_local = /tmp/rpc.socket"                             >> $PATH_rt  # Create sgci socket
-	#echo 'schedule = chmod,0,0,"execute=chmod,777,/tmp/rpc.socket"' >> $PATH_rt  # Make socket readable
-#	echo 'scgi_port = 127.0.0.1:5000'     >> $PATH_rt  # Create scgi port
-#else debug_wait "No httpd found: Make sure to add sgci mounts to .rtorrent.rc"
-#fi
 log "rTorrent Config | Created" ; log "rTorrent listening on port: $NUMBER"
-
 
 if [[ $DISTRO = @([Uu]buntu|[dD]ebian|*Mint) && ! -f /etc/init.d/rtorrent ]]; then  # Copy init script
 	cp modules/rtorrent/rtorrent-init /etc/init.d/rtorrent
