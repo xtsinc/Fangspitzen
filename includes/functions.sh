@@ -280,6 +280,17 @@ packages() {  # use appropriate package manager depending on distro
 	fi
 }
 
+patch_rtorrent() {  # Put rtorrent|libtorrent patches here
+	if [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
+		if [[ "$ARCH" = "x86_64" ]]; then
+			# Fix segfault caused by ncurses 5.8
+			if is_version "ncursesw5-config" "1-3" "=" "5.8"; then
+				sed -i "s|width = 0, int height = 0|width = 1, int height = 1|" rtorrent/src/display/canvas.h
+			fi
+		fi
+	fi
+}
+
 runchecks() {
 if [[ $(uname -s) = "Linux" ]] ; then
 	if [[ -f config.ini ]]; then  # Find Config and Load it

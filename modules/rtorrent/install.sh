@@ -22,8 +22,8 @@ while [[ $compile_rtorrent = 'no' ]]; do
 	fi
 done ; done
 
-if [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
-	compile_rtorrent='no' compile_xmlrpc='no' rtorrent_svn='n'
+if [[ "$DISTRO" = @(ARCH|[Aa]rch)* && $rtorrent_svn != 'y' ]]; then
+	compile_rtorrent='no' compile_xmlrpc='no'
 	packages install "libsigc++ openssl curl xmlrpc-c"
 	build_from_aur "/usr/lib/libtorrent.so" "libtorrent-extended"
 	build_from_aur "rtorrent" "rtorrent-extended"
@@ -57,20 +57,18 @@ cd $SOURCE_DIR
 		mv trunk/libtorrent libtorrent && mv trunk/rtorrent rtorrent && rm -r trunk
 		log "Lib|rTorrent | Downloaded" >> $LOG
 	else
-		if [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
-			build_from_aur "libtorrent" "libtorrent-extended"
-			build_from_aur "rtorrent" "rtorrent-extended" "ignore-deps"
-		else
-			download http://libtorrent.rakshasa.no/downloads/libtorrent-0.12.6.tar.gz  # Grab libtorrent
-			if_error "LibTorrent Download Failed"
-			download http://libtorrent.rakshasa.no/downloads/rtorrent-0.8.6.tar.gz     # Grab rtorrent
-			if_error "rTorrent Download Failed"
-		fi
+		download http://libtorrent.rakshasa.no/downloads/libtorrent-0.12.6.tar.gz  # Grab libtorrent
+		if_error "LibTorrent Download Failed"
+		download http://libtorrent.rakshasa.no/downloads/rtorrent-0.8.6.tar.gz     # Grab rtorrent
+		if_error "rTorrent Download Failed"
 		log "Lib|rTorrent | Downloaded" >> $LOG
+
 		extract libtorrent-0.12.6.tar.gz && extract rtorrent-0.8.6.tar.gz          # Unpack
 		mv libtorrent-0.12.6 libtorrent && mv rtorrent-0.8.6 rtorrent
 		log "Lib|rTorrent | Unpacked"
 	fi
+
+patch_rtorrent
 
 	notice "COMPiLiNG... LiBTORRENT"
 #-->[ Compile libtorrent ]
