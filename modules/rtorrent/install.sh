@@ -11,7 +11,7 @@ while [[ $compile_xmlrpc = 'no' ]]; do
 
 compile_libtorrent='no'
 while [[ $compile_libtorrent = 'no' ]]; do 
-	if [[ -f "/usr/lib/libtorrent.so" || -f "/usr/lib/libtorrent-rasterbar.so" ]]; then
+	if [[ -f "/usr/lib/libtorrent.so" || -f "/usr/lib/libtorrent-rasterbar.so" ]]
 		then echo -en "libTorrent is already installed.... overwrite? [y/n]: "
 		if yes
 			then compile_libtorrent='yes'
