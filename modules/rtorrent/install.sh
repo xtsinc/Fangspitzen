@@ -37,10 +37,10 @@ done
 done
 
 if [[ "$DISTRO" = @(ARCH|[Aa]rch)* && $rtorrent_svn != 'y' ]]; then
-	compile_rtorrent='no' compile_xmlrpc='no'
-	packages install "libsigc++ openssl curl xmlrpc-c"
-	build_from_aur "/usr/lib/libtorrent.so" "libtorrent-extended"
-	build_from_aur "rtorrent" "rtorrent-extended"
+	[[ $compile_xmlrpc = 'yes' ]]     && packages install "libsigc++ openssl curl xmlrpc-c"
+	[[ $compile_libtorrent = 'yes' ]] && build_from_aur "/usr/lib/libtorrent.so" "libtorrent-extended"
+	[[ $compile_rtorrent = 'yes' ]]   && build_from_aur "rtorrent" "rtorrent-extended"
+	compile_libtorrent='no' compile_rtorrent='no' compile_xmlrpc='no'
 fi
 
 if [[ $compile_xmlrpc = 'yes' ]]; then
