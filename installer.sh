@@ -175,7 +175,8 @@ elif [[ $http = 'lighttp' ]]; then
 		packages install $PHP_SUSE lighttpd
 		PHPini=/etc/php5/fastcgi/php.ini
 	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
-		packages install apache-tools lighttpd &&
+		build_from_aur "htpasswd" "apache-tools"
+		packages install lighttpd &&
 		packages install $PHP_ARCHLINUX fcgi php-cgi 
 		cp modules/lighttp/lighttpd.conf.arch /etc/lighttpd/lighttpd.conf
 		echo "/etc/rc.d/lighttpd start" >> /etc/rc.local
@@ -210,7 +211,8 @@ elif [[ $http = 'nginx' ]]; then  # TODO
 		#packages install nginx-0.8 &&
 		#packages install $PHP_SUSE
 	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
-		packages install  apache-tools nginx &&
+		build_from_aur "htpasswd" "apache-tools"
+		packages install nginx &&
 		packages install $PHP_ARCHLINUX php-fpm
 		cp modules/nginx/nginx.conf.arch /etc/nginx/conf/nginx.conf
 		sed -i "s:worker_processes .*:worker_processes  $(($CORES+2));:"         /etc/nginx/conf/nginx.conf
@@ -238,7 +240,8 @@ elif [[ $http = 'cherokee' ]]; then
 		packages install $PHP_SUSE
 		PHPini=/etc/php5/fastcgi/php.ini
 	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
-		packages install apache-tools cherokee &&
+		build_from_aur "htpasswd" "apache-tools"
+		packages install cherokee &&
 		packages install $PHP_ARCHLINUX php-cgi
 		echo "/etc/rc.d/cherokee start" >> /etc/rc.local
 		PHPini=/etc/php/php.ini

@@ -54,6 +54,7 @@ build_from_aur() {  # compile and install PKBUILDs
 	BIN_NAME="$1"
 	PKG_NAME="$2"
 	PKG_URL="https://aur.archlinux.org/packages/$PKG_NAME/${PKG_NAME}.tar.gz"
+
 	is_version "gcc" "11-13" ">" "4.1" && {
 		if [[ $(grep "mtune=generic" /etc/makepkg.conf) ]]; then
 			sed -i "s;[#]*CFLAGS=.*;CFLAGS=\"-march=native\";" /etc/makepkg.conf  # implies -mtune=native
@@ -63,12 +64,12 @@ build_from_aur() {  # compile and install PKBUILDs
 
 	if ! is_installed "$BIN_NAME" ;then
 		[[ $3 = 'ignore-deps' ]] && PKG_OPTS="-di" || PKG_OPTS="-si"
-		cd $SOURCE_DIR
+		LAST_DIR="$PWD" && cd $SOURCE_DIR
 		download $PKG_URL
 		extract "${PKG_NAME}.tar.gz" && cd "$PKG_NAME"
 		makepkg "$PKG_OPTS" --asroot --noconfirm
 			if_error "$PKG_NAME Failed to install"
-		cd ..
+		cd $LAST_DIR
 	else notice "$PKG_NAME is already installed. Skipping"
 	fi
 }
@@ -315,9 +316,9 @@ if [[ $(uname -s) = "Linux" ]] ; then
 		echo -e ">>> Debug Mode .........[${bldylw} OFF ${rst}]"
 
 	if [[ $OVERWRITE_SOURCE_DIR != "" ]]; then
-		SOURCE_DIR=$OVERWRITE_SOURCE_DIR
+		SOURCE_DIR="$OVERWRITE_SOURCE_DIR"
 	else [[ $(grep /tmp /etc/mtab | grep noexec) != "" ]] &&  # Check whether /tmp is mounted 'noexec'
-			SOURCE_DIR=$BASE/tmp || SOURCE_DIR=/tmp/.fangspitzen
+			SOURCE_DIR="$BASE/tmp" || SOURCE_DIR="/tmp/.fangspitzen"
 	fi
 
 	echo -ne ">>> Internet Access ..."
