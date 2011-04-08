@@ -37,10 +37,14 @@ done
 done
 
 if [[ "$DISTRO" = @(ARCH|[Aa]rch)* && $rtorrent_svn != 'y' ]]; then
-	[[ $compile_xmlrpc = 'yes' ]]     && packages install "libsigc++ openssl curl xmlrpc-c"
-	[[ $compile_libtorrent = 'yes' ]] && build_from_aur "/usr/lib/libtorrent.so" "libtorrent-extended"
-	[[ $compile_rtorrent = 'yes' ]]   && build_from_aur "rtorrent" "rtorrent-extended"
-	compile_libtorrent='no' compile_rtorrent='no' compile_xmlrpc='no'
+	if is_version "gcc" "11-15" "=" "4.6.0"; then  # gcc 4.6.0 fails
+		error "Downgrade version of \"gcc\" and re-run!"
+	else
+		[[ $compile_xmlrpc = 'yes' ]]     && packages install "libsigc++ openssl curl xmlrpc-c"
+		[[ $compile_libtorrent = 'yes' ]] && build_from_aur "/usr/lib/libtorrent.so" "libtorrent-extended"
+		[[ $compile_rtorrent = 'yes' ]]   && build_from_aur "rtorrent" "rtorrent-extended"
+		compile_libtorrent='no' compile_rtorrent='no' compile_xmlrpc='no'
+	fi
 fi
 
 if [[ $compile_xmlrpc = 'yes' ]]; then
@@ -168,7 +172,7 @@ fi
 
 [[ $alloc = 'y' ]] &&
 	echo "system.file_allocate.set = yes" >> $PATH_rt  # Enable file pre-allocation
-
+chown $USER $PATH_rt  # Make .rtorrent.rc writeable
 log "rTorrent Config | Created" ; log "rTorrent listening on port: $NUMBER"
 
 if [[ $DISTRO = @([Uu]buntu|[dD]ebian|*Mint) && ! -f /etc/init.d/rtorrent ]]; then  # Copy init script

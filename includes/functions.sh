@@ -165,8 +165,9 @@ is_installed() {  # check if a program is installed
 is_running() {  # check if a program is running
 	# $1 = program  $2 = user (optional)
 	# 0 = IS running  1 = is NOT running
+	sleep 1
 	if [[ "$#" = 1 ]]; then
-		[[ ! -z $(pgrep "$1") ]] && return 0 ||  return 1
+		[[ ! -z $(pgrep "$1") ]] && return 0 || return 1
 	elif [[ "$#" = 2 ]]; then
 		[[ ! -z $(pgrep -u "$2" "$1") ]] && return 0 || return 1
 	fi
