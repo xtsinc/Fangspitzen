@@ -28,12 +28,13 @@ fi
 while [ "$#" -gt 0 ]; do
   	case "$1" in
 		-p|--pass) if [[ "$2" ]]
-					then passwdlength="$2" && mkpass; shift
-					else error "Specify Length --pass x "; fi ;;
+			then passwdlength="$2" && mkpass; shift
+			else error "Specify Length --pass x "; fi ;;
 		--adduser) source tools/add-user.sh ;;
 		--rtorrent-prealloc) alloc='y'; shift ;;
 		--rutorrent-workaround) rutorrent_workaround='y'; shift ;;
 		--save-tmp) RM_TMP='n'; shift ;; 
+		--tmp) [[ "$2" ]] && OVERWRITE_SOURCE_DIR="$2"; shift ;;
 		-t|--threads) if [[ "$2" ]]
 			then declare -i OVERWRITE_THREAD_COUNT="$2"; shift 
 			else error "Specify num of threads --threads x "; fi ;;
@@ -425,6 +426,9 @@ if ! is_installed "buildtorrent" ;then
 	rm -r buildtorrent
 	log "BuildTorrent Installation | Completed" ; debug_wait "buildtorrent.installed"
 fi
+#elif [[ $buildtorrent = 'c' ]]; then
+#-->##[ CreateTorrent ]##
+
 elif [[ $buildtorrent != 'n' ]]; then
 #-->##[ mkTorrent ]##
 if ! is_installed "mktorrent" || [[ $buildtorrent = 'm' ]]; then
@@ -435,7 +439,11 @@ if ! is_installed "mktorrent" || [[ $buildtorrent = 'm' ]]; then
 		log "MkTorrent | Downloaded"
 	fi
 	cd mktorrent
-	make install
+	git checkout rewrite  # Switch to rewrite branch  https://github.com/esmil/mktorrent/commits/rewrite
+	MKT_OPT="USE_PTHREAD=1 USE_LONG_OPTIONS=1 USE_OPENSSL=1 NO_HASH_CHECK=1"
+	[[ "$ARCH" = "x86_64" ]] &&
+		make $MKT_OPT install ||
+		make $MKT_OPT USE_LARGE_FILES=1 install
 
 	E_=$? ; if_error "MkTorrent Build Failed"
 	rm -r mktorrent

@@ -65,12 +65,13 @@ fi
 if [[ $torrent = 'rtorrent' ]]; then
 	if [[ $rtorrent_svn = 'y' ]]
 		then echo -e "${bldblu} Package: rTorrent: Version: 0.8.7~svn r1180 ${rst}"
-		else echo -e "${bldblu} Package: rTorrent: Version: 0.8.6 ${rst}"
+		else echo -e "${bldblu} Package: rTorrent: Version: 0.8.6 ${rst}"; rtorrent_svn='n'
 	fi
 	if [[ $alloc = 'y' ]]; then
 		echo -e "${bldpur} Compiling --with-posix-fallocate ${rst}"
 		echo -e "${bldpur} See http://libtorrent.rakshasa.no/ticket/460 for more info and potential dangers. Do not use on ext3 ${rst}"
 		read -p "Press ENTER if OK " ENTER
+	else alloc='n'
 	fi
 elif [[ $torrent = 'tranny' ]]; then
 	if [[ $NAME = 'lenny' ]]; then

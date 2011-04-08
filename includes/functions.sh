@@ -104,12 +104,12 @@ ctrl_c() {  # interrupt trap
 }
 
 debian_addrepo() {
-	[[ "$DISTRO" = @(Debian|*Mint) ]] && ppa_dist='lucid' || ppa_dist=$NAME
+	[[ "$DISTRO" = @(Debian|*Mint) ]] && ppa_dist='lucid' || ppa_dist="$NAME"
 	ppa=$(echo "$1" | cut -d":" -f2 -s)
-	key=$2
-	echo "deb http://ppa.launchpad.net/$ppa/ubuntu $ppa_dist main" >> /etc/apt/sources.list.d/autoinstaller.list
-	apt-key adv --keyserver keyserver.ubuntu.com --recv-keys $key
-	log "Repository: $ppa|$ppa_dist ADDED"
+	key="$2"
+	echo "deb http://ppa.launchpad.net/"$ppa"/ubuntu "$ppa_dist" main" >> /etc/apt/sources.list.d/autoinstaller.list
+	apt-key adv --keyserver keyserver.ubuntu.com --recv-keys "$key"
+	log "Repository: "$ppa"|"$ppa_dist" ADDED"
 }
 
 debug_wait() {  # prints a message and wait for user before continuing
@@ -281,14 +281,15 @@ packages() {  # use appropriate package manager depending on distro
 }
 
 patch_rtorrent() {  # Put rtorrent|libtorrent patches here
-	if [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
-		if [[ "$ARCH" = "x86_64" ]]; then
-			# Fix segfault caused by ncurses 5.8
-			if is_version "ncursesw5-config" "1-3" "=" "5.8"; then
+if [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
+	if [[ "$ARCH" = "x86_64" ]]; then
+		if [[ $rtorrent_svn = 'n' ]]; then
+			if is_version "ncursesw5-config" "1-3" "=" "5.8"; then  # Fix segfault caused by ncurses 5.8
 				sed -i "s|width = 0, int height = 0|width = 1, int height = 1|" rtorrent/src/display/canvas.h
 			fi
 		fi
 	fi
+fi
 }
 
 runchecks() {
@@ -299,22 +300,31 @@ if [[ $(uname -s) = "Linux" ]] ; then
 		[[ "$PWD" != "$BASE"     ]] && error "Does not match $BASE "   # Check if the user declared BASE correctly in the config
 	else error "config.ini not found!"  # Cant continue without a config so produce an error and exit
 	fi
+
 	echo -en "${rst}>>> Checking Requires..."
 		[[ -x /usr/bin/lsb_release ]] ||  # Check if lsb-release is installed
 			error "Please install package: lsb-release"
 	echo -e "[${bldylw} OK ${rst}]"
+
 	[[ "$UID" = 0 ]] &&  # Check if user is root
 		echo -e ">>> User Check .........[${bldylw} OK ${rst}]" ||
 		error "PLEASE RUN WITH SUDO"
+
 	[[ "$DEBUG" = 1 ]] &&  # Check if debug is on/off
 		echo -e ">>> Debug Mode .........[${bldylw} ON ${rst}]" ||
 		echo -e ">>> Debug Mode .........[${bldylw} OFF ${rst}]"
-	[[ $(grep /tmp /etc/mtab | grep noexec) != "" ]] &&  # Check whether /tmp is mounted 'noexec'
+
+	if [[ $OVERWRITE_SOURCE_DIR != "" ]]; then
+		SOURCE_DIR=$OVERWRITE_SOURCE_DIR
+	else [[ $(grep /tmp /etc/mtab | grep noexec) != "" ]] &&  # Check whether /tmp is mounted 'noexec'
 			SOURCE_DIR=$BASE/tmp || SOURCE_DIR=/tmp/.fangspitzen
+	fi
+
 	echo -ne ">>> Internet Access ..."
 	[[ $(ping -c 1 74.125.226.116) ]] && [[ $(ping -c 1 208.67.222.222) ]] &&  # Ping google and opendns
 		echo -e ".[${bldylw} OK ${rst}]" || error "Unable to ping outside world..."
-	sleep 1
+
+sleep 1
 else error "Unsupported OS"
 fi
 }

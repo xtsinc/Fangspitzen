@@ -21,7 +21,7 @@ while [[ $compile_libtorrent = 'no' ]]; do
 	else compile_libtorrent='yes'
 	fi
 done
-	
+
 compile_rtorrent='no'
 while [[ $compile_rtorrent = 'no' ]]; do 
 	if is_installed "rtorrent"
