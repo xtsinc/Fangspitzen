@@ -180,6 +180,8 @@ elif [[ $http = 'lighttp' ]]; then
 		packages install $PHP_ARCHLINUX fcgi php-cgi 
 		cp modules/lighttp/lighttpd.conf.arch /etc/lighttpd/lighttpd.conf
 		echo "/etc/rc.d/lighttpd start" >> /etc/rc.local
+		sed -i "s:;extension=.*:extension=suhosin.so:" /etc/php/conf.d/suhosin.ini
+		sed -i "s:;extension=.*:extension=geoip.so:"   /etc/php/conf.d/geoip.ini
 		PHPini=/etc/php/php.ini
 	fi
 	if_error "Lighttpd failed to install"  # I wonder when the fam and gamin api will be compatible (this generates an error coce 100 so we are forced to ignore it)

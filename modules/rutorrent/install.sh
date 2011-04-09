@@ -74,10 +74,13 @@ cd rutorrent
 	# Install extra plugins
 cd plugins
 	checkout http://rutorrent-pausewebui.googlecode.com/svn/trunk pausewebui
-	checkout http://rutorrent-logoff.googlecode.com/svn/trunk/ logoff
+	checkout http://rutorrent-logoff.googlecode.com/svn/trunk logoff
 	checkout http://rutorrent-instantsearch.googlecode.com/svn/trunk instantsearch
-	#checkout http://rutorrent-chat.googlecode.com/svn/trunk chat
-	download http://srious.biz/nfo.tar.gz && extract nfo.tar.gz && rm nfo.tar.gz
+	checkout http://svn.rutorrent.org/svn/filemanager/trunk/filemanager
+	checkout http://svn.rutorrent.org/svn/filemanager/trunk/fileshare
+	checkout http://svn.rutorrent.org/svn/filemanager/trunk/mediastream
+	checkout http://rutorrent-chat.googlecode.com/svn/trunk chat
+	extract $BASE/modules/rutorrent/nfo_img.tar.gz nfo_img
 	log "ruTorrent plugins | Downloaded"
 
 cd $SOURCE_DIR

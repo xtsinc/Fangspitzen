@@ -43,6 +43,8 @@ if [[ "$DISTRO" = @(ARCH|[Aa]rch)* && $rtorrent_svn != 'y' ]]; then
 		[[ $compile_xmlrpc = 'yes' ]]     && packages install "libsigc++ openssl curl xmlrpc-c"
 		[[ $compile_libtorrent = 'yes' ]] && build_from_aur "/usr/lib/libtorrent.so" "libtorrent-extended"
 		[[ $compile_rtorrent = 'yes' ]]   && build_from_aur "rtorrent" "rtorrent-extended"
+		#download "http://iblocklist.charlieprice.org/files/bt_level1.gz"
+		#download "http://iblocklist.charlieprice.org/files/tbg_primarythreats.gz"
 		compile_libtorrent='no' compile_rtorrent='no' compile_xmlrpc='no'
 	fi
 fi
@@ -158,9 +160,7 @@ if [[ $rtorrent_svn != 'y' ]]; then
 	echo "max_memory_usage = 800M" >> $PATH_rt
 	echo "preload_type = 1"        >> $PATH_rt
 	if [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
-		download "http://iblocklist.charlieprice.org/files/bt_level1.gz"
-		download "http://iblocklist.charlieprice.org/files/tbg_primarythreats.gz"
-		echo "ip_filter=bt_level1.gz,tbg_primarythreats.gz"             >> $PATH_rt
+		#echo "ip_filter=bt_level1.gz,tbg_primarythreats.gz"             >> $PATH_rt
 		echo "schedule = filter,18:30:00,24:00:00,reload_ip_filter="    >> $PATH_rt
 		echo 'schedule = snub_leechers,120,120,"snub_leechers=10,5,1M"' >> $PATH_rt
 		echo 'schedule = ban_slow_peers,120,120,"ban_slow_peers=5,2K,64K,5,128K,10,1M,30"' >> $PATH_rt
