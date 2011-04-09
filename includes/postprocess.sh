@@ -91,6 +91,7 @@ fi
 
 #[ Add Some Useful Command Alias' ]#
 if [[ -f $HOME/.bashrc && ! $(grep '# added by autoscript' $HOME/.bashrc) ]]; then  # Check if this has already been added or not
+cp $HOME/.bashrc $HOME/.bashrc.saved
 echo "
 #sudo completion
 complete -cf sudo
