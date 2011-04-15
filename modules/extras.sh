@@ -447,8 +447,8 @@ sudo -u "$USER" bash -c '
 	echo " Changing your default shell to zsh ..."
 	chsh -s `which zsh`
 
-	echo -e "\n Zsh is now installed"
-	echo -e " Re-login to use it. \n"
+	echo -e "\n Zsh is now installed. Start a new session to use it. "
+	echo -e " Edit ~/.zshrc for new themes and plugins. \n"
 
 	else
 		echo "Previous Oh My Zsh installation detected. Running updater..."
