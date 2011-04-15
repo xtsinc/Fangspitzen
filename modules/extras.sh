@@ -444,13 +444,16 @@ sudo -u "$USER" bash -c '
 	cp ~/.oh-my-zsh/templates/zshrc.zsh-template $HOME/.zshrc
 	echo "export PATH=$PATH" >> $HOME/.zshrc
 
-	echo " Chaning your default shell to zsh ..."
+	echo " Changing your default shell to zsh ..."
 	chsh -s `which zsh`
 
 	echo -e "\n Zsh is now installed"
 	echo -e " Re-login to use it. \n"
 
-	else echo "Previous Oh My Zsh installation detected. Running updater..."
+	else
+		echo "Previous Oh My Zsh installation detected. Running updater..."
+		cd $HOME/.oh-my-zsh && git pull
+		echo "Any new updates will be reflected when you start your next terminal session."
 	fi
 '
 fi
