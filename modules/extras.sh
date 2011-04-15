@@ -432,10 +432,25 @@ fi  # end `if $virtualbox`
 if [[ $zshell = 'y' ]]; then
 	notice "iNSTALLiNG ZSHELL"
 	packages install zsh
-	if_error "ZSHELL failed to install"
+	if_error "ZSH failed to install"
 	
-	cd $HOME
-	#git clone git://github.com/robbyrussell/oh-my-zsh.git
-	wget --no-check-certificate https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh
-	sudo -u "$USER" sh install.sh
+sudo -u "$USER" bash -c '
+	if [[ ! -d $HOME/.oh-my-zsh ]]; then
+		git clone git://github.com/robbyrussell/oh-my-zsh.git $HOME/.oh-my-zsh
+
+	[[ -f $HOME/.zshrc || -h $HOME/.zshrc ]] &&
+		cp $HOME/.zshrc $HOME/.zshrc.pre-oh-my-zsh && rm $HOME/.zshrc
+
+	cp ~/.oh-my-zsh/templates/zshrc.zsh-template $HOME/.zshrc
+	echo "export PATH=$PATH" >> $HOME/.zshrc
+
+	echo " Chaning your default shell to zsh ..."
+	chsh -s `which zsh`
+
+	echo -e "\n Zsh is now installed"
+	echo -e " Re-login to use it. \n"
+
+	else echo "Previous Oh My Zsh installation detected. Running updater..."
+	fi
+'
 fi
