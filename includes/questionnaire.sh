@@ -201,6 +201,15 @@ if [[ $ipblock = 'y' ]]; then
 elif [[ $ipblock = @(none|no|[Nn]) ]]
 	then echo -e "${bldylw} iPBLOCK NOT BEiNG iNSTALLED ${rst}"
 	else echo -e "${bldred}---> ERROR iN iPBLOCK iNPUT! ${rst}"; ipblock='n'
+fi
+
+##[ Check for ZSH ]##
+if [[ $zshell = 'y' ]]; then
+	v1=$(packages version zsh)
+	echo -e "${bldblu} ZSH: $v1 ${rst}"
+elif [[ $zshell = @(none|no|[Nn]) ]]
+	then echo -e "${bldylw} ZSHELL NOT BEiNG iNSTALLED ${rst}"
+	else echo -e "${bldred}---> ERROR iN ZSHELL iNPUT! ${rst}"; zshell='n'
 fi ; fi  # end `if $extras`
 
 ##[ CONFiRMATiON ]##

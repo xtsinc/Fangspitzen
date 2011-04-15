@@ -1,12 +1,12 @@
 ##!=======================>> FUNCTiONS <<=======================!##
 base_install() {  # install dependencies
-COMMON="apache2-utils autoconf automake axel binutils bzip2 ca-certificates cpp curl file gamin gcc git-core gzip htop iptables libexpat1 libtool libxml2 m4 make mcrypt openssl patch perl pkg-config python python-gamin python-openssl python-setuptools rsync screen subversion sudo unrar unzip"
+COMMON="apache2-utils autoconf automake axel bash-completion binutils bzip2 ca-certificates cpp curl file gamin gcc git-core gzip htop iptables libexpat1 libtool libxml2 m4 make mcrypt openssl patch perl pkg-config python python-gamin python-openssl python-setuptools rsync screen subversion sudo unrar unzip"
 DYNAMIC="libcurl3 libcurl3-gnutls libcurl4-openssl-dev libncurses5 libncurses5-dev libsigc++-2.0-dev"
 
 DEBIAN="$COMMON $DYNAMIC aptitude autotools-dev build-essential cfv comerr-dev dtach g++ geoip-database libcppunit-dev libperl-dev libssl-dev libterm-readline-gnu-perl libtorrent-rasterbar-dev ncurses-base ncurses-bin ncurses-term perl-modules ssl-cert"
 SUSE="$COMMON libcppunit-devel libcurl-devel libopenssl-devel libtorrent-rasterbar-devel gcc-c++ geoip ncurses-devel libncurses6 libsigc++2-devel"
 
-ARCHLINUX="axel base-devel binutils cppunit curl dtach freetype2 geoip htop libsigc++ libmcrypt libxslt ncurses openssl perl perl-digest-sha1 perl-json perl-json-xs perl-xml-libxslt perl-net-ssleay pcre popt rar-beta rsync subversion sudo t1lib unzip"
+ARCHLINUX="axel base-devel bash-completion binutils cppunit curl dtach freetype2 geoip htop libsigc++ libmcrypt libxslt ncurses openssl perl perl-digest-sha1 perl-json perl-json-xs perl-xml-libxslt perl-net-ssleay pcre popt rar-beta rsync subversion sudo t1lib unzip"
 
 PHP_COMMON="php5-curl php5-geoip php5-gd php5-mcrypt php5-mysql php5-suhosin php5-xmlrpc"
 
@@ -253,7 +253,7 @@ packages() {  # use appropriate package manager depending on distro
 				WEBUSER='http'
 				WEBGROUP='http'
 				alias_autoclean="sudo pacman -Sc"
-				alias_install="sudo pacmane -S --needed"
+				alias_install="sudo pacman -S --needed"
 				alias_remove="sudo pacman -R"
 				alias_update="sudo pacman -Sy"
 				alias_upgrade="sudo pacman -Syu" ;;

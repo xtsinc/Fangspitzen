@@ -427,3 +427,15 @@ if [[ $phpvirtualbox = 'y' ]]; then  # TODO
 	#fi
 fi
 fi  # end `if $virtualbox`
+
+##[ ZSHELL ]##
+if [[ $zshell = 'y' ]]; then
+	notice "iNSTALLiNG ZSHELL"
+	packages install zsh
+	if_error "ZSHELL failed to install"
+	
+	cd $HOME
+	#git clone git://github.com/robbyrussell/oh-my-zsh.git
+	wget --no-check-certificate https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh
+	sudo -u "$USER" sh install.sh
+fi

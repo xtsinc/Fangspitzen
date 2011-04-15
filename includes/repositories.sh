@@ -52,6 +52,7 @@ elif [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]; then
 	packages addrepo http://download.opensuse.org/repositories/server:/http/openSUSE_${RELEASE}/            "Cherokee"
 	packages addrepo http://download.opensuse.org/repositories/filesharing/openSUSE_${RELEASE}/             "Transmission"
 	packages addrepo http://download.opensuse.org/repositories/home:/uljanow/openSUSE_11.2/                 "iPList"
+	packages addrepo http://download.opensuse.org/repositories/shells/openSUSE_${RELEASE}/                  "Shells"
 	log "Repositories ADD | Success"
 else
 	error "Failed to add repositories to unknown distro... exiting (${DISTRO})"

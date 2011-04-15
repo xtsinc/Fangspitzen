@@ -8,6 +8,7 @@ while [[ $compile_xmlrpc = 'no' ]]; do
 		fi
 	else compile_xmlrpc='yes'  # yes, install because its not installed
 	fi
+done
 
 compile_libtorrent='no'
 while [[ $compile_libtorrent = 'no' ]]; do 
@@ -33,7 +34,6 @@ while [[ $compile_rtorrent = 'no' ]]; do
 		break
 	else compile_rtorrent='yes'
 	fi
-done
 done
 
 if [[ "$DISTRO" = @(ARCH|[Aa]rch)* && $rtorrent_svn != 'y' ]]; then
