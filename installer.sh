@@ -32,7 +32,6 @@ while [ "$#" -gt 0 ]; do
 			else error "Specify Length --pass x "; fi ;;
 		--adduser) source tools/add-user.sh ;;
 		--rtorrent-prealloc) alloc='y'; shift ;;
-		--rutorrent-workaround) rutorrent_workaround='y'; shift ;;
 		--save-tmp) RM_TMP='n'; shift ;; 
 		--tmp) [[ "$2" ]] && OVERWRITE_SOURCE_DIR="$2"; shift ;;
 		-t|--threads) if [[ "$2" ]]

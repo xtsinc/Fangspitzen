@@ -63,12 +63,19 @@ build_from_aur() {  # compile and install PKBUILDs
 		sed -i "s;[#]*MAKEFLAGS=.*;MAKEFLAGS=\"-j$(($(grep -c ^processor /proc/cpuinfo) + 1))\";" /etc/makepkg.conf ;}
 
 	if ! is_installed "$BIN_NAME" ;then
-		[[ $3 = 'ignore-deps' ]] && PKG_OPTS="-di" || PKG_OPTS="-si"
+		[[ $3 = 'ignore-deps' ]] && PKG_OPTS="-dfc" || PKG_OPTS="-sfc"
 		LAST_DIR="$PWD" && cd $SOURCE_DIR
 		download $PKG_URL
 		extract "${PKG_NAME}.tar.gz" && cd "$PKG_NAME"
 		makepkg "$PKG_OPTS" --asroot --noconfirm
-			if_error "$PKG_NAME Failed to install"
+			if_error "$PKG_NAME Failed to build"
+		PKG_VER=$(ls $PKG_NAME*.pkg.tar.* | sed s/$PKG_NAME-// | sed s/-$ARCH.pkg.tar.*//)
+		pacman -U $PKG_NAME-$PKG_VER-$ARCH.pkg.tar.*
+		INST_VER=$(pacman -Q $PKG_NAME)
+		if [[ "$INST_VER" != "$PKG_NAME $PKG_VER" ]]
+			then echo -e "$PKG_NAME Failed to install"
+			else log "$PKG_NAME Installed Successfully"
+		fi
 		cd $LAST_DIR
 	else notice "$PKG_NAME is already installed. Skipping"
 	fi

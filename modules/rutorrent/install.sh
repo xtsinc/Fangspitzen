@@ -8,52 +8,6 @@ while [[ $install_rutorrent = 'no' ]]; do
 		break
 	fi
 done
-if [[ $rutorrent_workaround = 'y' ]]; then install_rutorrent='no'
-cd $SOURCE_DIR
-	extract $BASE/modules/rutorrent/rutorrent.tar.bz2
-
-	rm -R rutorrent/conf/plugins.ini rutorrent/favicon.ico
-	cp $BASE/modules/rutorrent/plugins.ini rutorrent/conf/plugins.ini 
-	cp $BASE/modules/rutorrent/favicon.ico rutorrent/favicon.ico 
-
-	sed -i "s:\$saveUploadedTorrents .*:\$saveUploadedTorrents = false;:"         rutorrent/conf/config.php
-	sed -i "s:\$topDirectory .*:\$topDirectory = '/home';:"                       rutorrent/conf/config.php
-	sed -i "s:\$XMLRPCMountPoint .*:\$XMLRPCMountPoint = \"/rutorrent/master\";:" rutorrent/conf/config.php
-	sed -i "s:\$defaultTheme .*:\$defaultTheme = \"Oblivion\";:"                  rutorrent/plugins/theme/conf.php
-
-	notice "CONFiGURiNG USER AUTHENTiCATiON"
-	if [[ $(pgrep lighttpd) || $http = 'lighttp' ]]; then  # Lighttp - Create user authentication
-		if [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]
-			then htdigest2 -c /etc/lighttpd/.htpasswd "ruTorrent" $USER
-			else htdigest -c /etc/lighttpd/.htpasswd "ruTorrent" $USER
-		fi
-	elif [[ $(pgrep nginx) || $http='nginx' ]]; then
-		htpasswd -c /etc/nginx/.htpasswd $USER
-	elif [[ $(pgrep apache2) || $(pgrep httpd) || $http = 'apache' ]]; then  # Apache - Create user authentication
-		cp $BASE/modules/apache/htaccess rutorrent/.htaccess
-		if [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
-			htdigest -c /etc/httpd/.htpasswd "ruTorrent" $USER
-			sed -i "s:apache2:httpd:" rutorrent/.htaccess
-		elif [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]
-			then htdigest2 -c /etc/apache2/.htpasswd "ruTorrent" $USER
-			else htdigest -c /etc/apache2/.htpasswd "ruTorrent" $USER
-		fi
-	fi
-
-	if is_installed "buildtorrent"
-		then sed -i "s:	\$useExternal .*;:	\$useExternal = \"buildtorrent\";:"                              rutorrent/plugins/create/conf.php
-			#sed -i "s:	\$pathToCreatetorrent .*;:	\$pathToCreatetorrent = '/usr/local/bin/buildtorrent';:" rutorrent/plugins/create/conf.php
-	elif is_installed "mktorrent"
-		then sed -i "s:	\$useExternal .*;:	\$useExternal = \"mktorrent\";:"                                 rutorrent/plugins/create/conf.php
-			#sed -i "s:	\$pathToCreatetorrent .*;:	\$pathToCreatetorrent = '/usr/local/bin/mktorrent';:"    rutorrent/plugins/create/conf.php
-	fi
-	log "ruTorrent Config | Created"
-
-	cp -R rutorrent "$WEB"  # Move rutorrent to webroot
-	chmod -R 755 $WEB
-	chown -R $WEBUSER:$WEBGROUP $WEB
-	log "ruTorrent Installation | Completed" ; debug_wait "rutorrent.installed-workaround"
-fi
 
 if [[ $install_rutorrent = 'yes' ]]; then
 cd $SOURCE_DIR
