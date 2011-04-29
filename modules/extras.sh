@@ -436,13 +436,14 @@ if [[ $zshell = 'y' ]]; then
 	
 sudo -u "$USER" bash -c '
 	if [[ ! -d $HOME/.oh-my-zsh ]]; then
-		git clone git://github.com/robbyrussell/oh-my-zsh.git $HOME/.oh-my-zsh
+		git clone https://github.com/robbyrussell/oh-my-zsh.git $HOME/.oh-my-zsh
 
 	[[ -f $HOME/.zshrc || -h $HOME/.zshrc ]] &&
 		cp $HOME/.zshrc $HOME/.zshrc.pre-oh-my-zsh && rm $HOME/.zshrc
 
 	cp ~/.oh-my-zsh/templates/zshrc.zsh-template $HOME/.zshrc
 	echo "export PATH=$PATH" >> $HOME/.zshrc
+	sed -i "s:export ZSH_THEME=.*:export ZSH_THEME=\"murilasso\":" $HOME/.zshrc
 
 	echo " Changing your default shell to zsh ..."
 	chsh -s `which zsh`
