@@ -52,7 +52,7 @@ fi
 if [[ $compile_xmlrpc = 'yes' ]]; then
 cd $SOURCE_DIR
 	notice "DOWNLOADiNG... XMLRPC"
-	checkout http://xmlrpc-c.svn.sourceforge.net/svnroot/xmlrpc-c/advanced xmlrpc  # Checkout xmlrpc ~advanced
+	checkout http://xmlrpc-c.svn.sourceforge.net/svnroot/xmlrpc-c/advanced xmlrpc  # Checkout xmlrpc
 	if_error "XMLRPC Download Failed"
 	log "XMLRPC | Downloaded" >> $LOG
 
@@ -72,7 +72,7 @@ if [[ $compile_libtorrent = 'yes' ]]; then
 cd $SOURCE_DIR
 	notice "DOWNLOADiNG... libTORRENT"
 	if [[ $rtorrent_svn = 'y' ]]; then
-		checkout -r 1180 svn://rakshasa.no/libtorrent/trunk/libtorrent
+		checkout svn://rakshasa.no/libtorrent/trunk/libtorrent
 		if_error "libTorrent Download Failed"
 		log "LibTorrent | Downloaded" >> $LOG
 	else
@@ -105,7 +105,7 @@ if [[ $compile_rtorrent = 'yes' ]]; then
 cd $SOURCE_DIR
 	notice "DOWNLOADiNG... rTORRENT"
 	if [[ $rtorrent_svn = 'y' ]]; then
-		checkout -r 1180 svn://rakshasa.no/libtorrent/trunk/rtorrent
+		checkout svn://rakshasa.no/libtorrent/trunk/rtorrent
 		if_error "rTorrent Download Failed"
 		log "rTorrent | Downloaded" >> $LOG
 	else

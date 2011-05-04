@@ -64,7 +64,7 @@ fi
 ##[ Check for Torent Client ]##
 if [[ $torrent = 'rtorrent' ]]; then
 	if [[ $rtorrent_svn = 'y' ]]
-		then echo -e "${bldblu} Package: rTorrent: Version: 0.8.7~svn r1180 ${rst}"
+		then echo -e "${bldblu} Package: rTorrent: Version: 0.8.7~svn HEAD ${rst}"
 		else echo -e "${bldblu} Package: rTorrent: Version: 0.8.6 ${rst}"; rtorrent_svn='n'
 	fi
 	if [[ $alloc = 'y' ]]; then
