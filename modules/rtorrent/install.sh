@@ -76,12 +76,12 @@ cd $SOURCE_DIR
 		if_error "libTorrent Download Failed"
 		log "LibTorrent | Downloaded" >> $LOG
 	else
-		download http://libtorrent.rakshasa.no/downloads/libtorrent-0.12.6.tar.gz  # Grab libtorrent
+		download http://libtorrent.rakshasa.no/downloads/libtorrent-0.12.7.tar.gz  # Grab libtorrent
 		if_error "LibTorrent Download Failed"
 		log "Lib|rTorrent | Downloaded" >> $LOG
 
-		extract libtorrent-0.12.6.tar.gz  # Unpack
-		mv libtorrent-0.12.6 libtorrent
+		extract libtorrent-0.12.7.tar.gz  # Unpack
+		mv libtorrent-0.12.7 libtorrent
 		log "LibTorrent | Unpacked"
 	fi
 
@@ -109,12 +109,12 @@ cd $SOURCE_DIR
 		if_error "rTorrent Download Failed"
 		log "rTorrent | Downloaded" >> $LOG
 	else
-		download http://libtorrent.rakshasa.no/downloads/rtorrent-0.8.6.tar.gz     # Grab rtorrent
+		download http://libtorrent.rakshasa.no/downloads/rtorrent-0.8.7.tar.gz     # Grab rtorrent
 		if_error "rTorrent Download Failed"
 		log "rTorrent | Downloaded" >> $LOG
 
-		extract rtorrent-0.8.6.tar.gz  # Unpack
-		mv rtorrent-0.8.6 rtorrent
+		extract rtorrent-0.8.7.tar.gz  # Unpack
+		mv rtorrent-0.8.7 rtorrent
 		log "Lib|rTorrent | Unpacked"
 	fi
 
@@ -156,9 +156,6 @@ echo "session = /home/$USER/.session"     >> $PATH_rt
 echo -e "${bldylw} done${rst}"
 
 if [[ $rtorrent_svn != 'y' ]]; then
-	echo "max_open_files = 256"    >> $PATH_rt
-	echo "max_memory_usage = 800M" >> $PATH_rt
-	echo "preload_type = 1"        >> $PATH_rt
 	if [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
 		#echo "ip_filter=bt_level1.gz,tbg_primarythreats.gz"             >> $PATH_rt
 		echo "schedule = filter,18:30:00,24:00:00,reload_ip_filter="    >> $PATH_rt
@@ -168,8 +165,6 @@ if [[ $rtorrent_svn != 'y' ]]; then
 		echo 'on_finished = unsnub,"d.unsnub_peers="'                   >> $PATH_rt
 		echo "done_fg_color = 1" >> $PATH_rt
 	fi
-else
-	echo "network.http.ssl_verify_peer.set = no" >> $PATH_rt
 fi
 
 [[ $alloc = 'y' ]] &&
