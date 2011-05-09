@@ -165,6 +165,8 @@ if [[ $rtorrent_svn != 'y' ]]; then
 		echo 'on_finished = unsnub,"d.unsnub_peers="'                   >> $PATH_rt
 		echo "done_fg_color = 1" >> $PATH_rt
 	fi
+else
+	echo 'network.http.ssl_verify_peer.set = no' >> $PATH_rt  # added in 0.8.8
 fi
 
 [[ $alloc = 'y' ]] &&

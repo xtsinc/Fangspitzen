@@ -23,8 +23,6 @@ encoding_list = UTF-8
 
 encryption = allow_incoming,try_outgoing,enable_retry
 
-network.http.ssl_verify_peer.set = no
-
 scgi_port = 127.0.0.1:5000
 
 ##- Below Generated From Auto Script -##
