@@ -53,6 +53,8 @@ if [[ $sql = 'mysql' ]]; then
 	if_error "MySQL failed to install"
 	sed -ie 's:query_cache_limit .*:query_cache_limit = 2M\nquery_cache_type = 1:' /etc/mysql/my.cnf
 	log "MySQL Installation | Completed" ; debug_wait "mysql.installed"
+	[[ $mysql_tuner = 'y' ]] &&
+		git clone https://github.com/rackerhacker/MySQLTuner-perl.git $HOME/MySQL-Tuner
 
 ##[ SQLiTE ]##
 elif [[ $sql = 'sqlite' ]]; then
@@ -427,6 +429,11 @@ if [[ $phpvirtualbox = 'y' ]]; then  # TODO
 	#fi
 fi
 fi  # end `if $virtualbox`
+
+if [[ $namebench = 'y' ]]; then
+	cd $HOME
+	svn checkout http://namebench.googlecode.com/svn/trunk/ namebench
+fi
 
 ##[ ZSHELL ]##
 if [[ $zshell = 'y' ]]; then
