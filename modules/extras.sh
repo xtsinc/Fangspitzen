@@ -11,12 +11,12 @@ if [[ $cache = 'xcache' ]]; then
 
 	PATH_xcache="/etc/php5/conf.d/xcache.ini"
 	sed -i $PATH_xcache \
-	-e "s:; xcache.admin.user .*:xcache.admin.user = $xUser:" \
-	-e "s:; xcache.admin.pass .*:xcache.admin.pass = $xPass:" \
-	-e 's:xcache.size  .*:xcache.size  = 48M:'                \  # Increase cache size
-	-e "s:xcache.count .*:xcache.count = $CORES:" 	          \  # Specify CPU Core count
-	-e 's:xcache.var_size  .*:xcache.var_size  = 8M:'         \
-	-e 's:xcache.optimizer .*:xcache.optimizer = On:'
+		-e "s:; xcache.admin.user .*:xcache.admin.user = $xUser:" \
+		-e "s:; xcache.admin.pass .*:xcache.admin.pass = $xPass:" \
+		-e 's:xcache.size  .*:xcache.size  = 48M:'                \  # Increase cache size
+		-e "s:xcache.count .*:xcache.count = $CORES:" 	          \  # Specify CPU Core count
+		-e 's:xcache.var_size  .*:xcache.var_size  = 8M:'         \
+		-e 's:xcache.optimizer .*:xcache.optimizer = On:'
 
 	cp -a /usr/share/xcache/admin "$WEB"/xcache-admin/  # Copy Admin folder to webroot
 
@@ -77,9 +77,9 @@ elif [[ $sql = 'postgre' ]]; then
 		packages install postgresql php-pgsql
 		echo "/etc/rc.d/postgresql start" >> /etc/rc.local
 		sed -i $PHPini \
-		-e "s:;extension=pgsql.so:extension=pgsql.so:"         \
-		-e "s:;extension=pdo.so:extension=pdo.so:"             \
-		-e "s:;extension=pdo_pgsql.so:extension=pdo_pgsql.so:"
+			-e "s:;extension=pgsql.so:extension=pgsql.so:"         \
+			-e "s:;extension=pdo.so:extension=pdo.so:"             \
+			-e "s:;extension=pdo_pgsql.so:extension=pdo_pgsql.so:"
 
 		/etc/rc.d/postgresql start
 	fi
@@ -182,15 +182,17 @@ if [[ $fail2ban = 'y' ]]; then
 		elif [[ $ftp = 'proftp' ]]; then
 			sed -i '/[proftpd]/,/filter   = proftpd/ s:enabled .*:enabled = true:' $f2b_jail
 		elif [[ $ftp = 'pureftp' ]]; then
-			sed -i 's:[wuftpd]:[pure-ftpd]:' $f2b_jail
-			sed -i 's:filter   = wuftpd:filter   = pure-ftpd:'                                            $f2b_jail
-			sed -i '/[pure-ftpd]/,/filter   = pure-ftpd/ s:enabled .*:enabled = true:'                    $f2b_jail
-			sed -i '/filter   = pure-ftpd/,/maxretry = 6/ s:logpath .*:logpath  = /var/log/pureftpd.log:' $f2b_jail
+			sed -i $f2b_jail \
+				-e 's:[wuftpd]:[pure-ftpd]:' \
+				-e 's:filter   = wuftpd:filter   = pure-ftpd:' \
+				-e '/[pure-ftpd]/,/filter   = pure-ftpd/ s:enabled .*:enabled = true:' \
+				-e '/filter   = pure-ftpd/,/maxretry = 6/ s:logpath .*:logpath  = /var/log/pureftpd.log:'
 		fi
 		if [[ $http = 'apache' ]]; then
-			sed -i '/[apache]/,/port	= http,https/ s:enabled .*:enabled = true:'           $f2b_jail
-			sed -i '/[apache-noscript]/,/port    = http,https/ s:enabled .*:enabled = true:'  $f2b_jail
-			sed -i '/[apache-overflows]/,/port    = http,https/ s:enabled .*:enabled = true:' $f2b_jail
+			sed -i $f2b_jail \
+				-e '/[apache]/,/port	= http,https/ s:enabled .*:enabled = true:'          \
+				-e '/[apache-noscript]/,/port    = http,https/ s:enabled .*:enabled = true:' \
+				-e '/[apache-overflows]/,/port    = http,https/ s:enabled .*:enabled = true:'
 			cat >> $f2b_jail << "EOF"
 [apache-badbots]
 enabled = true
@@ -229,9 +231,9 @@ cd $SOURCE_DIR
 	cp config.php.new config.php
 
 	sed -i config.php \
-	-e "s:define('PSI_PLUGINS'.*:define('PSI_PLUGINS', 'PS,PSStatus,Quotas,SMART');:"     \
-	-e "s:define('PSI_TEMP_FORMAT'.*:define('PSI_TEMP_FORMAT', 'c-f');:"                  \
-	-e "s:define('PSI_DEFAULT_TEMPLATE',.*);:define('PSI_DEFAULT_TEMPLATE', 'nextgen');:"
+		-e "s:define('PSI_PLUGINS'.*:define('PSI_PLUGINS', 'PS,PSStatus,Quotas,SMART');:"     \
+		-e "s:define('PSI_TEMP_FORMAT'.*:define('PSI_TEMP_FORMAT', 'c-f');:"                  \
+		-e "s:define('PSI_DEFAULT_TEMPLATE',.*);:define('PSI_DEFAULT_TEMPLATE', 'nextgen');:"
 
 	sed -e "/open_basedir = /s|$|:/proc:/usr/sbin/lspci:/usr/sbin/lsusb|" -i /etc/php/php.ini
 
@@ -292,12 +294,12 @@ cd $SOURCE_DIR
 	fi
 
 	sed -i /etc/vnstat.conf \
-	-e "s:UnitMode 0:UnitMode 1:"               \  # Use MB not MiB
-	-e "s:RateUnit 1:RateUnit 0:"               \  # Use bytes not bits
-	-e "s:UpdateInterval 30:UpdateInterval 60:" \  # Increase daemon checks
-	-e "s:PollInterval 5:PollInterval 10:"      \  # ^^^^^^^^ ^^^^^^ ^^^^^^
-	-e "s:SaveInterval 5:SaveInterval 10:"      \  # Less saves to disk
-	-e "s:UseLogging 2:UseLogging 1:"              # Log to file instead of syslog
+		-e "s:UnitMode 0:UnitMode 1:"               \  # Use MB not MiB
+		-e "s:RateUnit 1:RateUnit 0:"               \  # Use bytes not bits
+		-e "s:UpdateInterval 30:UpdateInterval 60:" \  # Increase daemon checks
+		-e "s:PollInterval 5:PollInterval 10:"      \  # ^^^^^^^^ ^^^^^^ ^^^^^^
+		-e "s:SaveInterval 5:SaveInterval 10:"      \  # Less saves to disk
+		-e "s:UseLogging 2:UseLogging 1:"              # Log to file instead of syslog
 
 	if [[ $vnstat = 'vnstatphp' ]]; then
 		notice "iNSTALLiNG VNSTAT-PHP"
@@ -352,9 +354,9 @@ cd $SOURCE_DIR
 	sabnzbd_init=/etc/default/sabnzbdplus
 
 	sed -i $sabnzbd_init \
-	-i "s:USER.*:USER=$USER:"   \
-	-i "s:HOST.*:HOST=0.0.0.0:" \
-	-i "s:PORT.*:PORT=8080:"
+		-e "s:USER.*:USER=$USER:"   \
+		-e "s:HOST.*:HOST=0.0.0.0:" \
+		-e "s:PORT.*:PORT=8080:"
 	
 	/etc/init.d/sabnzbdplus start && /etc/init.d/sabnzbdplus stop  # Create config in user's home
 	sed -i "s:host .*:host = $iP:"  $sabnzbd_conf

@@ -22,22 +22,23 @@ cd $SOURCE_DIR
 
 	log "Deluge Init Script Created"
 	debug_wait "deluge.init.copied"
-
-	deluge_conf="$HOME/.config/deluge/core.conf"
-	sed -i "s,\"move_completed\": .*,\"move_completed\": \"true\","                             $deluge_conf
-	sed -i "s,\"move_completed_path\": .*,\"move_completed_path\": \"$HOME/Finished\","         $deluge_conf
-	sed -i "s,\"download_location\": .*,\"download_location\": \"$HOME/downloads\","            $deluge_conf
-	sed -i "s,\"autoadd_location\": .*,\"autoadd_location\": \"$HOME/watch\","                  $deluge_conf
-	sed -i "s,\"plugins_location\": .*,\"plugins_location\": \"$HOME/.config/deluge/plugins\"," $deluge_conf
-	sed -i "s,\"max_active_limit\": .*,\"max_active_limit\": \"200\","             $deluge_conf
-	sed -i "s,\"max_active_downloading\": .*,\"max_active_downloading\": \"200\"," $deluge_conf
-	sed -i "s,\"max_active_seeding\": .*,\"max_active_seeding\": \"200\","         $deluge_conf
-	sed -i "s,\"allow_remote\": .*,\"allow_remote\": \"true\"," $deluge_conf
-	sed -i "s,\"dht\": .*,\"dht\": \"false\","                  $deluge_conf
-
+	
 	NUMBER=$[($RANDOM % 65534) + 20000]  # Generate a random number from 20000-65534
-	sed -i "s:6881,:$NUMBER,:" $deluge_conf
-	sed -i "s:6891,:$NUMBER:"  $deluge_conf
+	deluge_conf="$HOME/.config/deluge/core.conf"
+
+	sed -i $deluge_conf \
+		-e "s,\"move_completed\": .*,\"move_completed\": \"true\","                     \
+		-e "s,\"move_completed_path\": .*,\"move_completed_path\": \"$HOME/Finished\"," \
+		-e "s,\"download_location\": .*,\"download_location\": \"$HOME/downloads\","    \
+		-e "s,\"autoadd_location\": .*,\"autoadd_location\": \"$HOME/watch\","          \
+		-e "s,\"plugins_location\": .*,\"plugins_location\": \"$HOME/.config/deluge/plugins\"," \
+		-e "s,\"max_active_limit\": .*,\"max_active_limit\": \"200\","                  \
+		-e "s,\"max_active_downloading\": .*,\"max_active_downloading\": \"200\","      \
+		-e "s,\"max_active_seeding\": .*,\"max_active_seeding\": \"200\","              \
+		-e "s,\"allow_remote\": .*,\"allow_remote\": \"true\","                         \
+		-e "s,\"dht\": .*,\"dht\": \"false\","                                          \
+		-e "s:6881,:$NUMBER,:"                                                          \
+		-e "s:6891,:$NUMBER:"
 
 	chown -R $USER:$USER $HOME/.config/deluge
 

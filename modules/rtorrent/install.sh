@@ -180,10 +180,10 @@ if [[ $DISTRO = @([Uu]buntu|[dD]ebian|*Mint) && ! -f /etc/init.d/rtorrent ]]; th
 
 	# Write init configuration
 	sed -i $HOME/.rtorrent.init.conf \
-	-e "s:user=:user=\"$USER\":"                      \
-	-e "s:base=:base=$HOME:"                          \
-	-e 's:config=:config=("$base/.rtorrent.rc"):'     \
-	-e "s:logfile=:logfile=$HOME/.rtorrent.init.log:"
+		-e "s:user=:user=\"$USER\":"                  \
+		-e "s:base=:base=$HOME:"                      \
+		-e 's:config=:config=("$base/.rtorrent.rc"):' \
+		-e "s:logfile=:logfile=$HOME/.rtorrent.init.log:"
 
 	chmod a+x /etc/init.d/rtorrent && update-rc.d rtorrent defaults  # Start at boot
 	 log "rTorrent Config | Installed \nrTorrent Init Script | Created"

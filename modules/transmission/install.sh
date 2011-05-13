@@ -21,14 +21,15 @@ cd $SOURCE_DIR
 	read -p " WEBUi Password : " tPass
 
 	PATH_tr=$HOME/.config/transmission-daemon/settings.json
-	sed -i "s|\"blocklist-enabled.*|\"blocklist-enabled\": true,|"                     $PATH_tr
-	sed -i "s|\"blocklist-url.*|\"blocklist-url\": \"http://www.bluetack.co.uk/config/level1.gz\",|" $PATH_tr
-	sed -i "s|\"cache-size-mb.*|\"cache-size-mb\": 8,|"                                $PATH_tr
-	sed -i "s|\"open-file-limit.*|\"open-file-limit\": 64,|"                           $PATH_tr
-	sed -i "s|\"rpc-authentication-required.*|\"rpc-authentication-required\": true,|" $PATH_tr
-	sed -i "s|\"rpc-password.*|\"rpc-password\": \"$tPass\",|"                         $PATH_tr
-	sed -i "s|\"rpc-username.*|\"rpc-username\": \"$tUser\",|"                         $PATH_tr
-	sed -i "s|\"rpc-whitelist.*|\"rpc-whitelist\": \"*.*.*.*\",|"                      $PATH_tr
+	sed -i $PATH_tr \
+		-e "s|\"blocklist-enabled.*|\"blocklist-enabled\": true,|" \
+		-e "s|\"blocklist-url.*|\"blocklist-url\": \"http://www.bluetack.co.uk/config/level1.gz\",|" \
+		-e "s|\"cache-size-mb.*|\"cache-size-mb\": 8,|"            \
+		-e "s|\"open-file-limit.*|\"open-file-limit\": 64,|"       \
+		-e "s|\"rpc-authentication-required.*|\"rpc-authentication-required\": true,|" \
+		-e "s|\"rpc-password.*|\"rpc-password\": \"$tPass\",|"     \
+		-e "s|\"rpc-username.*|\"rpc-username\": \"$tUser\",|"     \
+		-e "s|\"rpc-whitelist.*|\"rpc-whitelist\": \"*.*.*.*\",|"
 	
 	[[ -d /etc/rc.d/ ]] && /etc/rc.d/transmissiond start || /etc/init.d/transmission-daemon start
 
