@@ -127,22 +127,25 @@ if [[ $http = 'apache' ]]; then
 		a2enmod auth_digest ssl php5 expires deflate mem_cache  # Enable modules
 		a2ensite default-ssl
 		sed -i "/<Directory \/var\/www\/>/,/<\/Directory>/ s:AllowOverride .*:AllowOverride All:" /etc/apache2/sites-available/default*
-		sed -i "s:ServerSignature On:ServerSignature Off:" /etc/apache2/apache2.conf
-		sed -i "s:Timeout 300:Timeout 30:"                 /etc/apache2/apache2.conf
-		sed -i "s:KeepAliveTimeout 15:KeepAliveTimeout 5:" /etc/apache2/apache2.conf
-		sed -i "s:ServerTokens Full:ServerTokens Prod:"    /etc/apache2/apache2.conf
-		echo   "ServerName $HOSTNAME" >>                   /etc/apache2/apache2.conf
+		sed -i /etc/apache2/apache2.conf \
+		-e "s:ServerSignature On:ServerSignature Off:" \
+		-e "s:Timeout 300:Timeout 30:"                 \
+		-e "s:KeepAliveTimeout 15:KeepAliveTimeout 5:" \
+		-e "s:ServerTokens Full:ServerTokens Prod:"
+		echo   "ServerName $HOSTNAME" >> /etc/apache2/apache2.conf
 	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
 		if [[ ! $(grep 'LoadModule php5_module' /etc/httpd/conf/httpd.conf) ]]; then
 		 echo "LoadModule php5_module modules/libphp5.so"                 >> /etc/httpd/conf/httpd.conf
 		 echo "Include conf/extra/php5_module.conf"                       >> /etc/httpd/conf/httpd.conf
 		fi
-		sed -i "s:Include conf/extra/httpd-userdir.conf:#Include conf/extra/httpd-userdir.conf:"       /etc/httpd/conf/httpd.conf  # Disable User-Dir
-		sed -i "s:#Include conf/extra/httpd-ssl.conf:Include conf/extra/httpd-ssl.conf:"               /etc/httpd/conf/httpd.conf  # Enable SSL
-		sed -i "/<Directory \"\/srv\/http\">/,/<\/Directory>/ s:AllowOverride None:AllowOverride All:" /etc/httpd/conf/httpd.conf  # Allow parsing .htaccess files
-		sed -i "s:Timeout 300:Timeout 30:"                 /etc/httpd/conf/extra/httpd-default.conf
-		sed -i "s:ServerTokens .*:ServerTokens Prod:"      /etc/httpd/conf/extra/httpd-default.conf
-		sed -i "s:ServerSignature On:ServerSignature Off:" /etc/httpd/conf/extra/httpd-default.conf
+		sed -i /etc/httpd/conf/httpd.conf \
+		-e "s:Include conf/extra/httpd-userdir.conf:#Include conf/extra/httpd-userdir.conf:"       \  # Disable User-Dir
+		-e "s:#Include conf/extra/httpd-ssl.conf:Include conf/extra/httpd-ssl.conf:"               \  # Enable SSL
+		-e "/<Directory \"\/srv\/http\">/,/<\/Directory>/ s:AllowOverride None:AllowOverride All:"    # Allow parsing .htaccess files
+		sed -i /etc/httpd/conf/extra/httpd-default.conf \
+		-e "s:Timeout 300:Timeout 30:"                 \
+		-e "s:ServerTokens .*:ServerTokens Prod:"      \
+		-e "s:ServerSignature On:ServerSignature Off:"
 		sed -i "s:;extension=.*:extension=suhosin.so:"     /etc/php/conf.d/suhosin.ini
 		sed -i "s:;extension=.*:extension=geoip.so:"       /etc/php/conf.d/geoip.ini
 		touch $WEB/index.html
@@ -253,18 +256,20 @@ fi
 
 ##[ PHP ]##
 if [[ $http != @(none|no|[Nn]) ]]; then  # Edit php config
-	sed -i 's:memory_limit .*:memory_limit = 128M:'                                        $PHPini
-	sed -i 's:error_reporting = .*:error_reporting = E_ALL \& ~E_DEPRECATED \& ~E_NOTICE:' $PHPini
-	sed -i 's:expose_php = On:expose_php = Off:'                                           $PHPini
-	sed -i 's:display_errors = On:display_errors = Off:'                                   $PHPini
-	sed -i 's:log_errors = Off:log_errors = On:'                                           $PHPini
-	sed -i 's:;error_log .*:error_log = /var/log/php-error.log:'                           $PHPini
-	sed -i "s:;extension=curl.so:extension=curl.so:"                                       $PHPini
-	sed -i "s:;extension=json.so:extension=json.so:"                                       $PHPini
-	sed -i "s:;extension=sockets.so:extension=sockets.so:"                                 $PHPini
-	sed -i "s:;extension=xmlrpc.so:extension=xmlrpc.so:"                                   $PHPini
-	sed -i "s:;date.timezone .*:date.timezone = Europe/Luxembourg:"                        $PHPini
-	sed -i "s|[;]*open_basedir = /srv.*|open_basedir = /srv/http/:/home/:/tmp/:/usr/share/pear/:/bin:/usr/bin/:/usr/local/bin/|" $PHPini
+	sed -i $PHPini \
+	-e 's:memory_limit .*:memory_limit = 128M:'                                        \
+	-e 's:error_reporting = .*:error_reporting = E_ALL \& ~E_DEPRECATED \& ~E_NOTICE:' \
+	-e 's:expose_php = On:expose_php = Off:'                                           \
+	-e 's:display_errors = On:display_errors = Off:'                                   \
+	-e 's:log_errors = Off:log_errors = On:'                                           \
+	-e 's:;error_log .*:error_log = /var/log/php-error.log:'                           \
+	-e "s:;extension=curl.so:extension=curl.so:"                                       \
+	-e "s:;extension=json.so:extension=json.so:"                                       \
+	-e "s:;extension=sockets.so:extension=sockets.so:"                                 \
+	-e "s:;extension=xmlrpc.so:extension=xmlrpc.so:"                                   \
+	-e "s:;date.timezone .*:date.timezone = Europe/Luxembourg:"                        \
+	-e "s|[;]*open_basedir = /srv.*|open_basedir = /srv/http/:/home/:/tmp/:/usr/share/pear/:/bin:/usr/bin/:/usr/local/bin/|"
+
 	touch $WEB/favicon.ico
 	[[ $create_phpinfo = 'y' ]] && echo "<?php phpinfo(); ?>" > $WEB/info.php  # Create phpinfo file
 fi
@@ -275,13 +280,14 @@ if [[ $ftpd = 'vsftp' ]]; then
 	packages install vsftpd
 	[[ $DISTRO = @(ARCH|[Aa]rch)* ]] && echo "/etc/rc.d/vsftpd start" >> /etc/rc.local
 	if_error "vsFTPd failed to install"
-	sed -i 's:anonymous_enable.*:anonymous_enable=NO:'           /etc/vsftpd.conf
-	sed -i 's:#local_enable.*:local_enable=YES:'                 /etc/vsftpd.conf
-	sed -i 's:#write_enable.*:write_enable=YES:'                 /etc/vsftpd.conf
-	sed -i 's:#local_umask.*:local_umask=022:'                   /etc/vsftpd.conf
-	sed -i 's:#idle_session_timeout.*:idle_session_timeout=600:' /etc/vsftpd.conf
-	sed -i 's:#nopriv_user.*:nopriv_user=ftp:'                   /etc/vsftpd.conf
-	sed -i 's:#chroot_local_user.*:chroot_local_user=YES:'       /etc/vsftpd.conf
+	sed -i /etc/vsftpd.conf \
+	-e 's:anonymous_enable.*:anonymous_enable=NO:'           \
+	-e 's:#local_enable.*:local_enable=YES:'                 \
+	-e 's:#write_enable.*:write_enable=YES:'                 \
+	-e 's:#local_umask.*:local_umask=022:'                   \
+	-e 's:#idle_session_timeout.*:idle_session_timeout=600:' \
+	-e 's:#nopriv_user.*:nopriv_user=ftp:'                   \
+	-e 's:#chroot_local_user.*:chroot_local_user=YES:'
 	
 	if [[ ! -f /etc/ssl/private/vsftpd.pem ]]; then
 		mksslcert "/etc/ssl/private/vsftpd.pem"
@@ -349,10 +355,11 @@ TLSRequired                off
 </IfModule>
 EOF
 	fi
-	sed -i 's:#DefaultRoot .*:DefaultRoot ~:'                     $proftpd_conf
-	sed -i 's:UseIPv6 .*:UseIPv6 off:'                            $proftpd_conf
-	sed -i 's:IdentLookups .*:IdentLookups off:'                  $proftpd_conf
-	sed -i 's:ServerIdent .*:ServerIdent on "FTP Server ready.":' $proftpd_conf
+	sed -i $proftpd_conf \
+	-e 's:#DefaultRoot .*:DefaultRoot ~:'                     \
+	-e 's:UseIPv6 .*:UseIPv6 off:'                            \
+	-e 's:IdentLookups .*:IdentLookups off:'                  \
+	-e 's:ServerIdent .*:ServerIdent on "FTP Server ready.":'
 
 	echo -en "\n Force SSL? [y/n]: "
 	if yes  # allow toggling of forcing ssl

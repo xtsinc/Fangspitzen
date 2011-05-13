@@ -10,12 +10,14 @@ if [[ $cache = 'xcache' ]]; then
 	read -p " MD5 Password: " xPass  # For XCache-Admin
 
 	PATH_xcache="/etc/php5/conf.d/xcache.ini"
-	sed -i "s:; xcache.admin.user .*:xcache.admin.user = $xUser:" $PATH_xcache
-	sed -i "s:; xcache.admin.pass .*:xcache.admin.pass = $xPass:" $PATH_xcache
-	sed -i 's:xcache.size  .*:xcache.size  = 48M:'                $PATH_xcache  # Increase cache size
-	sed -i "s:xcache.count .*:xcache.count = $CORES:" 	          $PATH_xcache  # Specify CPU Core count
-	sed -i 's:xcache.var_size  .*:xcache.var_size  = 8M:'         $PATH_xcache
-	sed -i 's:xcache.optimizer .*:xcache.optimizer = On:'         $PATH_xcache
+	sed -i $PATH_xcache \
+	-e "s:; xcache.admin.user .*:xcache.admin.user = $xUser:" \
+	-e "s:; xcache.admin.pass .*:xcache.admin.pass = $xPass:" \
+	-e 's:xcache.size  .*:xcache.size  = 48M:'                \  # Increase cache size
+	-e "s:xcache.count .*:xcache.count = $CORES:" 	          \  # Specify CPU Core count
+	-e 's:xcache.var_size  .*:xcache.var_size  = 8M:'         \
+	-e 's:xcache.optimizer .*:xcache.optimizer = On:'
+
 	cp -a /usr/share/xcache/admin "$WEB"/xcache-admin/  # Copy Admin folder to webroot
 
 	log "XCache Installation | Completed" ; debug_wait "xcache.installed"
@@ -74,9 +76,11 @@ elif [[ $sql = 'postgre' ]]; then
 	elif [[ $DISTRO = @(ARCH|[Aa]rch)* ]]; then
 		packages install postgresql php-pgsql
 		echo "/etc/rc.d/postgresql start" >> /etc/rc.local
-		sed -i "s:;extension=pgsql.so:extension=pgsql.so:"         $PHPini
-		sed -i "s:;extension=pdo.so:extension=pdo.so:"             $PHPini
-		sed -i "s:;extension=pdo_pgsql.so:extension=pdo_pgsql.so:" $PHPini
+		sed -i $PHPini \
+		-e "s:;extension=pgsql.so:extension=pgsql.so:"         \
+		-e "s:;extension=pdo.so:extension=pdo.so:"             \
+		-e "s:;extension=pdo_pgsql.so:extension=pdo_pgsql.so:"
+
 		/etc/rc.d/postgresql start
 	fi
 	if_error "PostgreSQL failed to install"
@@ -224,10 +228,12 @@ cd $SOURCE_DIR
 	rm ChangeLog COPYING README README_PLUGIN ChangeLog
 	cp config.php.new config.php
 
-	sed -i "s:define('PSI_PLUGINS'.*:define('PSI_PLUGINS', 'PS,PSStatus,Quotas,SMART');:"     config.php
-	sed -i "s:define('PSI_TEMP_FORMAT'.*:define('PSI_TEMP_FORMAT', 'c-f');:"                  config.php
-	sed -i "s:define('PSI_DEFAULT_TEMPLATE',.*);:define('PSI_DEFAULT_TEMPLATE', 'nextgen');:" config.php
-	sed -e "/open_basedir = /s|$|:/proc:/usr/sbin/lspci:/usr/sbin/lsusb|"            -i /etc/php/php.ini
+	sed -i config.php \
+	-e "s:define('PSI_PLUGINS'.*:define('PSI_PLUGINS', 'PS,PSStatus,Quotas,SMART');:"     \
+	-e "s:define('PSI_TEMP_FORMAT'.*:define('PSI_TEMP_FORMAT', 'c-f');:"                  \
+	-e "s:define('PSI_DEFAULT_TEMPLATE',.*);:define('PSI_DEFAULT_TEMPLATE', 'nextgen');:"
+
+	sed -e "/open_basedir = /s|$|:/proc:/usr/sbin/lspci:/usr/sbin/lsusb|" -i /etc/php/php.ini
 
 	cd ..
 	mv phpsysinfo $WEB 
@@ -285,13 +291,14 @@ cd $SOURCE_DIR
 	else log "VnStat | Previous Init Script Found, skipping..."
 	fi
 
-	sed -i "s:UnitMode 0:UnitMode 1:"               /etc/vnstat.conf  # Use MB not MiB
-	sed -i "s:RateUnit 1:RateUnit 0:"               /etc/vnstat.conf  # Use bytes not bits
-	sed -i "s:UpdateInterval 30:UpdateInterval 60:" /etc/vnstat.conf  # Increase daemon checks
-	sed -i "s:PollInterval 5:PollInterval 10:"      /etc/vnstat.conf  # ^^^^^^^^ ^^^^^^ ^^^^^^
-	sed -i "s:SaveInterval 5:SaveInterval 10:"      /etc/vnstat.conf  # Less saves to disk
-	sed -i "s:UseLogging 2:UseLogging 1:"           /etc/vnstat.conf  # Log to file instead of syslog
-	
+	sed -i /etc/vnstat.conf \
+	-e "s:UnitMode 0:UnitMode 1:"               \  # Use MB not MiB
+	-e "s:RateUnit 1:RateUnit 0:"               \  # Use bytes not bits
+	-e "s:UpdateInterval 30:UpdateInterval 60:" \  # Increase daemon checks
+	-e "s:PollInterval 5:PollInterval 10:"      \  # ^^^^^^^^ ^^^^^^ ^^^^^^
+	-e "s:SaveInterval 5:SaveInterval 10:"      \  # Less saves to disk
+	-e "s:UseLogging 2:UseLogging 1:"              # Log to file instead of syslog
+
 	if [[ $vnstat = 'vnstatphp' ]]; then
 		notice "iNSTALLiNG VNSTAT-PHP"
 		git clone -q git://github.com/bjd/vnstat-php-frontend.git vnstat-web                           # Checkout VnStat-Web
@@ -344,11 +351,12 @@ cd $SOURCE_DIR
 	sabnzbd_conf=/home/$USER/.sabnzbd/sabnzbd.ini
 	sabnzbd_init=/etc/default/sabnzbdplus
 
-	sed -i "s:USER.*:USER=$USER:"   $sabnzbd_init
-	sed -i "s:HOST.*:HOST=0.0.0.0:" $sabnzbd_init
-	sed -i "s:PORT.*:PORT=8080:"    $sabnzbd_init
+	sed -i $sabnzbd_init \
+	-i "s:USER.*:USER=$USER:"   \
+	-i "s:HOST.*:HOST=0.0.0.0:" \
+	-i "s:PORT.*:PORT=8080:"
+	
 	/etc/init.d/sabnzbdplus start && /etc/init.d/sabnzbdplus stop  # Create config in user's home
-
 	sed -i "s:host .*:host = $iP:"  $sabnzbd_conf
 	[[ $CORES < 2 ]] && 
 		sed -i "s:par2_multicore .*:par2_multicore = 0:" $sabnzbd_conf
@@ -367,6 +375,11 @@ if [[ $ipblock = 'y' ]]; then
 			apt-get -t squeeze install libpcre3 libnfnetlink0 libnetfilter-queue1 2>> $LOG  # Install updated libraries for lenny support
 		fi
 		packages install iplist
+		#[ LATEST ]#
+		#packages install libnetfilter-queue-dev zlib1g-dev libpcre3-dev
+		#cd $SOURCE_DIR
+		#git clone git://iplist.git.sourceforge.net/gitroot/iplist/iplist
+		#cd iplist && make && make install
 	elif [[ $DISTRO = @(SUSE|[Ss]use)* ]]; then
 		packages install iplist libpcre0 libnfnetlink0 libnetfilter-queue1
 	elif [[ $DISTRO = @(ARCH|[Aa]rch)* ]]; then
@@ -380,7 +393,7 @@ if [[ $ipblock = 'y' ]]; then
 	sed -i "s:AUTOSTART=.*:AUTOSTART=\"Yes\":"        $PATH_iplist
 	sed -i "s:BLOCK_LIST=.*:BLOCK_LIST=\"$filters\":" $PATH_iplist
 
-	echo -en "${bldred} Updating block lists... ${rst}"
+	echo -en "${bldred} Updating block lists ($filters)... ${rst}"
 	ipblock -u && echo -e "${bldylw} done ${rst}"
 	/etc/init.d/ipblock start
 

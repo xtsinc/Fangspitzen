@@ -76,12 +76,12 @@ cd $SOURCE_DIR
 		if_error "libTorrent Download Failed"
 		log "LibTorrent | Downloaded" >> $LOG
 	else
-		download http://libtorrent.rakshasa.no/downloads/libtorrent-0.12.7.tar.gz  # Grab libtorrent
+		download http://libtorrent.rakshasa.no/downloads/libtorrent-0.12.8.tar.gz  # Grab libtorrent
 		if_error "LibTorrent Download Failed"
 		log "Lib|rTorrent | Downloaded" >> $LOG
 
-		extract libtorrent-0.12.7.tar.gz  # Unpack
-		mv libtorrent-0.12.7 libtorrent
+		extract libtorrent-0.12.8.tar.gz  # Unpack
+		mv libtorrent-0.12.8 libtorrent
 		log "LibTorrent | Unpacked"
 	fi
 
@@ -109,12 +109,12 @@ cd $SOURCE_DIR
 		if_error "rTorrent Download Failed"
 		log "rTorrent | Downloaded" >> $LOG
 	else
-		download http://libtorrent.rakshasa.no/downloads/rtorrent-0.8.7.tar.gz     # Grab rtorrent
+		download http://libtorrent.rakshasa.no/downloads/rtorrent-0.8.8.tar.gz     # Grab rtorrent
 		if_error "rTorrent Download Failed"
 		log "rTorrent | Downloaded" >> $LOG
 
-		extract rtorrent-0.8.7.tar.gz  # Unpack
-		mv rtorrent-0.8.7 rtorrent
+		extract rtorrent-0.8.8.tar.gz  # Unpack
+		mv rtorrent-0.8.8 rtorrent
 		log "Lib|rTorrent | Unpacked"
 	fi
 
@@ -179,10 +179,11 @@ if [[ $DISTRO = @([Uu]buntu|[dD]ebian|*Mint) && ! -f /etc/init.d/rtorrent ]]; th
 	cp modules/rtorrent/rtorrent-init-conf "$HOME"/.rtorrent.init.conf
 
 	# Write init configuration
-	sed -i "s:user=:user=\"$USER\":"                      $HOME/.rtorrent.init.conf
-	sed -i "s:base=:base=$HOME:"                          $HOME/.rtorrent.init.conf
-	sed -i 's:config=:config=("$base/.rtorrent.rc"):'     $HOME/.rtorrent.init.conf
-	sed -i "s:logfile=:logfile=$HOME/.rtorrent.init.log:" $HOME/.rtorrent.init.conf
+	sed -i $HOME/.rtorrent.init.conf \
+	-e "s:user=:user=\"$USER\":"                      \
+	-e "s:base=:base=$HOME:"                          \
+	-e 's:config=:config=("$base/.rtorrent.rc"):'     \
+	-e "s:logfile=:logfile=$HOME/.rtorrent.init.log:"
 
 	chmod a+x /etc/init.d/rtorrent && update-rc.d rtorrent defaults  # Start at boot
 	 log "rTorrent Config | Installed \nrTorrent Init Script | Created"

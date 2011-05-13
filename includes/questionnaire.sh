@@ -64,8 +64,8 @@ fi
 ##[ Check for Torent Client ]##
 if [[ $torrent = 'rtorrent' ]]; then
 	if [[ $rtorrent_svn = 'y' ]]
-		then echo -e "${bldblu} Package: rTorrent: Version: 0.8.7~svn HEAD ${rst}"
-		else echo -e "${bldblu} Package: rTorrent: Version: 0.8.6 ${rst}"; rtorrent_svn='n'
+		then echo -e "${bldblu} Package: rTorrent: Version: 0.8.9~svn HEAD ${rst}"
+		else echo -e "${bldblu} Package: rTorrent: Version: 0.8.8 ${rst}"; rtorrent_svn='n'
 	fi
 	if [[ $alloc = 'y' ]]; then
 		echo -e "${bldpur} Compiling --with-posix-fallocate ${rst}"

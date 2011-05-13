@@ -38,9 +38,10 @@ cd plugins
 	log "ruTorrent plugins | Downloaded"
 
 cd $SOURCE_DIR
-	sed -i "s:\$saveUploadedTorrents .*:\$saveUploadedTorrents = false;:"         rutorrent/conf/config.php
-	sed -i "s:\$topDirectory .*:\$topDirectory = '/home';:"                       rutorrent/conf/config.php
-	sed -i "s:\$XMLRPCMountPoint .*:\$XMLRPCMountPoint = \"/rutorrent/master\";:" rutorrent/conf/config.php
+	sed -i rutorrent/conf/config.php \
+	-e "s:\$saveUploadedTorrents .*:\$saveUploadedTorrents = false;:"         \
+	-e "s:\$topDirectory .*:\$topDirectory = '/home';:"                       \
+	-e "s:\$XMLRPCMountPoint .*:\$XMLRPCMountPoint = \"/rutorrent/master\";:"
 	sed -i "s:\$defaultTheme .*:\$defaultTheme = \"Oblivion\";:"                  rutorrent/plugins/theme/conf.php
 
 	notice "CONFiGURiNG USER AUTHENTiCATiON"
