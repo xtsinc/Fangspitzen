@@ -4,14 +4,15 @@ echo -e   "******${bldred} POST PROCESSiNG ${rst}********"
 echo -e   "*******************************"
 
 if [[ -f /etc/ssh/sshd_config && ! $(grep '#added by autoscript' /etc/ssh/sshd_config) ]]; then  # Check if this has already been done
-	sed -i 's:[#]*Protocol .*:Protocol 2:'                       /etc/ssh/sshd_config
-	sed -i 's:[#]*IgnoreRhosts no:IgnoreRhosts yes:'             /etc/ssh/sshd_config
-	sed -i 's:[#]*PermitRootLogin yes:PermitRootLogin no:'       /etc/ssh/sshd_config
-	sed -i 's:[#]*LoginGraceTime .*:LoginGraceTime 30:'          /etc/ssh/sshd_config
-	sed -i 's:[#]*StrictModes no:StrictModes yes:'               /etc/ssh/sshd_config
-	sed -i 's:[#]*ServerKeyBits .*:ServerKeyBits 1024:'          /etc/ssh/sshd_config
-	sed -i 's:[#]*AllowTcpForwarding yes:AllowTcpForwarding no:' /etc/ssh/sshd_config
-	sed -i 's:[#]*X11Forwarding yes:X11Forwarding no:'           /etc/ssh/sshd_config
+	sed -i /etc/ssh/sshd_config \
+		-e 's:[#]*Protocol .*:Protocol 2:'                       \
+		-e 's:[#]*IgnoreRhosts no:IgnoreRhosts yes:'             \
+		-e 's:[#]*PermitRootLogin yes:PermitRootLogin no:'       \
+		-e 's:[#]*LoginGraceTime .*:LoginGraceTime 30:'          \
+		-e 's:[#]*StrictModes no:StrictModes yes:'               \
+		-e 's:[#]*ServerKeyBits .*:ServerKeyBits 1024:'          \
+		-e 's:[#]*AllowTcpForwarding yes:AllowTcpForwarding no:' \
+		-e 's:[#]*X11Forwarding yes:X11Forwarding no:'
 	[[ $(grep "AllowUsers" /etc/ssh/sshd_config) ]] &&
 		sed -e "/AllowUsers/s/$/ $USER/"                      -i /etc/ssh/sshd_config ||
 		echo "AllowUsers $USER"                               >> /etc/ssh/sshd_config

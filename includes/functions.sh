@@ -57,8 +57,9 @@ build_from_aur() {  # compile and install PKBUILDs
 
 	is_version "gcc" "11-13" ">" "4.1" && {
 		if [[ $(grep "mtune=generic" /etc/makepkg.conf) ]]; then
-			sed -i "s;[#]*CFLAGS=.*;CFLAGS=\"-march=native\";" /etc/makepkg.conf  # implies -mtune=native
-			sed -i "s;[#]*CXXFLAGS=.*;CXXFLAGS=\"${CFLAGS}\";" /etc/makepkg.conf
+			sed -i /etc/makepkg.conf \
+				-e "s;[#]*CFLAGS=.*;CFLAGS=\"-march=native\";" \  # implies -mtune=native
+				-e "s;[#]*CXXFLAGS=.*;CXXFLAGS=\"${CFLAGS}\";"
 		fi
 		sed -i "s;[#]*MAKEFLAGS=.*;MAKEFLAGS=\"-j$(($(grep -c ^processor /proc/cpuinfo) + 1))\";" /etc/makepkg.conf ;}
 
@@ -204,8 +205,9 @@ mkpass() {  # generate a random password of user defined length
 
 mksslcert() {  # use 2048 bit certs, use sha256, and regenerate
 	if [[ "$1" = 'generate-default-snakeoil' ]]; then  # do once and only once
-		sed -i 's:default_bits .*:default_bits = 2048:' /etc/ssl/openssl.cnf
-		sed -i 's:default_md .*:default_md = sha256:'   /etc/ssl/openssl.cnf
+		sed -i /etc/ssl/openssl.cnf \
+			-e 's:default_bits .*:default_bits = 2048:' \
+			-e 's:default_md .*:default_md = sha256:'
 		if [[ -x /usr/sbin/make-ssl-cert ]]; then
 			echo -en "${bldred} Generating SSL Certificate...${rst}"
 			sed -i 's:default_bits .*:default_bits = 2048:' $SSLCERT
