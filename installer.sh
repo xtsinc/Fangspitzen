@@ -19,7 +19,8 @@ VERSION='1.1.0~git'                                              #
 DATE='Mar 10 2011'                                               #
 ##################################################################
 trap ctrl_c SIGINT
-if [ `bash --version | head -n1 | cut -c 19` -gt '3' ]  # Check for bash verion 4+
+
+if [ ${BASH_VERSINFO[0]} -eq 4 ] || [ ${BASH_VERSINFO[0]} -gt 4 ]  # Check for bash verion 4+
 	then source includes/functions.sh || echo " Error: while loading functions.sh"  # Source in our functions
 	else echo "Please install package: bash, version 4.0 or higher" && exit
 fi
@@ -69,10 +70,9 @@ ${bldylw}       (@${bldgrn}           '--------'
   not likely. If you do run into problems, please let us know so we can
   fix it.
 
-      Supported:                InProgress:
-        Ubuntu 9 +                OpenSUSE 11.3 +
-        Debian 5 +                   
-        ArchLinux
+      ${undrln}Supported Distros:${rst}
+        Ubuntu 9 +	OpenSUSE 11.3 +          
+        Debian 6 +	ArchLinux
 
   If your OS is not listed, this script will most likey explode.${rst}"
 echo -e " ${undred}___________________________________________${rst}"

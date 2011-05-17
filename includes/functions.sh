@@ -365,13 +365,19 @@ spinner() {
 }
 
 usage() {  # help screen
-	echo -e "\n${bldpur} Usage:${bldred} "$0" ${bldpur}[${bldred}option${bldpur}]"
-	echo -e " Options:"
-	echo -e " ${bldred}  -p,  --pass    ${bldpur}(length) ${bldylw} Generate a strong password of 'x' length"
-	echo -e " ${bldred}  -t,  --threads ${bldpur}(num) ${bldylw}    Number of threads to create when using 'make'"
-	echo -e " ${bldred}  -v,  --version ${bldylw}          Show date and version number \n ${rst}"
-	echo -e " ${bldred}       --save-tmp ${bldylw}          Dont remove script src directory ${rst}"
-	echo -e " ${bldred}       --rtorrent-prealloc ${bldylw} Build rtorrent with file preallocation \n ${rst}"
+	cat <<EOF
+
+Usage:
+./installer [options]
+
+options:
+-p,  --pass    #     Generate a strong password of 'x' length
+-t,  --threads #     Number of threads to create when using compiling
+-v,  --version       Show date and version number
+--save-tmp           Dont remove script src directory
+--rtorrent-prealloc  Build rtorrent with file preallocation
+
+EOF
 	exit 1
 }
 
