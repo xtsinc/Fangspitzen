@@ -450,7 +450,7 @@ if ! is_installed "mktorrent" || [[ $buildtorrent = 'm' ]]; then
 		log "MkTorrent | Downloaded"
 	fi
 	cd mktorrent
-	git checkout rewrite  # Switch to rewrite branch  https://github.com/esmil/mktorrent/commits/rewrite
+
 	MKT_OPT="USE_PTHREAD=1 USE_LONG_OPTIONS=1 USE_OPENSSL=1 NO_HASH_CHECK=1"
 	[[ "$ARCH" = "x86_64" ]] &&
 		make $MKT_OPT install ||
