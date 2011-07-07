@@ -76,12 +76,12 @@ cd $SOURCE_DIR
 		if_error "libTorrent Download Failed"
 		log "LibTorrent | Downloaded" >> $LOG
 	else
-		download http://libtorrent.rakshasa.no/downloads/libtorrent-0.12.8.tar.gz  # Grab libtorrent
+		download http://libtorrent.rakshasa.no/downloads/libtorrent-0.12.9.tar.gz  # Grab libtorrent
 		if_error "LibTorrent Download Failed"
 		log "Lib|rTorrent | Downloaded" >> $LOG
 
-		extract libtorrent-0.12.8.tar.gz  # Unpack
-		mv libtorrent-0.12.8 libtorrent
+		extract libtorrent-0.12.9.tar.gz  # Unpack
+		mv libtorrent-0.12.9 libtorrent
 		log "LibTorrent | Unpacked"
 	fi
 
@@ -109,12 +109,12 @@ cd $SOURCE_DIR
 		if_error "rTorrent Download Failed"
 		log "rTorrent | Downloaded" >> $LOG
 	else
-		download http://libtorrent.rakshasa.no/downloads/rtorrent-0.8.8.tar.gz     # Grab rtorrent
+		download http://libtorrent.rakshasa.no/downloads/rtorrent-0.8.9.tar.gz     # Grab rtorrent
 		if_error "rTorrent Download Failed"
 		log "rTorrent | Downloaded" >> $LOG
 
-		extract rtorrent-0.8.8.tar.gz  # Unpack
-		mv rtorrent-0.8.8 rtorrent
+		extract rtorrent-0.8.9.tar.gz  # Unpack
+		mv rtorrent-0.8.9 rtorrent
 		log "Lib|rTorrent | Unpacked"
 	fi
 
