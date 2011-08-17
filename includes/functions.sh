@@ -1,6 +1,6 @@
 ##!=======================>> FUNCTiONS <<=======================!##
 base_install() {  # install dependencies
-COMMON="apache2-utils autoconf automake axel bash-completion binutils bzip2 ca-certificates cpp curl file gamin gcc git-core gzip htop iptables libexpat1 libtool libxml2 m4 make mcrypt openssl patch perl pkg-config python python-gamin python-openssl python-setuptools rsync screen subversion sudo unrar unzip"
+COMMON="apache2-utils autoconf automake axel bash-completion binutils bzip2 ca-certificates cpp curl file gamin gcc git-core gzip htop iptables libexpat1 libtool libxml2 m4 make mcrypt openssl patch perl pkg-config python python-gamin python-openssl python-setuptools rsync screen subversion sudo unrar unzip rar zip"
 DYNAMIC="libcurl3 libcurl3-gnutls libcurl4-openssl-dev libncurses5 libncurses5-dev libsigc++-2.0-dev"
 
 DEBIAN="$COMMON $DYNAMIC aptitude autotools-dev build-essential cfv comerr-dev dtach g++ geoip-database libcppunit-dev libperl-dev libssl-dev libterm-readline-gnu-perl libtorrent-rasterbar-dev ncurses-base ncurses-bin ncurses-term perl-modules ssl-cert"
@@ -41,7 +41,7 @@ base_configure() {  # do this before base_install ^
 	esac
 	log "Base Configuration | Completed"
 }
-			
+
 archlinux_add_module() {
 	cp /etc/rc.conf /etc/rc.conf.bak
 	source /etc/rc.conf
@@ -85,7 +85,7 @@ build_from_aur() {  # compile and install PKBUILDs
 checkout() {  # increase verbosity
 	if [[ "$DEBUG" = 1 ]]; then svn co "$@" ; E_=$?
 	else svn co -q "$@" ; E_=$?
-	fi	
+	fi
 }
 
 cleanup() {  # remove tmp folder and restore permissions

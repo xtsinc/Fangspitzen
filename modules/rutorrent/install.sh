@@ -45,7 +45,7 @@ cd $SOURCE_DIR
 	sed -i "s:\$defaultTheme .*:\$defaultTheme = \"Oblivion\";:"                  rutorrent/plugins/theme/conf.php
 
 	notice "CONFiGURiNG USER AUTHENTiCATiON"
-	if [[ $(pgrep apache2) || $(pgrep httpd) || $http = 'apache' ]]; then  # Apache - Create user authentication
+	if [[ $(pgrep apache2) || $(pgrep -x httpd) || $http = 'apache' ]]; then  # Apache - Create user authentication
 		cp $BASE/modules/apache/htaccess rutorrent/.htaccess
 		if [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]
 			then htdigest -c /etc/httpd/.htpasswd "ruTorrent" $USER
@@ -62,12 +62,14 @@ cd $SOURCE_DIR
 	fi
 
 	if is_installed "buildtorrent"
-		then sed -i "s:	\$useExternal .*;:	\$useExternal = \"buildtorrent\";:"                              rutorrent/plugins/create/conf.php
+		then sed -i "s:	\$useExternal .*;:	\$useExternal = \"buildtorrent\";:" rutorrent/plugins/create/conf.php
 			#sed -i "s:	\$pathToCreatetorrent .*;:	\$pathToCreatetorrent = '/usr/local/bin/buildtorrent';:" rutorrent/plugins/create/conf.php
 	elif is_installed "mktorrent"
-		then sed -i "s:	\$useExternal .*;:	\$useExternal = \"mktorrent\";:"                                 rutorrent/plugins/create/conf.php
+		then sed -i "s:	\$useExternal .*;:	\$useExternal = \"mktorrent\";:"    rutorrent/plugins/create/conf.php
 			#sed -i "s:	\$pathToCreatetorrent .*;:	\$pathToCreatetorrent = '/usr/local/bin/mktorrent';:"    rutorrent/plugins/create/conf.php
 	fi
+
+	sed -i "s:\$pathToExternals\['rar'\] .*;:\$pathToExternals\['rar'\] = '/usr/bin/rar';:" rutorrent/plugins/filemanager/conf.php
 	log "ruTorrent Config | Created"
 
 	cp -R rutorrent "$WEB"  # Move rutorrent to webroot

@@ -33,10 +33,10 @@ while [ "$#" -gt 0 ]; do
 			else error "Specify Length --pass x "; fi ;;
 		--adduser) source tools/add-user.sh ;;
 		--rtorrent-prealloc) alloc='y'; shift ;;
-		--save-tmp) RM_TMP='n'; shift ;; 
+		--save-tmp) RM_TMP='n'; shift ;;
 		--tmp) [[ "$2" ]] && OVERWRITE_SOURCE_DIR="$2"; shift ;;
 		-t|--threads) if [[ "$2" ]]
-			then declare -i OVERWRITE_THREAD_COUNT="$2"; shift 
+			then declare -i OVERWRITE_THREAD_COUNT="$2"; shift
 			else error "Specify num of threads --threads x "; fi ;;
 		-v|--version) echo -e "\n v$VERSION  $DATE \n"; exit ;;
 		-h|--help) usage ;;
@@ -71,7 +71,7 @@ ${bldylw}       (@${bldgrn}           '--------'
   fix it.
 
       ${undrln}Supported Distros:${rst}
-        Ubuntu 9 +	OpenSUSE 11.3 +          
+        Ubuntu 9 +	OpenSUSE 11.3 +
         Debian 6 +	ArchLinux
 
   If your OS is not listed, this script will most likey explode.${rst}"
@@ -112,6 +112,10 @@ if [[ $http = 'apache' ]]; then
 		packages install $PHP_DEBIAN php5 libapache2-mod-php5 libapache2-mod-suphp suphp-common
 		PHPini=/etc/php5/apache2/php.ini
 	elif [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]; then
+		packages addrepo "http://download.opensuse.org/repositories/Apache/openSUSE_${RELEASE}/" "Apache"
+		packages addrepo "http://download.opensuse.org/repositories/Apache:/Modules/Apache_openSUSE_${RELEASE}/" "Apache-Modules"
+		packages addrepo "http://download.opensuse.org/repositories/server:/php/openSUSE_${RELEASE}/" "Apache-PHP"
+		packages update
 		packages install apache2 apache2-prefork &&
 		packages install $PHP_SUSE php5 suphp apache2-mod_php5
 		PHPini=/etc/php5/apache2/php.ini
@@ -151,7 +155,7 @@ if [[ $http = 'apache' ]]; then
 		touch $WEB/index.html
 		if [[ ! -f /etc/httpd/conf/server.key ]]; then
 			mksslcert "/etc/httpd/conf/server.crt" "/etc/httpd/conf/server.key"
-			log "Lighttpd SSL Key created"
+			log "Apache SSL Key created"
 		fi
 	elif [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]; then
 		a2enmod auth_digest ssl php5 expires deflate mem_cache
@@ -167,6 +171,7 @@ if [[ $http = 'apache' ]]; then
 elif [[ $http = 'lighttp' ]]; then
 	notice "iNSTALLiNG LiGHTTP"
 	if [[ "$DISTRO" = @([Uu]buntu|[dD]ebian|*Mint) ]]; then
+		packages addrepo "ppa:stbuehler/ppa" "5A43ED73" && packages update
 		packages install lighttpd php5-cgi &&
 		packages install $PHP_DEBIAN
 		cat < modules/lighttp/auth.conf >> /etc/lighttpd/conf-available/05-auth.conf  # Apend contents of our auth.conf into lighttp's auth.conf
@@ -179,7 +184,7 @@ elif [[ $http = 'lighttp' ]]; then
 	elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
 		build_from_aur "htpasswd" "apache-tools"
 		packages install lighttpd &&
-		packages install $PHP_ARCHLINUX fcgi php-cgi 
+		packages install $PHP_ARCHLINUX fcgi php-cgi
 		cp modules/lighttp/lighttpd.conf.arch /etc/lighttpd/lighttpd.conf
 		echo "/etc/rc.d/lighttpd start" >> /etc/rc.local
 		sed -i "s:;extension=.*:extension=suhosin.so:" /etc/php/conf.d/suhosin.ini
@@ -193,11 +198,14 @@ elif [[ $http = 'lighttp' ]]; then
 		log "Lighttpd SSL Key created"
 	fi
 	log "Lighttp Installation | Completed" ; debug_wait "lighttpd.installed"
-	
+
 ##[ NGiNX ]##
 elif [[ $http = 'nginx' ]]; then  # TODO
 	notice "iNSTALLiNG NGiNX"
 	if [[ "$DISTRO" = @([Uu]buntu|[dD]ebian|*Mint) ]]; then
+		packages addrepo "ppa:nginx/stable"           "C300EE8C" # Nginx (ppa:nginx/php5 is Broken) <-| check
+		packages addrepo "ppa:brianmercer/php"        "8D0DC64F" # Nginx-PHP                     <----| these
+		packages update
 		packages install nginx nginx-common nginx-full php5-fpm &&
 		packages install $PHP_COMMON php5-cli
 		cp modules/nginx/nginx.conf.ubuntu /etc/nginx/nginx.conf
@@ -236,6 +244,7 @@ elif [[ $http = 'nginx' ]]; then  # TODO
 elif [[ $http = 'cherokee' ]]; then
 	notice "iNSTALLiNG CHEROKEE"
 	if [[ "$DISTRO" = @([Uu]buntu|[dD]ebian|*Mint) ]]; then
+		packages addrepo "ppa:cherokee-webserver/ppa" "EBA7BD49" && packages update
 		packages install cherokee libcherokee-mod-libssl libcherokee-mod-rrd libcherokee-mod-admin spawn-fcgi &&
 		packages install $PHP_DEBIAN
 		PHPini=/etc/php5/cgi/php.ini
@@ -288,7 +297,7 @@ if [[ $ftpd = 'vsftp' ]]; then
 	-e 's:#idle_session_timeout.*:idle_session_timeout=600:' \
 	-e 's:#nopriv_user.*:nopriv_user=ftp:'                   \
 	-e 's:#chroot_local_user.*:chroot_local_user=YES:'
-	
+
 	if [[ ! -f /etc/ssl/private/vsftpd.pem ]]; then
 		mksslcert "/etc/ssl/private/vsftpd.pem"
 		if [[ ! $(grep 'rsa_cert_file' /etc/vsftpd.conf) ]]
@@ -381,7 +390,7 @@ elif [[ $ftpd = 'pureftp' ]]; then
 		[[ -f /etc/default/pure-ftpd-common ]] && sed -i 's:STANDALONE_OR_INETD=.*:STANDALONE_OR_INETD=standalone:' /etc/default/pure-ftpd-common
 	fi
 	if_error "PureFTP failed to install"
-	
+
 	if [[ ! -f /etc/ssl/private/pure-ftpd.pem ]]; then  # Create SSL Certificate
 		mkdir -p /etc/ssl/private
 		mksslcert "/etc/ssl/private/pure-ftpd.pem" &&

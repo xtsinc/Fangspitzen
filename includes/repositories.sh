@@ -20,18 +20,6 @@ if [[ "$DISTRO" = @([uU]buntu|[dD]ebian|*Mint) ]]; then
 			echo "deb http://security.debian.org/ squeeze/updates non-free contrib"      >> /etc/apt/sources.list
 		fi
 	fi
-	packages addrepo "ppa:cherokee-webserver/ppa" "EBA7BD49" # Cherokee
-	packages addrepo "ppa:nginx/stable"           "C300EE8C" # Nginx (ppa:nginx/php5 is Broken)
-	packages addrepo "ppa:brianmercer/php"        "8D0DC64F" # Nginx-PHP
-	packages addrepo "ppa:stbuehler/ppa"          "5A43ED73" # Lighttp
-	packages addrepo "ppa:deluge-team/ppa"        "249AD24C" # Deluge
-	packages addrepo "ppa:transmissionbt/ppa"     "365C5CA1" # Transmission
-	packages addrepo "ppa:ssakar/ppa"             "108B243F" # iPList
-	packages addrepo "ppa:jcfp/ppa"               "4BB9F05F" # SABnzbd
-	echo "deb http://download.virtualbox.org/virtualbox/debian "$NAME" non-free" >> $REPO_PATH/autoinstaller.list  # VirtualBox
-	echo "deb http://download.webmin.com/download/repository sarge contrib"      >> $REPO_PATH/autoinstaller.list  # Webmin
-	wget -q http://download.virtualbox.org/virtualbox/debian/oracle_vbox.asc -O- | apt-key add -
-	wget -q http://www.webmin.com/jcameron-key.asc -O- | apt-key add -
 
 elif [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
 	if [[ "$ARCH" = "x86_64" ]] && [[ ! $(grep '\[multilib\]' /etc/pacman.conf) || $(grep '#\[multilib\]' /etc/pacman.conf) ]]; then
@@ -45,14 +33,7 @@ elif [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]; then
 	packages addrepo http://download.opensuse.org/repositories/openSUSE:/${RELEASE}:/Contrib/standard/      "Contrib"
 	packages addrepo http://download.opensuse.org/repositories/network:/utilities/openSUSE_${RELEASE}/      "Axel"
 	packages addrepo http://ftp.uni-erlangen.de/pub/mirrors/packman/suse/${RELEASE}/                        "Packman"
-	packages addrepo http://download.opensuse.org/repositories/Apache/openSUSE_${RELEASE}/                  "Apache"
-	packages addrepo http://download.opensuse.org/repositories/Apache:/Modules/Apache_openSUSE_${RELEASE}/  "Apache-Modules"
-	packages addrepo http://download.opensuse.org/repositories/server:/php/openSUSE_${RELEASE}/             "Apache-PHP"
 	packages addrepo http://download.opensuse.org/repositories/server:/php:/extensions/openSUSE_${RELEASE}/ "PHP-Extensions"
-	packages addrepo http://download.opensuse.org/repositories/server:/http/openSUSE_${RELEASE}/            "Cherokee"
-	packages addrepo http://download.opensuse.org/repositories/filesharing/openSUSE_${RELEASE}/             "Transmission"
-	packages addrepo http://download.opensuse.org/repositories/home:/uljanow/openSUSE_11.2/                 "iPList"
-	packages addrepo http://download.opensuse.org/repositories/shells/openSUSE_${RELEASE}/                  "Shells"
 	log "Repositories ADD | Success"
 else
 	error "Failed to add repositories to unknown distro... exiting (${DISTRO})"

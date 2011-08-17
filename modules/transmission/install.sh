@@ -1,10 +1,13 @@
 cd $SOURCE_DIR
 	notice "iNSTALLiNG TRANSMiSSiON"
 	if [[ "$DISTRO" = @([Uu]buntu|[dD]ebian|*Mint) ]]; then
+		packages addrepo "ppa:transmissionbt/ppa" "365C5CA1" && packages update
 		packages install transmission-daemon transmission-common transmission-cli
 		sed -i "s:USER=.*:USER=$USER:" /etc/init.d/transmission-daemon
 		/etc/init.d/transmission-daemon restart && /etc/init.d/transmission-daemon stop
 	elif [[ "$DISTRO" = @(SUSE|[Ss]use)* ]]; then
+		packages addrepo "http://download.opensuse.org/repositories/filesharing/openSUSE_${RELEASE}/" "Transmission"
+		packages update
 		packages install transmission transmission-common
 		sudo -u $USER transmission-daemon && sleep 2
 		kill -u $USER $(pgrep transmission) && sleep 1
@@ -30,7 +33,7 @@ cd $SOURCE_DIR
 		-e "s|\"rpc-password.*|\"rpc-password\": \"$tPass\",|"     \
 		-e "s|\"rpc-username.*|\"rpc-username\": \"$tUser\",|"     \
 		-e "s|\"rpc-whitelist.*|\"rpc-whitelist\": \"*.*.*.*\",|"
-	
+
 	[[ -d /etc/rc.d/ ]] && /etc/rc.d/transmissiond start || /etc/init.d/transmission-daemon start
 
 	notice "http://code.google.com/p/transmisson-remote-gui  is recommened to access transmission remotely, instead of its built-in webui."

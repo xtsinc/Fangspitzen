@@ -3,6 +3,7 @@ cd $SOURCE_DIR
 	if [[ "$DISTRO" = @(ARCH|[Aa]rch)* ]]; then
 		build_from_aur "deluge" "deluge-git"
 	else
+		packages addrepo "ppa:deluge-team/ppa" "249AD24C" && packages update
 		packages install deluge-common deluge-console deluge-web deluged
 			if_error "Deluge failed to install"
 	fi
@@ -22,7 +23,7 @@ cd $SOURCE_DIR
 
 	log "Deluge Init Script Created"
 	debug_wait "deluge.init.copied"
-	
+
 	NUMBER=$[($RANDOM % 65534) + 20000]  # Generate a random number from 20000-65534
 	deluge_conf="$HOME/.config/deluge/core.conf"
 
@@ -39,9 +40,7 @@ cd $SOURCE_DIR
 		-e "s,\"dht\": .*,\"dht\": \"false\","                                          \
 		-e "s:6881,:$NUMBER,:"                                                          \
 		-e "s:6891,:$NUMBER:"
-
 	chown -R $USER:$USER $HOME/.config/deluge
-
 	sudo -u $USER deluged deluged
 	sudo -u $USER deluged deluge-web
 

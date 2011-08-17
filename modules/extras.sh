@@ -238,7 +238,7 @@ cd $SOURCE_DIR
 	sed -e "/open_basedir = /s|$|:/proc:/usr/sbin/lspci:/usr/sbin/lsusb|" -i /etc/php/php.ini
 
 	cd ..
-	mv phpsysinfo $WEB 
+	mv phpsysinfo $WEB
 	log "phpSysInfo Installation | Completed" ; debug_wait "phpsysinfo.installed"
 fi
 
@@ -247,8 +247,12 @@ cd $BASE
 if [[ $webmin = 'y' ]]; then
 	notice "iNSTALLiNG WEBMiN"
 	if [[ $DISTRO = @(Ubuntu|[dD]ebian|*Mint) ]]; then
+		echo "deb http://download.webmin.com/download/repository sarge contrib" >> $REPO_PATH/autoinstaller.list
+		wget -q http://www.webmin.com/jcameron-key.asc -O- | apt-key add -
+		packages update
 		packages install webmin libauthen-pam-perl libio-pty-perl libnet-ssleay-perl libpam-runtime
 	elif [[ $DISTRO = @(SUSE|[Ss]use)* ]]; then
+		packages addrepo "http://download.opensuse.org/repositories/server:/http/openSUSE_${RELEASE}/" "Cherokee" && packages update
 		packages install webmin perl-Net-SSLeay
 	elif [[ $DISTRO = @(ARCH|[Aa]rch)* ]]; then
 		packages install webmin
@@ -270,7 +274,7 @@ cd $SOURCE_DIR
 		packages install gd
 	fi
 	if_error "vnStat deps failed to install"
-	
+
 	download http://humdi.net/vnstat/vnstat-1.10.tar.gz # Download VnStat
 	extract vnstat-1.10.tar.gz && cd vnstat-1.10        # Unpack
 
@@ -329,7 +333,9 @@ if [[ $sabnzbd = 'y' ]]; then
 cd $SOURCE_DIR
 	notice "iNSTALLiNG SABnzbd"
 	if [[ $DISTRO = @(Ubuntu|[dD]ebian|*Mint) ]]; then
-			packages install par2 python-cheetah python-dbus python-feedparser python-memcache python-utidylib python-yenc sabnzbdplus sabnzbdplus-theme-classic sabnzbdplus-theme-plush sabnzbdplus-theme-smpl
+		packages addrepo "ppa:jcfp/ppa" "4BB9F05F"
+		packages update
+		packages install par2 python-cheetah python-dbus python-feedparser python-memcache python-utidylib python-yenc sabnzbdplus sabnzbdplus-theme-classic sabnzbdplus-theme-plush sabnzbdplus-theme-smpl
 	elif [[ $DISTRO = @(SUSE|[Ss]use)* ]]; then
 		echo "TODO" # packages install
 	elif [[ $DISTRO = @(ARCH|[Aa]rch)* ]]; then
@@ -357,10 +363,10 @@ cd $SOURCE_DIR
 		-e "s:USER.*:USER=$USER:"   \
 		-e "s:HOST.*:HOST=0.0.0.0:" \
 		-e "s:PORT.*:PORT=8080:"
-	
+
 	/etc/init.d/sabnzbdplus start && /etc/init.d/sabnzbdplus stop  # Create config in user's home
 	sed -i "s:host .*:host = $iP:"  $sabnzbd_conf
-	[[ $CORES < 2 ]] && 
+	[[ $CORES < 2 ]] &&
 		sed -i "s:par2_multicore .*:par2_multicore = 0:" $sabnzbd_conf
 
 	/etc/init.d/sabnzbdplus start  # Start 'er up
@@ -373,6 +379,8 @@ fi
 if [[ $ipblock = 'y' ]]; then
 	notice "iNSTALLiNG iPBLOCK"
 	if [[ $DISTRO = @(Ubuntu|[dD]ebian|*Mint) ]]; then
+		packages addrepo "ppa:ssakar/ppa" "108B243F"
+		packages update
 		if [[ $NAME = 'lenny' ]]; then
 			apt-get -t squeeze install libpcre3 libnfnetlink0 libnetfilter-queue1 2>> $LOG  # Install updated libraries for lenny support
 		fi
@@ -383,6 +391,8 @@ if [[ $ipblock = 'y' ]]; then
 		#git clone git://iplist.git.sourceforge.net/gitroot/iplist/iplist
 		#cd iplist && make && make install
 	elif [[ $DISTRO = @(SUSE|[Ss]use)* ]]; then
+		packages addrepo "http://download.opensuse.org/repositories/home:/uljanow/openSUSE_11.2/" "iPList"
+		packages update
 		packages install iplist libpcre0 libnfnetlink0 libnetfilter-queue1
 	elif [[ $DISTRO = @(ARCH|[Aa]rch)* ]]; then
 		packages install iplist libnetfilter_queue libnfnetlink
@@ -420,10 +430,10 @@ if [[ $virtualbox = 'y' ]]; then  # TODO
 		/etc/rc.d/vboxdrv setup  # Build kernel modules
 		modprobe vboxdrv && archlinux_add_module "vboxdrv"
 	fi
-	
+
 	notice "VBoxManage --help \n VBoxHeadless --help"
 	log "ViRTUALBOX Installation | Completed" ; debug_wait "virtualbox.installed"
-	
+
 	echo -en "\n Install php-virtualbox frontend? [y/n]: "
 	if yes
 		then phpvirtualbox='y'
@@ -453,9 +463,13 @@ fi
 ##[ ZSHELL ]##
 if [[ $zshell = 'y' ]]; then
 	notice "iNSTALLiNG ZSHELL"
+	if [[ $DISTRO = @(SUSE|[Ss]use)* ]]; then
+		packages addrepo "http://download.opensuse.org/repositories/shells/openSUSE_${RELEASE}/" "Shells"
+		packages update
+	fi
 	packages install zsh
 	if_error "ZSH failed to install"
-	
+
 sudo -u "$USER" bash -c '
 	if [[ ! -d $HOME/.oh-my-zsh ]]; then
 		git clone https://github.com/robbyrussell/oh-my-zsh.git $HOME/.oh-my-zsh
